@@ -3,7 +3,19 @@ import React, { useEffect, useState } from "react";
 import { useAdminAuth } from "@/components/AdminAuthContext";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Check, FolderOpen, X } from "lucide-react";
+// استبدل أي استخدام لأي أيقونة خارج اللائحة بأيقونة من القائمة المسموح بها
+import { FolderOpen, X, Eye } from "lucide-react";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogClose,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
 type ProjectRequest = {
   id: string;
@@ -43,6 +55,9 @@ const AdminDashboard = () => {
   const [requests, setRequests] = useState<ProjectRequest[]>([]);
   const [orders, setOrders] = useState<SoftwareOrder[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // حاله لتحديد التذكرة المعروضة
+  const [viewedRequest, setViewedRequest] = useState<ProjectRequest | null>(null);
 
   useEffect(() => {
     if (!isLoggedIn) {
@@ -151,6 +166,67 @@ const AdminDashboard = () => {
                         {new Date(r.created_at).toLocaleString("ar-EG")}
                       </td>
                       <td className="px-4 py-2 flex items-center gap-1">
+                        {/* زر استعراض كامل التذكرة */}
+                        <Dialog>
+                          <DialogTrigger asChild>
+                            <Button
+                              variant="outline"
+                              size="icon"
+                              title="استعراض كامل التذكرة"
+                              onClick={() => setViewedRequest(r)}
+                            >
+                              <Eye />
+                            </Button>
+                          </DialogTrigger>
+                          <DialogContent dir="rtl">
+                            <DialogHeader>
+                              <DialogTitle>تفاصيل التذكرة</DialogTitle>
+                              <DialogDescription>
+                                معلومات الطلب بشكل كامل
+                              </DialogDescription>
+                            </DialogHeader>
+                            {viewedRequest && viewedRequest.id === r.id && (
+                              <div className="text-base space-y-4 py-4">
+                                <div>
+                                  <span className="font-medium">الاسم: </span>
+                                  {viewedRequest.name}
+                                </div>
+                                <div>
+                                  <span className="font-medium">البريد الإلكتروني: </span>
+                                  {viewedRequest.email || "-"}
+                                </div>
+                                <div>
+                                  <span className="font-medium">رقم الهاتف: </span>
+                                  {viewedRequest.phone || "-"}
+                                </div>
+                                <div>
+                                  <span className="font-medium">العنوان: </span>
+                                  {viewedRequest.title}
+                                </div>
+                                <div>
+                                  <span className="font-medium">الشرح: </span>
+                                  {viewedRequest.description}
+                                </div>
+                                <div>
+                                  <span className="font-medium">الحالة: </span>
+                                  <span className={`rounded px-2 py-1 text-xs font-semibold ${statusColors[viewedRequest.status] || ""
+                                    }`}>
+                                    {statusLabels[viewedRequest.status] || viewedRequest.status}
+                                  </span>
+                                </div>
+                                <div>
+                                  <span className="font-medium">تاريخ الطلب: </span>
+                                  {new Date(viewedRequest.created_at).toLocaleString("ar-EG")}
+                                </div>
+                              </div>
+                            )}
+                            <DialogFooter>
+                              <DialogClose asChild>
+                                <Button variant="secondary">إغلاق</Button>
+                              </DialogClose>
+                            </DialogFooter>
+                          </DialogContent>
+                        </Dialog>
                         <button
                           disabled={r.status === "open"}
                           className="px-2 py-1 rounded bg-green-100 text-green-800 hover:bg-green-200 transition-all disabled:opacity-50"
@@ -221,4 +297,3 @@ const AdminDashboard = () => {
   );
 };
 export default AdminDashboard;
-
