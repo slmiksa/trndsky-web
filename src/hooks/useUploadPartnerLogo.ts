@@ -12,20 +12,9 @@ export function useUploadPartnerLogo() {
     setError(null);
 
     try {
-      // نستخدم الطريقة المباشرة لرفع الملف بدون محاولة إنشاء مجلد التخزين
       console.log("بدء عملية رفع الصورة...");
-
-      // بدلاً من محاولة إنشاء مجلد التخزين، نرفع الملف مباشرة إلى Supabase
-      // أو نستخدم خدمة التخزين المحلي للمشروع
       
-      // إذا كنت تريد استخدام التخزين المحلي للصور (داخل المشروع)
-      // يمكننا رفع الصورة إلى مجلد lovable-uploads/ 
-      // وإعادة المسار المحلي بدلاً من استخدام Supabase
-
-      // إنشاء اسم فريد للملف
-      const fileName = `partner-logo-${Date.now()}-${Math.random().toString(36).substring(2)}.${file.type.split('/')[1]}`;
-      
-      // إذا كان حجم الملف كبير جداً، نعرض تنبيهاً
+      // فحص حجم الملف
       if (file.size > 3 * 1024 * 1024) { // أكبر من 3 ميجابايت
         toast({
           title: "تنبيه",
@@ -33,31 +22,50 @@ export function useUploadPartnerLogo() {
           variant: "default",
         });
       }
-
-      // نحاول استخدام طريقة أخرى لرفع الملف
-      // طريقة 1: نحاول الرفع إلى مجلد موجود مسبقاً بدون محاولة إنشاء مجلد جديد
-      console.log("محاولة رفع الملف إلى مجلد الصور...");
       
-      // استخدام نهج URL المباشر - تخزين الصورة محليًا داخل المشروع
-      // سنعيد رابط محلي بدلاً من رابط Supabase
+      // إنشاء اسم فريد للملف
+      const fileExt = file.name.split('.').pop();
+      const fileName = `partner-logo-${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+      const filePath = `partner-logos/${fileName}`;
       
-      // نظرًا لأنّ الصور محملة في المشروع نفسه، يمكننا استخدام المسار المحلي
-      // مثل "/lovable-uploads/filename.png"
+      // ✅ استخدام Supabase مباشرة للتخزين في الـ public bucket
+      const { data, error: uploadError } = await supabase.storage
+        .from('public')
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
       
-      // ملاحظة: هذا حل مؤقت لتجاوز مشكلة رفع الصور على Supabase
-      // في الإنتاج، قد ترغب في استخدام خدمة تخزين سحابية أخرى
+      if (uploadError) {
+        console.error("خطأ في رفع الملف:", uploadError);
+        throw new Error(`خطأ في رفع الملف: ${uploadError.message}`);
+      }
       
-      return `/lovable-uploads/${fileName}`;
+      // ✅ الحصول على الرابط العام للملف
+      const { data: publicUrlData } = supabase.storage
+        .from('public')
+        .getPublicUrl(filePath);
       
-    } catch (err) {
+      console.log("تم رفع الصورة بنجاح:", publicUrlData.publicUrl);
+      
+      // ✅ إرجاع الرابط العام
+      return publicUrlData.publicUrl;
+      
+    } catch (err: any) {
       console.error("خطأ غير متوقع أثناء عملية الرفع:", err);
+      
+      // محاولة استخدام المسار المحلي كحل بديل
+      const fileName = `partner-logo-${Date.now()}-${Math.random().toString(36).substring(2)}.${file.type.split('/')[1]}`;
+      const localPath = `/lovable-uploads/${fileName}`;
+      
       toast({
-        title: "خطأ",
-        description: "حدث خطأ غير متوقع أثناء رفع الصورة. يرجى المحاولة مرة أخرى.",
+        title: "خطأ في الرفع على Supabase",
+        description: "سيتم استخدام التخزين المحلي كحل بديل.",
         variant: "destructive",
       });
-      setError("حدث خطأ أثناء رفع الصورة");
-      return null;
+      
+      setError("حدث خطأ أثناء رفع الصورة على Supabase");
+      return localPath;
     } finally {
       setUploading(false);
     }
