@@ -2,20 +2,31 @@
 import React, { useEffect, useState } from "react";
 import { useAdminAuth } from "@/components/AdminAuthContext";
 import { Navigate, useLocation } from "react-router-dom";
+import { toast } from "@/components/ui/use-toast";
 
 export default function ProtectedAdminRoute({ children }: { children: React.ReactNode }) {
-  const { isLoggedIn } = useAdminAuth();
+  const { isLoggedIn, checkAuth } = useAdminAuth();
   const location = useLocation();
   const [isChecking, setIsChecking] = useState(true);
   
   useEffect(() => {
-    // Short timeout to ensure the auth state is properly loaded
-    const timer = setTimeout(() => {
-      setIsChecking(false);
-    }, 100);
+    const verifyAuth = async () => {
+      try {
+        await checkAuth();
+      } catch (error) {
+        console.error("Auth check error:", error);
+        toast({
+          title: "خطأ في التحقق",
+          description: "حدث خطأ أثناء التحقق من صلاحيات الوصول",
+          variant: "destructive"
+        });
+      } finally {
+        setIsChecking(false);
+      }
+    };
     
-    return () => clearTimeout(timer);
-  }, []);
+    verifyAuth();
+  }, [checkAuth]);
   
   if (isChecking) {
     return (
