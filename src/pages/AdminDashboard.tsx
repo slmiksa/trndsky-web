@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import { useAdminAuth } from "@/components/AdminAuthContext";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-// استبدل أي استخدام لأي أيقونة خارج اللائحة بأيقونة من القائمة المسموح بها
 import { FolderOpen, X, Eye } from "lucide-react";
 import {
   Dialog,
@@ -58,6 +57,8 @@ const AdminDashboard = () => {
 
   // حاله لتحديد التذكرة المعروضة
   const [viewedRequest, setViewedRequest] = useState<ProjectRequest | null>(null);
+  // حاله لتحديد الطلب البرمجي الجاهز المعروض
+  const [viewedOrder, setViewedOrder] = useState<SoftwareOrder | null>(null);
 
   useEffect(() => {
     if (!isLoggedIn) {
@@ -98,6 +99,15 @@ const AdminDashboard = () => {
   const updateStatus = async (id: string, newStatus: string) => {
     await supabase
       .from("project_requests")
+      .update({ status: newStatus })
+      .eq("id", id);
+    fetchData();
+  };
+
+  // تعديل حالة software order
+  const updateOrderStatus = async (id: string, newStatus: string) => {
+    await supabase
+      .from("software_orders")
       .update({ status: newStatus })
       .eq("id", id);
     fetchData();
@@ -166,7 +176,6 @@ const AdminDashboard = () => {
                         {new Date(r.created_at).toLocaleString("ar-EG")}
                       </td>
                       <td className="px-4 py-2 flex items-center gap-1">
-                        {/* زر استعراض كامل التذكرة */}
                         <Dialog>
                           <DialogTrigger asChild>
                             <Button
@@ -273,6 +282,7 @@ const AdminDashboard = () => {
                     <th className="px-4 py-2">واتساب</th>
                     <th className="px-4 py-2">الحالة</th>
                     <th className="px-4 py-2">تاريخ الطلب</th>
+                    <th className="px-4 py-2">إجراءات</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -281,9 +291,83 @@ const AdminDashboard = () => {
                       <td className="px-4 py-2">{o.software_id}</td>
                       <td className="px-4 py-2">{o.company_name}</td>
                       <td className="px-4 py-2">{o.whatsapp}</td>
-                      <td className="px-4 py-2">{o.status}</td>
+                      <td className="px-4 py-2">
+                        <span className={`inline-block rounded px-2 py-1 text-xs font-semibold ${statusColors[o.status] || ""}`}>
+                          {statusLabels[o.status] || o.status}
+                        </span>
+                      </td>
                       <td className="px-4 py-2">
                         {new Date(o.created_at).toLocaleString("ar-EG")}
+                      </td>
+                      <td className="px-4 py-2 flex items-center gap-1">
+                        {/* زر استعراض الطلب بالكامل */}
+                        <Dialog>
+                          <DialogTrigger asChild>
+                            <Button
+                              variant="outline"
+                              size="icon"
+                              title="استعراض كامل الطلب"
+                              onClick={() => setViewedOrder(o)}
+                            >
+                              <Eye />
+                            </Button>
+                          </DialogTrigger>
+                          <DialogContent dir="rtl">
+                            <DialogHeader>
+                              <DialogTitle>تفاصيل الطلب البرمجي الجاهز</DialogTitle>
+                              <DialogDescription>
+                                جميع معلومات الطلب
+                              </DialogDescription>
+                            </DialogHeader>
+                            {viewedOrder && viewedOrder.id === o.id && (
+                              <div className="text-base space-y-4 py-4">
+                                <div>
+                                  <span className="font-medium">رقم المنتج: </span>
+                                  {viewedOrder.software_id}
+                                </div>
+                                <div>
+                                  <span className="font-medium">اسم الشركة / العميل: </span>
+                                  {viewedOrder.company_name}
+                                </div>
+                                <div>
+                                  <span className="font-medium">رقم الواتساب: </span>
+                                  {viewedOrder.whatsapp}
+                                </div>
+                                <div>
+                                  <span className="font-medium">الحالة: </span>
+                                  <span className={`rounded px-2 py-1 text-xs font-semibold ${statusColors[viewedOrder.status] || ""}`}>
+                                    {statusLabels[viewedOrder.status] || viewedOrder.status}
+                                  </span>
+                                </div>
+                                <div>
+                                  <span className="font-medium">تاريخ الطلب: </span>
+                                  {new Date(viewedOrder.created_at).toLocaleString("ar-EG")}
+                                </div>
+                              </div>
+                            )}
+                            <DialogFooter>
+                              <DialogClose asChild>
+                                <Button variant="secondary">إغلاق</Button>
+                              </DialogClose>
+                            </DialogFooter>
+                          </DialogContent>
+                        </Dialog>
+                        <button
+                          disabled={o.status === "open"}
+                          className="px-2 py-1 rounded bg-green-100 text-green-800 hover:bg-green-200 transition-all disabled:opacity-50"
+                          onClick={() => updateOrderStatus(o.id, "open")}
+                          title="تحويل لمفتوح"
+                        >
+                          <FolderOpen size={16} />
+                        </button>
+                        <button
+                          disabled={o.status === "closed"}
+                          className="px-2 py-1 rounded bg-red-100 text-red-800 hover:bg-red-200 transition-all disabled:opacity-50"
+                          onClick={() => updateOrderStatus(o.id, "closed")}
+                          title="إغلاق"
+                        >
+                          <X size={16} />
+                        </button>
                       </td>
                     </tr>
                   ))}
@@ -297,3 +381,4 @@ const AdminDashboard = () => {
   );
 };
 export default AdminDashboard;
+
