@@ -28,12 +28,14 @@ export function useUploadPartnerLogo() {
         return null;
       }
 
-      const { data: publicUrlData, error: publicUrlError } = supabase.storage
+      // The getPublicUrl method doesn't return an error property in its response
+      // It just returns { data: { publicUrl: string } }
+      const { data: publicUrlData } = supabase.storage
         .from("partner-logos")
         .getPublicUrl(fileName);
 
-      if (publicUrlError || !publicUrlData?.publicUrl) {
-        console.error("Error getting public URL:", publicUrlError);
+      if (!publicUrlData?.publicUrl) {
+        console.error("Error getting public URL: No public URL returned");
         setError("حدث خطأ في الحصول على رابط الشعار");
         setUploading(false);
         return null;
