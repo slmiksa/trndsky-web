@@ -21,6 +21,7 @@ import {
   TabsContent,
 } from "@/components/ui/tabs";
 import { toast } from "@/components/ui/use-toast";
+import { useUploadPartnerLogo } from "@/hooks/useUploadPartnerLogo";
 
 const initialSlides = [
   {
@@ -125,6 +126,10 @@ const AdminDashboard = () => {
 
   const [isSavingSlide, setIsSavingSlide] = useState(false);
 
+  const [logoFile, setLogoFile] = useState<File | null>(null);
+
+  const { uploadLogo, uploading: logoUploading, error: logoUploadError } = useUploadPartnerLogo();
+
   useEffect(() => {
     if (!isLoggedIn) {
       navigate("/adminlogin");
@@ -201,16 +206,30 @@ const AdminDashboard = () => {
     }));
   };
 
+  const handleLogoFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setLogoFile(e.target.files[0]);
+    }
+  };
+
   const handleSavePartner = async () => {
     setIsSavingPartner(true);
     
     try {
+      let logo_url = partnerForm.logo_url;
+
+      if (logoFile) {
+        const uploadedUrl = await uploadLogo(logoFile);
+        if (uploadedUrl) logo_url = uploadedUrl;
+        else throw new Error("لم يتم رفع الشعار");
+      }
+
       if (partnerToEdit) {
         const { error } = await supabase
           .from("partners")
           .update({ 
             name: partnerForm.name, 
-            logo_url: partnerForm.logo_url 
+            logo_url
           })
           .eq("id", partnerToEdit.id);
 
@@ -221,7 +240,7 @@ const AdminDashboard = () => {
           .from("partners")
           .insert({ 
             name: partnerForm.name, 
-            logo_url: partnerForm.logo_url 
+            logo_url
           });
 
         if (error) throw error;
@@ -230,6 +249,8 @@ const AdminDashboard = () => {
       
       fetchPartners();
       setPartnerDialogOpen(false);
+      setLogoFile(null);
+      setPartnerForm({ name: "", logo_url: "" });
     } catch (error: any) {
       console.error("Error saving partner:", error);
       toast({ 
@@ -827,15 +848,20 @@ const AdminDashboard = () => {
                     />
                   </div>
                   <div>
-                    <label className="font-medium block mb-1">رابط الشعار</label>
+                    <label className="font-medium block mb-1">شعار الشريك</label>
                     <input
-                      name="logo_url"
-                      value={partnerForm.logo_url}
-                      onChange={handlePartnerFormChange}
-                      required
+                      type="file"
+                      accept="image/*"
+                      onChange={handleLogoFileChange}
                       className="input border px-3 py-2 w-full rounded"
-                      placeholder="رابط صورة الشعار"
+                      disabled={logoUploading}
                     />
+                    {(logoFile || partnerForm.logo_url) && (
+                      <div className="mt-2">
+                        <img src={logoFile ? URL.createObjectURL(logoFile) : partnerForm.logo_url} alt="معاينة الشعار" className="h-16 object-contain" />
+                      </div>
+                    )}
+                    {logoUploadError && <div className="text-red-500 text-sm">{logoUploadError}</div>}
                   </div>
                   <DialogFooter>
                     <Button type="submit" disabled={isSavingPartner}>
