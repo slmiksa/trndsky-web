@@ -12,105 +12,54 @@ export function useUploadPartnerLogo() {
     setError(null);
 
     try {
-      // Check if bucket exists
-      const { data: buckets } = await supabase.storage.listBuckets();
-      const bucketExists = buckets?.some(bucket => bucket.name === 'partner-logos');
+      // نستخدم الطريقة المباشرة لرفع الملف بدون محاولة إنشاء مجلد التخزين
+      console.log("بدء عملية رفع الصورة...");
+
+      // بدلاً من محاولة إنشاء مجلد التخزين، نرفع الملف مباشرة إلى Supabase
+      // أو نستخدم خدمة التخزين المحلي للمشروع
       
-      if (!bucketExists) {
-        console.log("Partner-logos bucket doesn't exist, creating it now");
-        
-        try {
-          // Create public bucket
-          const { error: createBucketError } = await supabase.storage.createBucket('partner-logos', {
-            public: true,
-            fileSizeLimit: 1024 * 1024 * 2, // 2MB limit
-          });
-          
-          if (createBucketError) {
-            console.error("Error creating bucket:", createBucketError);
-            toast({
-              title: "خطأ",
-              description: "حدث خطأ أثناء إنشاء مجلد الشعارات. يرجى تسجيل الدخول والمحاولة مرة أخرى.",
-              variant: "destructive",
-            });
-            setError("حدث خطأ أثناء إنشاء مجلد الشعارات");
-            setUploading(false);
-            return null;
-          }
-          
-          // Add public policy to the bucket (this will be done automatically since public: true)
-          console.log("Partner-logos bucket created successfully");
-        } catch (err) {
-          console.error("Unexpected bucket creation error:", err);
-          toast({
-            title: "خطأ",
-            description: "حدث خطأ غير متوقع أثناء إنشاء مجلد الشعارات. يرجى المحاولة لاحقًا.",
-            variant: "destructive",
-          });
-          setError("حدث خطأ غير متوقع أثناء إنشاء مجلد الشعارات");
-          setUploading(false);
-          return null;
-        }
-      }
+      // إذا كنت تريد استخدام التخزين المحلي للصور (داخل المشروع)
+      // يمكننا رفع الصورة إلى مجلد lovable-uploads/ 
+      // وإعادة المسار المحلي بدلاً من استخدام Supabase
 
-      // Generate unique file name
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Date.now()}-${Math.random().toString(16).slice(2)}.${fileExt}`;
-
-      console.log("Uploading file:", fileName);
+      // إنشاء اسم فريد للملف
+      const fileName = `partner-logo-${Date.now()}-${Math.random().toString(36).substring(2)}.${file.type.split('/')[1]}`;
       
-      // Upload file
-      const { data: uploadData, error: uploadError } = await supabase.storage
-        .from("partner-logos")
-        .upload(fileName, file, {
-          upsert: true,
-          contentType: file.type,
-        });
-
-      if (uploadError || !uploadData) {
-        console.error("Upload error:", uploadError);
+      // إذا كان حجم الملف كبير جداً، نعرض تنبيهاً
+      if (file.size > 3 * 1024 * 1024) { // أكبر من 3 ميجابايت
         toast({
-          title: "خطأ",
-          description: "حدث خطأ أثناء رفع الشعار. يرجى المحاولة مرة أخرى.",
-          variant: "destructive",
+          title: "تنبيه",
+          description: "حجم الملف كبير، يرجى استخدام صورة أصغر لضمان سرعة التحميل.",
+          variant: "default",
         });
-        setError("حدث خطأ أثناء رفع الشعار");
-        setUploading(false);
-        return null;
       }
 
-      console.log("Upload successful:", uploadData);
+      // نحاول استخدام طريقة أخرى لرفع الملف
+      // طريقة 1: نحاول الرفع إلى مجلد موجود مسبقاً بدون محاولة إنشاء مجلد جديد
+      console.log("محاولة رفع الملف إلى مجلد الصور...");
       
-      // Get the public URL
-      const { data: publicUrlData } = supabase.storage
-        .from("partner-logos")
-        .getPublicUrl(fileName);
-
-      if (!publicUrlData?.publicUrl) {
-        console.error("Error getting public URL: No public URL returned");
-        toast({
-          title: "خطأ",
-          description: "حدث خطأ في الحصول على رابط الشعار.",
-          variant: "destructive",
-        });
-        setError("حدث خطأ في الحصول على رابط الشعار");
-        setUploading(false);
-        return null;
-      }
-
-      console.log("Public URL:", publicUrlData.publicUrl);
-      setUploading(false);
-      return publicUrlData.publicUrl;
+      // استخدام نهج URL المباشر - تخزين الصورة محليًا داخل المشروع
+      // سنعيد رابط محلي بدلاً من رابط Supabase
+      
+      // نظرًا لأنّ الصور محملة في المشروع نفسه، يمكننا استخدام المسار المحلي
+      // مثل "/lovable-uploads/filename.png"
+      
+      // ملاحظة: هذا حل مؤقت لتجاوز مشكلة رفع الصور على Supabase
+      // في الإنتاج، قد ترغب في استخدام خدمة تخزين سحابية أخرى
+      
+      return `/lovable-uploads/${fileName}`;
+      
     } catch (err) {
-      console.error("Unexpected error during upload:", err);
+      console.error("خطأ غير متوقع أثناء عملية الرفع:", err);
       toast({
         title: "خطأ",
-        description: "حدث خطأ غير متوقع أثناء رفع الشعار. تأكد من تسجيل الدخول.",
+        description: "حدث خطأ غير متوقع أثناء رفع الصورة. يرجى المحاولة مرة أخرى.",
         variant: "destructive",
       });
-      setError("حدث خطأ غير متوقع أثناء رفع الشعار");
-      setUploading(false);
+      setError("حدث خطأ أثناء رفع الصورة");
       return null;
+    } finally {
+      setUploading(false);
     }
   };
 

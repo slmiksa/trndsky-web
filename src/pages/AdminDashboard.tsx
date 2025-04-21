@@ -47,6 +47,14 @@ const initialSlides = [
   },
 ];
 
+// شريك الوصل الوطنية الإفتراضي
+const WISAL_PARTNER = {
+  id: -1,
+  name: "شركة الوصل الوطنية لتحصيل ديون جهات التمويل",
+  logo_url: "/lovable-uploads/aa977791-13b8-471b-92c8-d9ef4ef03f27.png",
+  created_at: new Date().toISOString(),
+};
+
 type ProjectRequest = {
   id: string;
   name: string;
@@ -169,8 +177,22 @@ const AdminDashboard = () => {
     if (error) {
       console.error("Error fetching partners:", error);
       toast({ title: "خطأ", description: "حدث خطأ أثناء جلب بيانات الشركاء", variant: "destructive" });
+      // إضافة الشريك الإفتراضي عند حدوث خطأ
+      setPartners([WISAL_PARTNER]);
     } else {
-      setPartners(data || []);
+      // التحقق ما إذا كان شريك الوصل موجود بالفعل في قاعدة البيانات
+      const partnerList = data || [];
+      const wisalExists = partnerList.some(p => 
+        p.name === WISAL_PARTNER.name || 
+        p.logo_url === WISAL_PARTNER.logo_url
+      );
+      
+      // إضافة شريك الوصل الوطنية إلى القائمة إن لم يكن موجوداً بالفعل
+      if (!wisalExists) {
+        setPartners([WISAL_PARTNER, ...partnerList]);
+      } else {
+        setPartners(partnerList);
+      }
     }
     setLoadingPartners(false);
   }
@@ -212,12 +234,14 @@ const AdminDashboard = () => {
     }
   };
 
+  // عند حفظ الشريك، نتحقق إذا كان شريك الوصل الوطنية ونتعامل معه بطريقة خاصة
   const handleSavePartner = async () => {
     setIsSavingPartner(true);
 
     try {
       let logo_url = partnerForm.logo_url;
 
+      // إذا كان هناك ملف جديد للشعار، نرفعه
       if (logoFile) {
         const uploadedUrl = await uploadLogo(logoFile);
         if (!uploadedUrl) {
@@ -226,7 +250,26 @@ const AdminDashboard = () => {
         logo_url = uploadedUrl;
       }
 
-      if (partnerToEdit) {
+      // إذا كان التعديل على شريك الوصل الإفتراضي
+      if (partnerToEdit && partnerToEdit.id === -1) {
+        // تعديل الشريك الإفتراضي في الذاكرة فقط
+        // وسيتم تحديثه في العرض دون إرساله لقاعدة البيانات
+        const updatedWisal = {
+          ...WISAL_PARTNER,
+          name: partnerForm.name,
+          logo_url: logo_url
+        };
+        
+        // تحديث قائمة الشركاء مع الشريك الإفتراضي المعدل
+        setPartners(prev => {
+          const withoutWisal = prev.filter(p => p.id !== -1);
+          return [updatedWisal, ...withoutWisal];
+        });
+        
+        toast({ title: "تم التحديث", description: "تم تحديث بيانات الشريك الإفتراضي بنجاح" });
+      }
+      // إذا كان تعديل على شريك موجود في قاعدة البيانات
+      else if (partnerToEdit) {
         const { error } = await supabase
           .from("partners")
           .update({
@@ -237,7 +280,9 @@ const AdminDashboard = () => {
 
         if (error) throw error;
         toast({ title: "تم التحديث", description: "تم تحديث بيانات الشريك بنجاح" });
-      } else {
+      }
+      // إذا كان إضافة شريك جديد
+      else {
         const { error } = await supabase
           .from("partners")
           .insert({
@@ -265,12 +310,21 @@ const AdminDashboard = () => {
     }
   };
 
+  // حذف شريك - تعديل للتعامل مع شريك الوصل الإفتراضي
   const handleDeletePartner = async (partnerId: number) => {
     if (!confirm("هل أنت متأكد من حذف هذا الشريك؟")) {
       return;
     }
     
     try {
+      // إذا كان الشريك هو الإفتراضي، نحذفه فقط من العرض
+      if (partnerId === -1) {
+        setPartners(prev => prev.filter(p => p.id !== -1));
+        toast({ title: "تم الحذف", description: "تم إزالة الشريك الإفتراضي من العرض" });
+        return;
+      }
+      
+      // إذا كان شريك عادي من قاعدة البيانات
       const { error } = await supabase
         .from("partners")
         .delete()
@@ -780,107 +834,4 @@ const AdminDashboard = () => {
               ) : (
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {partners.map((partner) => (
-                    <div key={partner.id} className="bg-white rounded-xl shadow p-5 flex flex-col">
-                      <div className="bg-gray-50 flex items-center justify-center p-4 mb-3 rounded-lg h-40">
-                        <img
-                          src={partner.logo_url}
-                          alt={partner.name}
-                          className="object-contain max-h-24 max-w-full"
-                        />
-                      </div>
-                      <h3 className="font-bold text-trndsky-teal text-lg mb-1">{partner.name}</h3>
-                      <div className="text-gray-500 text-xs">
-                        تاريخ الإضافة: {new Date(partner.created_at).toLocaleDateString("ar-EG")}
-                      </div>
-                      <div className="flex gap-2 mt-3">
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          onClick={() => openEditPartnerDialog(partner)}
-                          title="تعديل"
-                        >
-                          <Edit size={18} />
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          onClick={() => handleDeletePartner(partner.id)}
-                          title="حذف"
-                        >
-                          <Trash2 size={18} className="text-red-500" />
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                  {partners.length === 0 && (
-                    <div className="text-gray-400 col-span-3 text-center py-12">
-                      لا يوجد شركاء حالياً. أضف شريكاً جديداً بالضغط على زر "إضافة شريك جديد".
-                    </div>
-                  )}
-                </div>
-              )}
-            </section>
-
-            <Dialog open={partnerDialogOpen} onOpenChange={setPartnerDialogOpen}>
-              <DialogContent dir="rtl">
-                <DialogHeader>
-                  <DialogTitle>{partnerToEdit ? "تعديل بيانات الشريك" : "إضافة شريك جديد"}</DialogTitle>
-                  <DialogDescription>
-                    {partnerToEdit
-                      ? "يمكنك تعديل بيانات الشريك أدناه"
-                      : "قم بإضافة بيانات الشريك الجديد"}
-                  </DialogDescription>
-                </DialogHeader>
-                <form
-                  className="space-y-4"
-                  onSubmit={e => {
-                    e.preventDefault();
-                    handleSavePartner();
-                  }}
-                >
-                  <div>
-                    <label className="font-medium block mb-1">اسم الشريك</label>
-                    <input
-                      name="name"
-                      value={partnerForm.name}
-                      onChange={handlePartnerFormChange}
-                      required
-                      className="input border px-3 py-2 w-full rounded"
-                      placeholder="اسم الشركة / المؤسسة الشريكة"
-                    />
-                  </div>
-                  <div>
-                    <label className="font-medium block mb-1">شعار الشريك</label>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleLogoFileChange}
-                      className="input border px-3 py-2 w-full rounded"
-                      disabled={logoUploading}
-                    />
-                    {(logoFile || partnerForm.logo_url) && (
-                      <div className="mt-2">
-                        <img src={logoFile ? URL.createObjectURL(logoFile) : partnerForm.logo_url} alt="معاينة الشعار" className="h-16 object-contain" />
-                      </div>
-                    )}
-                    {logoUploadError && <div className="text-red-500 text-sm">{logoUploadError}</div>}
-                  </div>
-                  <DialogFooter>
-                    <Button type="submit" disabled={isSavingPartner}>
-                      {isSavingPartner ? "جارٍ الحفظ..." : partnerToEdit ? "حفظ التعديلات" : "إضافة الشريك"}
-                    </Button>
-                    <DialogClose asChild>
-                      <Button variant="secondary">إلغاء</Button>
-                    </DialogClose>
-                  </DialogFooter>
-                </form>
-              </DialogContent>
-            </Dialog>
-          </TabsContent>
-        </Tabs>
-      </main>
-    </div>
-  );
-};
-
-export default AdminDashboard;
+                    <div key={partner.id} className="bg-white rounded-
