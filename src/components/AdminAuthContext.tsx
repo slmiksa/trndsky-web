@@ -5,6 +5,7 @@ interface AdminAuthContextType {
   isLoggedIn: boolean;
   login: (username: string, password: string) => boolean;
   logout: () => void;
+  checkAuth: () => Promise<boolean>; // Adding the checkAuth method to the interface
 }
 
 const AdminAuthContext = createContext<AdminAuthContextType | undefined>(undefined);
@@ -43,8 +44,22 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem("admin-auth");
   };
 
+  // Add the checkAuth method implementation
+  const checkAuth = async () => {
+    // Check if the user is authenticated in localStorage
+    const authState = localStorage.getItem("admin-auth");
+    const isAuthenticated = authState === "true";
+    
+    // Update state if needed
+    if (isLoggedIn !== isAuthenticated) {
+      setIsLoggedIn(isAuthenticated);
+    }
+    
+    return isAuthenticated;
+  };
+
   return (
-    <AdminAuthContext.Provider value={{ isLoggedIn, login, logout }}>
+    <AdminAuthContext.Provider value={{ isLoggedIn, login, logout, checkAuth }}>
       {children}
     </AdminAuthContext.Provider>
   );
