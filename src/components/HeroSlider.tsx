@@ -55,28 +55,28 @@ const HeroSlider = () => {
   };
 
   return (
-    <div className="relative h-[70vh] overflow-hidden">
+    <div className="relative h-[70vh] overflow-hidden rounded-b-3xl shadow-xl bg-gradient-to-br from-[#F5F7FA] via-[#e0e7ef] to-trndsky-blue">
       {slides.map((slide, index) => (
         <div
           key={slide.id}
           className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
-            index === currentSlide ? 'opacity-100' : 'opacity-0'
+            index === currentSlide ? 'opacity-100 z-10' : 'opacity-0 z-0'
           }`}
           style={{
-            backgroundImage: `url(${slide.image})`,
+            backgroundImage: `linear-gradient(90deg, rgba(10, 36, 99, 0.92) 35%, rgba(11, 61, 145, 0.8) 100%),url(${slide.image})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
           }}
         >
-          <div className="absolute inset-0 hero-gradient"></div>
+          <div className="absolute inset-0"></div>
           <div className="absolute inset-0 flex flex-col justify-center items-center text-center text-white p-4">
             <div className={`transform transition-all duration-700 delay-300 ${
               index === currentSlide ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
             }`}>
-              <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-3 font-tajawal">{slide.title}</h2>
-              <h3 className="text-xl md:text-2xl font-medium mb-4 text-trndsky-teal font-tajawal">{slide.subtitle}</h3>
-              <p className="max-w-3xl mx-auto text-lg font-tajawal">{slide.description}</p>
-              <button className="mt-8 btn-secondary font-tajawal">اطلب الآن</button>
+              <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-3 font-tajawal drop-shadow-xl">{slide.title}</h2>
+              <h3 className="text-2xl md:text-3xl font-bold mb-4 text-trndsky-teal font-tajawal">{slide.subtitle}</h3>
+              <p className="max-w-2xl mx-auto text-xl font-tajawal text-blue-50 bg-black/20 rounded-lg px-6 py-3 backdrop-blur">{slide.description}</p>
+              <button className="mt-8 bg-gradient-to-l from-trndsky-teal to-trndsky-blue shadow-xl text-white py-3 px-10 transition-all hover:scale-105 rounded-full font-tajawal text-lg tracking-widest">اطلب الآن</button>
             </div>
           </div>
         </div>
@@ -85,14 +85,14 @@ const HeroSlider = () => {
       {/* Navigation Arrows */}
       <button
         onClick={prevSlide}
-        className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white rounded-full p-2 transition"
+        className="absolute left-8 top-1/2 transform -translate-y-1/2 bg-white/80 text-trndsky-blue border border-trndsky-teal shadow-lg rounded-full p-2 transition hover:bg-trndsky-teal hover:text-white z-20"
         aria-label="Previous slide"
       >
         <ArrowLeft size={24} />
       </button>
       <button
         onClick={nextSlide}
-        className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white rounded-full p-2 transition"
+        className="absolute right-8 top-1/2 transform -translate-y-1/2 bg-white/80 text-trndsky-blue border border-trndsky-teal shadow-lg rounded-full p-2 transition hover:bg-trndsky-teal hover:text-white z-20"
         aria-label="Next slide"
       >
         <ArrowRight size={24} />

@@ -30,7 +30,6 @@ const ProjectRequestForm = () => {
       duration: 5000,
     });
     
-    // Reset form
     setFormData({
       name: '',
       email: '',
@@ -41,17 +40,20 @@ const ProjectRequestForm = () => {
   };
 
   return (
-    <section className="section-padding bg-trndsky-gray">
-      <div className="container mx-auto">
-        <div className="max-w-3xl mx-auto bg-white rounded-xl shadow-lg p-8">
-          <h2 className="text-3xl font-bold text-center mb-8 font-tajawal text-trndsky-blue">
+    <section className="section-padding bg-white relative">
+      {/* Background circles */}
+      <div className="absolute -top-24 -left-20 w-60 h-60 rounded-full bg-trndsky-teal/10 z-0"></div>
+      <div className="absolute -bottom-14 -right-24 w-72 h-72 rounded-full bg-trndsky-blue/10 z-0"></div>
+      <div className="container mx-auto relative z-10">
+        <div className="max-w-3xl mx-auto bg-gradient-to-br from-[#f5f7fa] via-white to-[#e0f7fa] rounded-3xl shadow-2xl p-10 border border-trndsky-blue/10">
+          <h2 className="text-4xl font-extrabold text-center mb-8 font-tajawal text-trndsky-blue drop-shadow-md">
             اطلب برمجة <span className="text-trndsky-teal">بأفكارك</span>
           </h2>
           
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-7">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <label htmlFor="name" className="block text-lg font-medium text-right font-tajawal">
+                <label htmlFor="name" className="block text-lg font-bold text-right font-tajawal text-trndsky-darkblue">
                   الاسم الثنائي / اسم الشركة
                 </label>
                 <input
@@ -61,13 +63,13 @@ const ProjectRequestForm = () => {
                   value={formData.name}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-trndsky-teal"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-trndsky-teal bg-white shadow-sm text-lg font-tajawal"
                   dir="rtl"
                 />
               </div>
               
               <div className="space-y-2">
-                <label htmlFor="contact" className="block text-lg font-medium text-right font-tajawal">
+                <label htmlFor="contact" className="block text-lg font-bold text-right font-tajawal text-trndsky-darkblue">
                   البريد الإلكتروني / رقم التواصل
                 </label>
                 <div className="grid grid-cols-2 gap-4">
@@ -78,7 +80,7 @@ const ProjectRequestForm = () => {
                     value={formData.email}
                     onChange={handleChange}
                     placeholder="البريد الإلكتروني"
-                    className="w-full px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-trndsky-teal"
+                    className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-trndsky-teal bg-white shadow-sm text-lg font-tajawal"
                     dir="rtl"
                   />
                   <input
@@ -88,7 +90,7 @@ const ProjectRequestForm = () => {
                     value={formData.phone}
                     onChange={handleChange}
                     placeholder="رقم الهاتف"
-                    className="w-full px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-trndsky-teal"
+                    className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-trndsky-teal bg-white shadow-sm text-lg font-tajawal"
                     dir="rtl"
                   />
                 </div>
@@ -96,7 +98,7 @@ const ProjectRequestForm = () => {
             </div>
             
             <div className="space-y-2">
-              <label htmlFor="title" className="block text-lg font-medium text-right font-tajawal">
+              <label htmlFor="title" className="block text-lg font-bold text-right font-tajawal text-trndsky-darkblue">
                 عنوان الفكرة
               </label>
               <input
@@ -106,13 +108,13 @@ const ProjectRequestForm = () => {
                 value={formData.title}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-trndsky-teal"
+                className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-trndsky-teal bg-white shadow-sm text-lg font-tajawal"
                 dir="rtl"
               />
             </div>
             
             <div className="space-y-2">
-              <label htmlFor="description" className="block text-lg font-medium text-right font-tajawal">
+              <label htmlFor="description" className="block text-lg font-bold text-right font-tajawal text-trndsky-darkblue">
                 شرح الفكرة
               </label>
               <textarea
@@ -122,7 +124,7 @@ const ProjectRequestForm = () => {
                 onChange={handleChange}
                 required
                 rows={5}
-                className="w-full px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-trndsky-teal resize-none"
+                className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-trndsky-teal bg-white shadow-sm text-lg font-tajawal resize-none"
                 dir="rtl"
               ></textarea>
             </div>
@@ -130,7 +132,7 @@ const ProjectRequestForm = () => {
             <div className="flex justify-center">
               <button
                 type="submit"
-                className="btn-primary py-3 px-8 text-lg font-tajawal"
+                className="bg-gradient-to-l from-trndsky-teal to-trndsky-blue hover:from-trndsky-blue hover:to-trndsky-teal text-white py-3 px-12 rounded-full shadow-lg text-xl font-tajawal tracking-widest transition-all hover:scale-105"
               >
                 إرسال الطلب
               </button>

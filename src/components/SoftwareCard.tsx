@@ -16,31 +16,31 @@ const SoftwareCard = ({ title, description, image, id }: SoftwareCardProps) => {
   };
 
   return (
-    <div className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300">
+    <div className="bg-gradient-to-tr from-white via-trndsky-gray to-[#f3fafe] rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 border border-trndsky-blue/10 hover:scale-105">
       <div 
         className="h-48 overflow-hidden relative"
         style={{ backgroundImage: `url(${image})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
       >
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
       </div>
       
-      <div className="p-5">
-        <h3 className="text-xl font-bold mb-2 font-tajawal text-right">{title}</h3>
+      <div className="p-6">
+        <h3 className="text-2xl font-bold mb-2 font-tajawal text-right text-trndsky-darkblue">{title}</h3>
         
         <div className="flex justify-end">
           <button
             onClick={toggleDetails}
-            className="text-trndsky-teal hover:text-trndsky-blue font-medium transition-colors font-tajawal"
+            className="text-trndsky-teal hover:text-trndsky-blue font-medium transition-colors font-tajawal underline underline-offset-4"
           >
             {showDetails ? 'إخفاء التفاصيل' : 'عرض التفاصيل'}
           </button>
         </div>
         
         {showDetails && (
-          <div className="mt-4 text-gray-600 text-right animate-fade-in font-tajawal">
+          <div className="mt-4 text-gray-600 text-right animate-fade-in font-tajawal bg-gray-50 rounded-lg p-4 border border-trndsky-blue/10">
             <p>{description}</p>
             <div className="mt-4 flex justify-end">
-              <button className="btn-secondary text-sm font-tajawal">طلب المزيد من المعلومات</button>
+              <button className="btn-secondary text-sm font-tajawal rounded-full shadow-md hover:bg-trndsky-darkblue">طلب المزيد من المعلومات</button>
             </div>
           </div>
         )}
@@ -75,14 +75,14 @@ export const FeaturedSoftware = () => {
   return (
     <section className="section-padding bg-white">
       <div className="container mx-auto">
-        <h2 className="text-3xl md:text-4xl font-bold text-center mb-4 font-tajawal text-trndsky-darkblue">
+        <h2 className="text-4xl font-extrabold text-center mb-4 font-tajawal text-trndsky-darkblue drop-shadow-lg">
           برمجياتنا <span className="text-trndsky-teal">الجاهزة</span>
         </h2>
-        <p className="text-center text-gray-600 mb-12 max-w-2xl mx-auto font-tajawal">
+        <p className="text-center text-gray-600 mb-12 max-w-2xl mx-auto font-tajawal text-lg">
           مجموعة من الحلول البرمجية الجاهزة التي يمكن تخصيصها لتناسب احتياجات عملك
         </p>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-9">
           {softwareItems.map((item) => (
             <SoftwareCard
               key={item.id}
@@ -95,7 +95,7 @@ export const FeaturedSoftware = () => {
         </div>
         
         <div className="mt-12 text-center">
-          <a href="/software" className="btn-primary inline-block font-tajawal">عرض جميع البرمجيات</a>
+          <a href="/software" className="btn-primary inline-block font-tajawal rounded-full shadow-xl hover:bg-trndsky-teal hover:text-white text-lg px-10 py-3 transition-all">عرض جميع البرمجيات</a>
         </div>
       </div>
     </section>

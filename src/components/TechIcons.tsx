@@ -33,7 +33,7 @@ const TechIcons = () => {
   return (
     <section className="section-padding bg-white">
       <div className="container mx-auto">
-        <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 font-tajawal text-trndsky-darkblue">
+        <h2 className="text-4xl md:text-5xl font-extrabold text-center mb-12 font-tajawal text-trndsky-darkblue drop-shadow">
           خدماتنا <span className="text-trndsky-teal">البرمجية</span>
         </h2>
         
@@ -41,12 +41,12 @@ const TechIcons = () => {
           {iconData.map((item, index) => (
             <div 
               key={index} 
-              className="flex flex-col items-center text-center p-6 rounded-lg shadow-md card-hover bg-white"
+              className="flex flex-col items-center text-center p-7 rounded-xl shadow-lg card-hover bg-gradient-to-br from-white via-trndsky-gray to-[#effafe] hover:scale-105 hover:shadow-xl transition-all"
             >
               <div className="animate-bounce-slow">
                 {item.icon}
               </div>
-              <h3 className="text-xl font-semibold mb-2 font-tajawal">{item.title}</h3>
+              <h3 className="text-xl font-bold mb-2 font-tajawal text-trndsky-blue">{item.title}</h3>
               <p className="text-gray-600 font-tajawal">{item.description}</p>
             </div>
           ))}

@@ -29,22 +29,21 @@ const partners = [
 
 const PartnersSection = () => {
   return (
-    <section className="section-padding bg-trndsky-gray">
+    <section className="section-padding bg-gradient-to-tr from-[#f7fafc] via-[#ebf5fd] to-trndsky-gray">
       <div className="container mx-auto">
-        <h2 className="text-3xl font-bold text-center mb-12 font-tajawal text-trndsky-darkblue">
+        <h2 className="text-4xl font-extrabold text-center mb-12 font-tajawal text-trndsky-darkblue drop-shadow">
           شركاء <span className="text-trndsky-teal">النجاح</span>
         </h2>
-        
-        <div className="flex flex-wrap justify-center items-center gap-8 md:gap-12">
+        <div className="flex flex-wrap justify-center items-center gap-10 md:gap-14">
           {partners.map((partner) => (
             <div 
               key={partner.id} 
-              className="bg-white p-4 rounded-lg shadow-sm card-hover"
+              className="bg-white rounded-full border border-trndsky-blue/10 shadow-sm hover:shadow-md transition-all flex items-center justify-center h-28 w-44 md:h-32 md:w-56 p-3"
             >
               <img 
                 src={partner.logo} 
                 alt={partner.name} 
-                className="h-16 object-contain" 
+                className="object-contain max-h-14 max-w-[200px]" 
               />
             </div>
           ))}
