@@ -10,36 +10,42 @@ const Software = () => {
       title: "نظام إدارة المبيعات",
       description: "نظام متكامل لإدارة المبيعات والمخزون مع تقارير تحليلية متقدمة وواجهة سهلة الاستخدام. يوفر النظام رؤية شاملة عن أداء المبيعات ويساعد في اتخاذ القرارات الاستراتيجية.",
       image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+      price: "٣,٩٩٩ ر.س",
     },
     {
       id: 2,
       title: "منصة التجارة الإلكترونية",
       description: "منصة احترافية للتجارة الإلكترونية مع دعم للدفع الإلكتروني وإدارة المنتجات والعملاء. تتيح المنصة إنشاء متجر إلكتروني بسهولة مع تجربة مستخدم مميزة.",
       image: "https://images.unsplash.com/photo-1563013544-824ae1b704d3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+      price: "٥,٥٠٠ ر.س",
     },
     {
       id: 3,
       title: "تطبيق إدارة المشاريع",
       description: "تطبيق لإدارة المشاريع وتتبع المهام والتعاون بين فرق العمل مع تقارير متقدمة. يساعد على تنظيم سير العمل وتحسين كفاءة الفرق وإنجاز المشاريع في الوقت المحدد.",
       image: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+      price: "٤,٢٠٠ ر.س",
     },
     {
       id: 4,
       title: "نظام إدارة الموارد البشرية",
       description: "نظام متكامل لإدارة شؤون الموظفين والرواتب والإجازات والتقييم. يساعد على تبسيط العمليات الإدارية وتحسين تجربة الموظفين.",
       image: "https://images.unsplash.com/photo-1529400971008-f566de0e6dfc?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+      price: "٦,٠٠٠ ر.س",
     },
     {
       id: 5,
       title: "منصة إدارة المحتوى",
       description: "منصة مرنة لإدارة المحتوى الرقمي بمختلف أنواعه. تتيح إنشاء وتحرير ونشر المحتوى بسهولة مع إمكانيات متقدمة للتخصيص.",
       image: "https://images.unsplash.com/photo-1432888498266-38ffec3eaf0a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2074&q=80",
+      price: "٣,٢٠٠ ر.س",
     },
     {
       id: 6,
       title: "نظام إدارة علاقات العملاء",
       description: "نظام متكامل لإدارة علاقات العملاء وتتبع فرص المبيعات وخدمة العملاء. يساعد على بناء علاقات قوية مع العملاء وزيادة معدلات الاحتفاظ بهم.",
       image: "https://images.unsplash.com/photo-1600880292089-90a7e086ee0c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+      price: "٥,٧٠٠ ر.س",
     },
   ];
 
@@ -66,6 +72,7 @@ const Software = () => {
                 title={item.title}
                 description={item.description}
                 image={item.image}
+                price={item.price}
               />
             ))}
           </div>
