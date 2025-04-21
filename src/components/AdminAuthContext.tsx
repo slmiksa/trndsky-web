@@ -1,5 +1,5 @@
 
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
 
 interface AdminAuthContextType {
   isLoggedIn: boolean;
@@ -16,9 +16,18 @@ export function useAdminAuth() {
 }
 
 export function AdminAuthProvider({ children }: { children: ReactNode }) {
-  const [isLoggedIn, setIsLoggedIn] = useState(() => {
-    return localStorage.getItem("admin-auth") === "true";
-  });
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
+
+  // Load auth state on initial render
+  useEffect(() => {
+    const authState = localStorage.getItem("admin-auth");
+    setIsLoggedIn(authState === "true");
+  }, []);
+
+  // If auth state is still loading, show nothing
+  if (isLoggedIn === null) {
+    return null;
+  }
 
   const login = (username: string, password: string) => {
     if (username === "admin" && password === "admin") {

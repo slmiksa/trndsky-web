@@ -8,6 +8,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import { toast } from "@/components/ui/use-toast";
 
 type Partner = {
   id: number;
@@ -18,23 +19,41 @@ type Partner = {
 const PartnersSection = () => {
   const [partners, setPartners] = useState<Partner[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchPartners = async () => {
+    fetchPartners();
+  }, []);
+
+  const fetchPartners = async () => {
+    try {
       setLoading(true);
-      const { data, error } = await supabase.from("partners").select("*").order("id", { ascending: true });
+      setError(null);
+      
+      const { data, error } = await supabase
+        .from("partners")
+        .select("*")
+        .order("id", { ascending: true });
       
       if (error) {
         console.error("Error fetching partners:", error);
+        setError("حدث خطأ أثناء تحميل بيانات الشركاء");
+        toast({
+          title: "خطأ في التحميل",
+          description: "لم نتمكن من تحميل بيانات الشركاء، يرجى المحاولة مرة أخرى لاحقاً.",
+          variant: "destructive",
+        });
         return;
       }
       
       setPartners(data || []);
+    } catch (err) {
+      console.error("Unexpected error:", err);
+      setError("حدث خطأ غير متوقع");
+    } finally {
       setLoading(false);
-    };
-
-    fetchPartners();
-  }, []);
+    }
+  };
 
   if (loading) {
     return (
@@ -44,6 +63,27 @@ const PartnersSection = () => {
             شركاء <span className="text-trndsky-teal">النجاح</span>
           </h2>
           <div className="text-center text-gray-500">جاري التحميل...</div>
+        </div>
+      </section>
+    );
+  }
+
+  if (error) {
+    return (
+      <section className="section-padding bg-gradient-to-tr from-[#f7fafc] via-[#ebf5fd] to-trndsky-gray">
+        <div className="container mx-auto">
+          <h2 className="text-4xl font-extrabold text-center mb-12 font-tajawal text-trndsky-darkblue drop-shadow">
+            شركاء <span className="text-trndsky-teal">النجاح</span>
+          </h2>
+          <div className="text-center text-red-500">{error}</div>
+          <div className="text-center mt-4">
+            <button 
+              onClick={fetchPartners}
+              className="bg-trndsky-teal text-white px-4 py-2 rounded-lg hover:bg-trndsky-blue transition-colors"
+            >
+              إعادة المحاولة
+            </button>
+          </div>
         </div>
       </section>
     );
@@ -75,6 +115,10 @@ const PartnersSection = () => {
                       src={partner.logo_url}
                       alt={partner.name}
                       className="object-contain max-h-14 max-w-[200px]"
+                      onError={(e) => {
+                        e.currentTarget.src = "/placeholder.svg";
+                        e.currentTarget.alt = "صورة غير متوفرة";
+                      }}
                     />
                   </div>
                 </CarouselItem>
