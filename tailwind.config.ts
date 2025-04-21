@@ -118,6 +118,40 @@ export default {
 					'50%': {
 						transform: 'translateY(-15px)'
 					}
+				},
+				'float': {
+					'0%, 100%': {
+						transform: 'translateY(0)'
+					},
+					'50%': {
+						transform: 'translateY(-10px)'
+					}
+				},
+				'pulse-soft': {
+					'0%, 100%': {
+						opacity: '1'
+					},
+					'50%': {
+						opacity: '0.85'
+					}
+				},
+				'grow': {
+					'from': {
+						transform: 'scale(0.95)',
+						opacity: '0'
+					},
+					'to': {
+						transform: 'scale(1)',
+						opacity: '1'
+					}
+				},
+				'spin-slow': {
+					'from': {
+						transform: 'rotate(0deg)'
+					},
+					'to': {
+						transform: 'rotate(360deg)'
+					}
 				}
 			},
 			animation: {
@@ -125,8 +159,21 @@ export default {
 				'accordion-up': 'accordion-up 0.2s ease-out',
 				'slide-in': 'slide-in 0.6s ease-out',
 				'fade-in': 'fade-in 0.8s ease-out',
-				'bounce-slow': 'bounce-slow 3s ease-in-out infinite'
-			}
+				'bounce-slow': 'bounce-slow 3s ease-in-out infinite',
+				'float': 'float 3s ease-in-out infinite',
+				'pulse-soft': 'pulse-soft 2s ease-in-out infinite',
+				'grow': 'grow 0.3s ease-out',
+				'spin-slow': 'spin-slow 8s linear infinite'
+			},
+			transitionProperty: {
+				'height': 'height',
+				'spacing': 'margin, padding',
+			},
+			backgroundImage: {
+				'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+				'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
+				'hero-pattern': "url('/path/to/hero-pattern.svg')",
+			},
 		}
 	},
 	plugins: [require("tailwindcss-animate")],

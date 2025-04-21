@@ -1,37 +1,57 @@
 
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Menu, X } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { Menu, X, ChevronDown } from 'lucide-react';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const location = useLocation();
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
+  useEffect(() => {
+    const handleScroll = () => {
+      const isScrolled = window.scrollY > 20;
+      if (isScrolled !== scrolled) {
+        setScrolled(isScrolled);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [scrolled]);
+
   return (
-    <nav className="bg-white shadow-md sticky top-0 z-50">
-      <div className="container mx-auto px-4 py-3">
+    <nav className={`sticky top-0 z-50 transition-all duration-300 ${
+      scrolled ? "bg-white/95 backdrop-blur-md shadow-md" : "bg-white/90"
+    }`}>
+      <div className="container mx-auto px-4 py-4">
         <div className="flex justify-between items-center">
           {/* Logo */}
-          <Link to="/" className="text-2xl font-bold text-trndsky-blue">
-            <span className="text-trndsky-teal">TRND</span>SKY
+          <Link to="/" className="text-2xl font-bold relative group">
+            <span className="text-trndsky-teal group-hover:text-trndsky-blue transition-colors duration-300">TRND</span>
+            <span className="text-trndsky-blue group-hover:text-trndsky-darkblue transition-colors duration-300">SKY</span>
+            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-trndsky-teal group-hover:w-full transition-all duration-300"></span>
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex space-x-8">
-            <NavLink to="/">الرئيسية</NavLink>
-            <NavLink to="/software">البرمجيات الجاهزة</NavLink>
-            <NavLink to="/about">من نحن</NavLink>
-            <NavLink to="/contact">تواصل معنا</NavLink>
+          <div className="hidden md:flex space-x-1 lg:space-x-2">
+            <NavLink to="/" currentPath={location.pathname}>الرئيسية</NavLink>
+            <NavLink to="/software" currentPath={location.pathname}>البرمجيات الجاهزة</NavLink>
+            <NavLink to="/about" currentPath={location.pathname}>من نحن</NavLink>
+            <NavLink to="/contact" currentPath={location.pathname}>تواصل معنا</NavLink>
           </div>
 
           {/* Mobile Menu Button */}
           <div className="md:hidden">
             <button 
               onClick={toggleMenu} 
-              className="focus:outline-none"
+              className="focus:outline-none hover:text-trndsky-teal transition-colors"
               aria-label={isMenuOpen ? "Close menu" : "Open menu"}
             >
               {isMenuOpen ? (
@@ -46,12 +66,12 @@ const Navbar = () => {
 
       {/* Mobile Menu */}
       {isMenuOpen && (
-        <div className="md:hidden bg-white shadow-lg animate-fade-in">
-          <div className="container mx-auto px-4 py-3 flex flex-col space-y-4 font-tajawal">
-            <MobileNavLink to="/" onClick={toggleMenu}>الرئيسية</MobileNavLink>
-            <MobileNavLink to="/software" onClick={toggleMenu}>البرمجيات الجاهزة</MobileNavLink>
-            <MobileNavLink to="/about" onClick={toggleMenu}>من نحن</MobileNavLink>
-            <MobileNavLink to="/contact" onClick={toggleMenu}>تواصل معنا</MobileNavLink>
+        <div className="md:hidden bg-white/95 backdrop-blur-md shadow-lg animate-slide-in">
+          <div className="container mx-auto px-4 py-5 flex flex-col space-y-6 font-tajawal">
+            <MobileNavLink to="/" onClick={toggleMenu} currentPath={location.pathname}>الرئيسية</MobileNavLink>
+            <MobileNavLink to="/software" onClick={toggleMenu} currentPath={location.pathname}>البرمجيات الجاهزة</MobileNavLink>
+            <MobileNavLink to="/about" onClick={toggleMenu} currentPath={location.pathname}>من نحن</MobileNavLink>
+            <MobileNavLink to="/contact" onClick={toggleMenu} currentPath={location.pathname}>تواصل معنا</MobileNavLink>
           </div>
         </div>
       )}
@@ -59,13 +79,22 @@ const Navbar = () => {
   );
 };
 
-const NavLink = ({ to, children }: { to: string; children: React.ReactNode }) => {
+const NavLink = ({ to, children, currentPath }: { to: string; children: React.ReactNode; currentPath: string }) => {
+  const isActive = currentPath === to;
+  
   return (
     <Link 
       to={to} 
-      className="text-gray-700 hover:text-trndsky-teal transition-colors font-medium font-tajawal"
+      className={`px-4 py-2 rounded-md text-lg transition-all duration-200 relative font-tajawal ${
+        isActive 
+          ? "text-trndsky-teal font-bold" 
+          : "text-gray-700 hover:text-trndsky-teal"
+      }`}
     >
       {children}
+      {isActive && (
+        <span className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1/2 h-0.5 bg-trndsky-teal"></span>
+      )}
     </Link>
   );
 };
@@ -73,19 +102,30 @@ const NavLink = ({ to, children }: { to: string; children: React.ReactNode }) =>
 const MobileNavLink = ({ 
   to, 
   children, 
-  onClick 
+  onClick,
+  currentPath
 }: { 
   to: string; 
   children: React.ReactNode;
   onClick: () => void;
+  currentPath: string;
 }) => {
+  const isActive = currentPath === to;
+  
   return (
     <Link 
       to={to} 
-      className="block text-gray-700 hover:text-trndsky-teal py-2 text-right text-lg"
+      className={`block text-right text-xl py-3 px-4 rounded-lg transition-all duration-200 ${
+        isActive 
+          ? "bg-trndsky-blue/10 text-trndsky-blue font-bold" 
+          : "text-gray-700 hover:bg-gray-100"
+      }`}
       onClick={onClick}
     >
-      {children}
+      <div className="flex justify-end items-center">
+        {children}
+        <ChevronDown className={`mr-1 h-5 w-5 transition-transform ${isActive ? "rotate-180 text-trndsky-teal" : ""}`} />
+      </div>
     </Link>
   );
 };
