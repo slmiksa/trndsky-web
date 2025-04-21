@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import { useAdminAuth } from "@/components/AdminAuthContext";
 import { useNavigate } from "react-router-dom";
@@ -834,4 +835,122 @@ const AdminDashboard = () => {
               ) : (
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {partners.map((partner) => (
-                    <div key={partner.id} className="bg-white rounded-
+                    <div key={partner.id} className="bg-white rounded-xl shadow p-4 flex flex-col">
+                      <div className="h-40 flex items-center justify-center bg-gray-50 rounded-lg mb-3">
+                        <img
+                          src={partner.logo_url}
+                          alt={partner.name}
+                          className="max-h-32 max-w-full object-contain"
+                        />
+                      </div>
+                      <h3 className="font-bold text-trndsky-teal text-lg mb-1 text-center">{partner.name}</h3>
+                      {partner.id === -1 && (
+                        <p className="text-gray-500 text-xs text-center mb-2">
+                          (شريك افتراضي - يظهر دائماً في الموقع)
+                        </p>
+                      )}
+                      <div className="flex gap-2 mt-auto pt-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => openEditPartnerDialog(partner)}
+                          className="flex-1"
+                        >
+                          <Edit size={16} className="ml-2" />
+                          تعديل
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleDeletePartner(partner.id)}
+                          className="flex-1 text-red-500 hover:text-red-700"
+                        >
+                          <Trash2 size={16} className="ml-2" />
+                          حذف
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                  {partners.length === 0 && (
+                    <div className="text-gray-400 col-span-3 text-center py-12">
+                      لا يوجد شركاء حالياً. أضف شركاء للموقع باستخدام الزر أعلاه.
+                    </div>
+                  )}
+                </div>
+              )}
+            </section>
+
+            <Dialog open={partnerDialogOpen} onOpenChange={setPartnerDialogOpen}>
+              <DialogContent dir="rtl">
+                <DialogHeader>
+                  <DialogTitle>{partnerToEdit ? "تعديل شريك" : "إضافة شريك جديد"}</DialogTitle>
+                  <DialogDescription>
+                    {partnerToEdit
+                      ? `أدخل المعلومات الجديدة ${partnerToEdit.id === -1 ? 'للشريك الافتراضي' : 'للشريك'}`
+                      : "أدخل اسم الشريك وشعاره"}
+                  </DialogDescription>
+                </DialogHeader>
+                <form
+                  className="space-y-4"
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    handleSavePartner();
+                  }}
+                >
+                  <div>
+                    <label className="font-medium block mb-1">اسم الشريك</label>
+                    <input
+                      name="name"
+                      value={partnerForm.name}
+                      onChange={handlePartnerFormChange}
+                      required
+                      className="input border px-3 py-2 w-full rounded"
+                      placeholder="اسم الشريك"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="font-medium block mb-1">رابط الشعار (إختياري)</label>
+                    <input
+                      name="logo_url"
+                      value={partnerForm.logo_url}
+                      onChange={handlePartnerFormChange}
+                      className="input border px-3 py-2 w-full rounded"
+                      placeholder="رابط شعار الشريك"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="font-medium block mb-1">أو تحميل شعار جديد</label>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleLogoFileChange}
+                      className="w-full border rounded p-2"
+                    />
+                    {logoFile && (
+                      <div className="mt-2 text-sm text-green-600">
+                        تم اختيار: {logoFile.name}
+                      </div>
+                    )}
+                  </div>
+
+                  <DialogFooter>
+                    <Button type="submit" disabled={isSavingPartner}>
+                      {isSavingPartner ? "جارٍ الحفظ..." : partnerToEdit ? "حفظ التعديلات" : "إضافة الشريك"}
+                    </Button>
+                    <DialogClose asChild>
+                      <Button variant="secondary">إلغاء</Button>
+                    </DialogClose>
+                  </DialogFooter>
+                </form>
+              </DialogContent>
+            </Dialog>
+          </TabsContent>
+        </Tabs>
+      </main>
+    </div>
+  );
+};
+
+export default AdminDashboard;
