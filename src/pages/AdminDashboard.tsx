@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { useAdminAuth } from "@/components/AdminAuthContext";
 import { useNavigate } from "react-router-dom";
@@ -21,6 +20,7 @@ import {
   TabsTrigger,
   TabsContent,
 } from "@/components/ui/tabs";
+import { toast } from "@/components/ui/use-toast";
 
 const initialSlides = [
   {
@@ -74,6 +74,13 @@ type Slide = {
   image: string;
 };
 
+type Partner = {
+  id: number;
+  name: string;
+  logo_url: string;
+  created_at: string;
+};
+
 const statusLabels: Record<string, string> = {
   new: "جديد",
   open: "مفتوح",
@@ -92,6 +99,16 @@ const AdminDashboard = () => {
   const [requests, setRequests] = useState<ProjectRequest[]>([]);
   const [orders, setOrders] = useState<SoftwareOrder[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const [partners, setPartners] = useState<Partner[]>([]);
+  const [loadingPartners, setLoadingPartners] = useState(true);
+  const [partnerDialogOpen, setPartnerDialogOpen] = useState(false);
+  const [partnerToEdit, setPartnerToEdit] = useState<Partner | null>(null);
+  const [partnerForm, setPartnerForm] = useState<Omit<Partner, "id" | "created_at">>({
+    name: "",
+    logo_url: "",
+  });
+  const [isSavingPartner, setIsSavingPartner] = useState(false);
 
   const [viewedRequest, setViewedRequest] = useState<ProjectRequest | null>(null);
   const [viewedOrder, setViewedOrder] = useState<SoftwareOrder | null>(null);
@@ -114,6 +131,7 @@ const AdminDashboard = () => {
       return;
     }
     fetchData();
+    fetchPartners();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoggedIn, navigate]);
 
@@ -136,9 +154,117 @@ const AdminDashboard = () => {
     setLoading(false);
   }
 
+  async function fetchPartners() {
+    setLoadingPartners(true);
+    const { data, error } = await supabase
+      .from("partners")
+      .select("*")
+      .order("id", { ascending: true });
+
+    if (error) {
+      console.error("Error fetching partners:", error);
+      toast({ title: "خطأ", description: "حدث خطأ أثناء جلب بيانات الشركاء", variant: "destructive" });
+    } else {
+      setPartners(data || []);
+    }
+    setLoadingPartners(false);
+  }
+
   const handleLogout = () => {
     logout();
     navigate("/adminlogin");
+  };
+
+  const openNewPartnerDialog = () => {
+    setPartnerToEdit(null);
+    setPartnerForm({
+      name: "",
+      logo_url: "",
+    });
+    setPartnerDialogOpen(true);
+  };
+
+  const openEditPartnerDialog = (partner: Partner) => {
+    setPartnerToEdit(partner);
+    setPartnerForm({
+      name: partner.name,
+      logo_url: partner.logo_url,
+    });
+    setPartnerDialogOpen(true);
+  };
+
+  const handlePartnerFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setPartnerForm((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleSavePartner = async () => {
+    setIsSavingPartner(true);
+    
+    try {
+      if (partnerToEdit) {
+        const { error } = await supabase
+          .from("partners")
+          .update({ 
+            name: partnerForm.name, 
+            logo_url: partnerForm.logo_url 
+          })
+          .eq("id", partnerToEdit.id);
+
+        if (error) throw error;
+        toast({ title: "تم التحديث", description: "تم تحديث بيانات الشريك بنجاح" });
+      } else {
+        const { error } = await supabase
+          .from("partners")
+          .insert({ 
+            name: partnerForm.name, 
+            logo_url: partnerForm.logo_url 
+          });
+
+        if (error) throw error;
+        toast({ title: "تمت الإضافة", description: "تم إضافة الشريك بنجاح" });
+      }
+      
+      fetchPartners();
+      setPartnerDialogOpen(false);
+    } catch (error: any) {
+      console.error("Error saving partner:", error);
+      toast({ 
+        title: "خطأ", 
+        description: `حدث خطأ أثناء حفظ بيانات الشريك: ${error.message}`, 
+        variant: "destructive" 
+      });
+    } finally {
+      setIsSavingPartner(false);
+    }
+  };
+
+  const handleDeletePartner = async (partnerId: number) => {
+    if (!confirm("هل أنت متأكد من حذف هذا الشريك؟")) {
+      return;
+    }
+    
+    try {
+      const { error } = await supabase
+        .from("partners")
+        .delete()
+        .eq("id", partnerId);
+
+      if (error) throw error;
+      
+      toast({ title: "تم الحذف", description: "تم حذف الشريك بنجاح" });
+      fetchPartners();
+    } catch (error: any) {
+      console.error("Error deleting partner:", error);
+      toast({ 
+        title: "خطأ", 
+        description: `حدث خطأ أثناء حذف الشريك: ${error.message}`, 
+        variant: "destructive" 
+      });
+    }
   };
 
   const updateStatus = async (id: string, newStatus: string) => {
@@ -236,10 +362,12 @@ const AdminDashboard = () => {
             <TabsTrigger value="slides" className="text-lg px-8 font-bold data-[state=active]:bg-trndsky-blue data-[state=active]:text-white">
               السلايدات
             </TabsTrigger>
+            <TabsTrigger value="partners" className="text-lg px-8 font-bold data-[state=active]:bg-trndsky-blue data-[state=active]:text-white">
+              شركاء النجاح
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="requests">
-            {/* قسم تذاكر الطلبات (يشمل تذاكر برمجيات بأفكارك وطلبات برمجيات جاهزة) */}
             <section>
               <h2 className="text-xl font-semibold mb-4 text-trndsky-darkblue">
                 طلبات برمجة بأفكارك (جديدة/مفتوحة)
@@ -489,7 +617,6 @@ const AdminDashboard = () => {
           </TabsContent>
 
           <TabsContent value="slides">
-            {/* قسم السلايدات */}
             <section>
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-semibold text-trndsky-darkblue">
@@ -611,6 +738,117 @@ const AdminDashboard = () => {
               </DialogContent>
             </Dialog>
           </TabsContent>
+
+          <TabsContent value="partners">
+            <section>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-semibold text-trndsky-darkblue">
+                  إدارة شركاء النجاح
+                </h2>
+                <Button onClick={openNewPartnerDialog} className="flex items-center gap-2">
+                  <Plus size={18} /> إضافة شريك جديد
+                </Button>
+              </div>
+              
+              {loadingPartners ? (
+                <div className="text-center py-12 text-trndsky-blue">
+                  جارٍ التحميل...
+                </div>
+              ) : (
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {partners.map((partner) => (
+                    <div key={partner.id} className="bg-white rounded-xl shadow p-5 flex flex-col">
+                      <div className="bg-gray-50 flex items-center justify-center p-4 mb-3 rounded-lg h-40">
+                        <img
+                          src={partner.logo_url}
+                          alt={partner.name}
+                          className="object-contain max-h-24 max-w-full"
+                        />
+                      </div>
+                      <h3 className="font-bold text-trndsky-teal text-lg mb-1">{partner.name}</h3>
+                      <div className="text-gray-500 text-xs">
+                        تاريخ الإضافة: {new Date(partner.created_at).toLocaleDateString("ar-EG")}
+                      </div>
+                      <div className="flex gap-2 mt-3">
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          onClick={() => openEditPartnerDialog(partner)}
+                          title="تعديل"
+                        >
+                          <Edit size={18} />
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          onClick={() => handleDeletePartner(partner.id)}
+                          title="حذف"
+                        >
+                          <Trash2 size={18} className="text-red-500" />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                  {partners.length === 0 && (
+                    <div className="text-gray-400 col-span-3 text-center py-12">
+                      لا يوجد شركاء حالياً. أضف شريكاً جديداً بالضغط على زر "إضافة شريك جديد".
+                    </div>
+                  )}
+                </div>
+              )}
+            </section>
+
+            <Dialog open={partnerDialogOpen} onOpenChange={setPartnerDialogOpen}>
+              <DialogContent dir="rtl">
+                <DialogHeader>
+                  <DialogTitle>{partnerToEdit ? "تعديل بيانات الشريك" : "إضافة شريك جديد"}</DialogTitle>
+                  <DialogDescription>
+                    {partnerToEdit
+                      ? "يمكنك تعديل بيانات الشريك أدناه"
+                      : "قم بإضافة بيانات الشريك الجديد"}
+                  </DialogDescription>
+                </DialogHeader>
+                <form
+                  className="space-y-4"
+                  onSubmit={e => {
+                    e.preventDefault();
+                    handleSavePartner();
+                  }}
+                >
+                  <div>
+                    <label className="font-medium block mb-1">اسم الشريك</label>
+                    <input
+                      name="name"
+                      value={partnerForm.name}
+                      onChange={handlePartnerFormChange}
+                      required
+                      className="input border px-3 py-2 w-full rounded"
+                      placeholder="اسم الشركة / المؤسسة الشريكة"
+                    />
+                  </div>
+                  <div>
+                    <label className="font-medium block mb-1">رابط الشعار</label>
+                    <input
+                      name="logo_url"
+                      value={partnerForm.logo_url}
+                      onChange={handlePartnerFormChange}
+                      required
+                      className="input border px-3 py-2 w-full rounded"
+                      placeholder="رابط صورة الشعار"
+                    />
+                  </div>
+                  <DialogFooter>
+                    <Button type="submit" disabled={isSavingPartner}>
+                      {isSavingPartner ? "جارٍ الحفظ..." : partnerToEdit ? "حفظ التعديلات" : "إضافة الشريك"}
+                    </Button>
+                    <DialogClose asChild>
+                      <Button variant="secondary">إلغاء</Button>
+                    </DialogClose>
+                  </DialogFooter>
+                </form>
+              </DialogContent>
+            </Dialog>
+          </TabsContent>
         </Tabs>
       </main>
     </div>
@@ -618,4 +856,3 @@ const AdminDashboard = () => {
 };
 
 export default AdminDashboard;
-
