@@ -27,42 +27,56 @@ const ProjectRequestForm = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    // إرسال البيانات إلى Supabase
-    const { data, error } = await supabase.from("project_requests").insert([
-      {
-        name: formData.name,
-        email: formData.email || null,
-        phone: formData.phone || null,
-        title: formData.title,
-        description: formData.description,
-        status: "new",
-      },
-    ]);
-    setLoading(false);
+    
+    try {
+      // Make sure we're explicitly inserting into the project_requests table
+      const { error } = await supabase.from("project_requests").insert([
+        {
+          name: formData.name,
+          email: formData.email || null,
+          phone: formData.phone || null,
+          title: formData.title,
+          description: formData.description,
+          status: "new",
+        },
+      ]);
 
-    if (error) {
+      if (error) {
+        console.error("Error submitting project request:", error);
+        toast({
+          title: "حدث خطأ!",
+          description: "تعذر إرسال الطلب. حاول مرة أخرى لاحقاً.",
+          variant: "destructive",
+          duration: 5000,
+        });
+        return;
+      }
+
+      toast({
+        title: "تم استلام طلبك",
+        description: "سنتواصل معك قريباً لمناقشة تفاصيل المشروع",
+        duration: 5000,
+      });
+
+      // Reset form data after successful submission
+      setFormData({
+        name: "",
+        email: "",
+        phone: "",
+        title: "",
+        description: "",
+      });
+    } catch (err) {
+      console.error("Unexpected error:", err);
       toast({
         title: "حدث خطأ!",
         description: "تعذر إرسال الطلب. حاول مرة أخرى لاحقاً.",
         variant: "destructive",
         duration: 5000,
       });
-      return;
+    } finally {
+      setLoading(false);
     }
-
-    toast({
-      title: "تم استلام طلبك",
-      description: "سنتواصل معك قريباً لمناقشة تفاصيل المشروع",
-      duration: 5000,
-    });
-
-    setFormData({
-      name: "",
-      email: "",
-      phone: "",
-      title: "",
-      description: "",
-    });
   };
 
   return (
@@ -179,4 +193,3 @@ const ProjectRequestForm = () => {
 };
 
 export default ProjectRequestForm;
-
