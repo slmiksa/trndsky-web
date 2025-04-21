@@ -1,6 +1,7 @@
-
 import { useState } from 'react';
 import { Send } from 'lucide-react';
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from 'sonner';
 
 interface SoftwareCardProps {
   title: string;
@@ -15,6 +16,7 @@ const SoftwareCard = ({ title, description, image, id, price }: SoftwareCardProp
   const [showOrderForm, setShowOrderForm] = useState(false);
   const [orderData, setOrderData] = useState({ company: '', whatsapp: '' });
   const [orderSent, setOrderSent] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const toggleDetails = () => {
     setShowDetails(!showDetails);
@@ -32,11 +34,39 @@ const SoftwareCard = ({ title, description, image, id, price }: SoftwareCardProp
     setOrderData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleOrderSubmit = (e: React.FormEvent) => {
+  const handleOrderSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setOrderSent(true);
-    setOrderData({ company: '', whatsapp: '' });
-    setTimeout(() => setShowOrderForm(false), 1800);
+    setIsSubmitting(true);
+    
+    try {
+      // Insert order into the database
+      const { error } = await supabase.from('software_orders').insert({
+        software_id: id,
+        company_name: orderData.company,
+        whatsapp: orderData.whatsapp,
+        status: 'new'
+      });
+      
+      if (error) {
+        console.error('Error submitting order:', error);
+        toast.error('حدث خطأ أثناء إرسال الطلب. الرجاء المحاولة مرة أخرى.');
+        setIsSubmitting(false);
+        return;
+      }
+      
+      setOrderSent(true);
+      setOrderData({ company: '', whatsapp: '' });
+      toast.success('تم إرسال طلبك بنجاح!');
+      
+      setTimeout(() => {
+        setShowOrderForm(false);
+      }, 1800);
+    } catch (error) {
+      console.error('Error:', error);
+      toast.error('حدث خطأ أثناء إرسال الطلب. الرجاء المحاولة مرة أخرى.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -120,10 +150,10 @@ const SoftwareCard = ({ title, description, image, id, price }: SoftwareCardProp
                 </div>
                 <button
                   type="submit"
-                  disabled={orderSent}
+                  disabled={orderSent || isSubmitting}
                   className="flex items-center gap-2 px-6 py-2 rounded-full bg-gradient-to-l from-trndsky-teal to-trndsky-blue text-white font-tajawal shadow hover:scale-105 transition-all hover:from-trndsky-blue hover:to-trndsky-teal"
                 >
-                  <Send className="w-5 h-5" /> {orderSent ? "تم الإرسال بنجاح" : "إرسال الطلب"}
+                  <Send className="w-5 h-5" /> {isSubmitting ? "جاري الإرسال..." : orderSent ? "تم الإرسال بنجاح" : "إرسال الطلب"}
                 </button>
                 {orderSent && (
                   <div className="mt-2 text-trndsky-teal font-tajawal text-sm">
@@ -139,7 +169,7 @@ const SoftwareCard = ({ title, description, image, id, price }: SoftwareCardProp
   );
 };
 
-// Featured Software Section Component
+// Featured Software Section Component 
 export const FeaturedSoftware = () => {
   const softwareItems = [
     {
@@ -197,4 +227,3 @@ export const FeaturedSoftware = () => {
 };
 
 export default SoftwareCard;
-
