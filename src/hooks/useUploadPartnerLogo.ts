@@ -9,33 +9,31 @@ export function useUploadPartnerLogo() {
   const uploadLogo = async (file: File): Promise<string | null> => {
     setUploading(true);
     setError(null);
-    
+
     try {
-      // Generate a unique file name
       const fileExt = file.name.split('.').pop();
       const fileName = `${Date.now()}-${Math.random().toString(16).slice(2)}.${fileExt}`;
-      
-      // Upload the file to the partner-logos bucket
-      const { error: uploadError } = await supabase.storage
+
+      const { data: uploadData, error: uploadError } = await supabase.storage
         .from("partner-logos")
-        .upload(fileName, file, { 
+        .upload(fileName, file, {
           upsert: true,
-          contentType: file.type // Add content type for proper file serving
+          contentType: file.type,
         });
-      
-      if (uploadError) {
+
+      if (uploadError || !uploadData) {
         console.error("Upload error:", uploadError);
         setError("حدث خطأ أثناء رفع الشعار");
         setUploading(false);
         return null;
       }
 
-      // Get public URL for the uploaded file
-      const { data: publicUrlData } = supabase.storage
+      const { data: publicUrlData, error: publicUrlError } = supabase.storage
         .from("partner-logos")
         .getPublicUrl(fileName);
-      
-      if (!publicUrlData?.publicUrl) {
+
+      if (publicUrlError || !publicUrlData?.publicUrl) {
+        console.error("Error getting public URL:", publicUrlError);
         setError("حدث خطأ في الحصول على رابط الشعار");
         setUploading(false);
         return null;

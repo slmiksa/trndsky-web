@@ -214,22 +214,24 @@ const AdminDashboard = () => {
 
   const handleSavePartner = async () => {
     setIsSavingPartner(true);
-    
+
     try {
       let logo_url = partnerForm.logo_url;
 
       if (logoFile) {
         const uploadedUrl = await uploadLogo(logoFile);
-        if (uploadedUrl) logo_url = uploadedUrl;
-        else throw new Error("لم يتم رفع الشعار");
+        if (!uploadedUrl) {
+          throw new Error("لم يتم رفع الشعار");
+        }
+        logo_url = uploadedUrl;
       }
 
       if (partnerToEdit) {
         const { error } = await supabase
           .from("partners")
-          .update({ 
-            name: partnerForm.name, 
-            logo_url
+          .update({
+            name: partnerForm.name,
+            logo_url,
           })
           .eq("id", partnerToEdit.id);
 
@@ -238,25 +240,25 @@ const AdminDashboard = () => {
       } else {
         const { error } = await supabase
           .from("partners")
-          .insert({ 
-            name: partnerForm.name, 
-            logo_url
+          .insert({
+            name: partnerForm.name,
+            logo_url,
           });
 
         if (error) throw error;
         toast({ title: "تمت الإضافة", description: "تم إضافة الشريك بنجاح" });
       }
-      
+
       fetchPartners();
       setPartnerDialogOpen(false);
       setLogoFile(null);
       setPartnerForm({ name: "", logo_url: "" });
     } catch (error: any) {
       console.error("Error saving partner:", error);
-      toast({ 
-        title: "خطأ", 
-        description: `حدث خطأ أثناء حفظ بيانات الشريك: ${error.message}`, 
-        variant: "destructive" 
+      toast({
+        title: "خطأ",
+        description: `حدث خطأ أثناء حفظ بيانات الشريك: ${error.message || error}`,
+        variant: "destructive",
       });
     } finally {
       setIsSavingPartner(false);
