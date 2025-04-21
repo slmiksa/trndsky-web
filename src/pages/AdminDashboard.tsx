@@ -1,9 +1,8 @@
-
 import React, { useEffect, useState } from "react";
 import { useAdminAuth } from "@/components/AdminAuthContext";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { FolderOpen, X, Eye } from "lucide-react";
+import { FolderOpen, X, Eye, Edit, Trash2, Plus } from "lucide-react";
 import {
   Dialog,
   DialogTrigger,
@@ -15,6 +14,30 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+
+const initialSlides = [
+  {
+    id: 1,
+    title: "برمجيات احترافية",
+    subtitle: "حلول تقنية متكاملة لمشاريعك",
+    description: "نقدم خدمات برمجية متكاملة بأحدث التقنيات وأفضل الممارسات العالمية",
+    image: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2072&q=80",
+  },
+  {
+    id: 2,
+    title: "تطوير المواقع والتطبيقات",
+    subtitle: "برمجة الويب بأحدث التقنيات",
+    description: "تصميم وتطوير مواقع وتطبيقات ويب متجاوبة وعالية الأداء",
+    image: "https://images.unsplash.com/photo-1581472723648-909f4851d4ae?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+  },
+  {
+    id: 3,
+    title: "حلول ذكاء اصطناعي",
+    subtitle: "الابتكار التقني للمستقبل",
+    description: "تطبيقات ذكاء اصطناعي متطورة لتحسين أداء وكفاءة أعمالك",
+    image: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+  },
+];
 
 type ProjectRequest = {
   id: string;
@@ -36,6 +59,14 @@ type SoftwareOrder = {
   created_at: string;
 };
 
+type Slide = {
+  id: number;
+  title: string;
+  subtitle: string;
+  description: string;
+  image: string;
+};
+
 const statusLabels: Record<string, string> = {
   new: "جديد",
   open: "مفتوح",
@@ -55,31 +86,38 @@ const AdminDashboard = () => {
   const [orders, setOrders] = useState<SoftwareOrder[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // حاله لتحديد التذكرة المعروضة
   const [viewedRequest, setViewedRequest] = useState<ProjectRequest | null>(null);
-  // حاله لتحديد الطلب البرمجي الجاهز المعروض
   const [viewedOrder, setViewedOrder] = useState<SoftwareOrder | null>(null);
+
+  const [slides, setSlides] = useState<Slide[]>(initialSlides);
+  const [slideDialogOpen, setSlideDialogOpen] = useState(false);
+  const [slideToEdit, setSlideToEdit] = useState<Slide | null>(null);
+  const [slideForm, setSlideForm] = useState<Omit<Slide, "id">>({
+    title: "",
+    subtitle: "",
+    description: "",
+    image: "",
+  });
+
+  const [isSavingSlide, setIsSavingSlide] = useState(false);
 
   useEffect(() => {
     if (!isLoggedIn) {
       navigate("/adminlogin");
       return;
     }
-
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoggedIn, navigate]);
 
   async function fetchData() {
     setLoading(true);
-    // Fetch project_requests
     const { data: reqData } = await supabase
       .from("project_requests")
       .select("*")
       .in("status", ["new", "open"])
       .order("created_at", { ascending: false });
 
-    // Fetch software_orders
     const { data: ordData } = await supabase
       .from("software_orders")
       .select("*")
@@ -104,13 +142,67 @@ const AdminDashboard = () => {
     fetchData();
   };
 
-  // تعديل حالة software order
   const updateOrderStatus = async (id: string, newStatus: string) => {
     await supabase
       .from("software_orders")
       .update({ status: newStatus })
       .eq("id", id);
     fetchData();
+  };
+
+  const openNewSlideDialog = () => {
+    setSlideToEdit(null);
+    setSlideForm({
+      title: "",
+      subtitle: "",
+      description: "",
+      image: "",
+    });
+    setSlideDialogOpen(true);
+  };
+
+  const openEditSlideDialog = (slide: Slide) => {
+    setSlideToEdit(slide);
+    setSlideForm({
+      title: slide.title,
+      subtitle: slide.subtitle,
+      description: slide.description,
+      image: slide.image,
+    });
+    setSlideDialogOpen(true);
+  };
+
+  const handleSlideFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setSlideForm((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleSaveSlide = () => {
+    setIsSavingSlide(true);
+    if (slideToEdit) {
+      setSlides((prev) =>
+        prev.map((s) => (s.id === slideToEdit.id ? { ...slideToEdit, ...slideForm } : s))
+      );
+    } else {
+      const nextId = Math.max(...slides.map(s => s.id), 0) + 1;
+      setSlides([...slides, { id: nextId, ...slideForm }]);
+    }
+    setIsSavingSlide(false);
+    setSlideDialogOpen(false);
+    setSlideToEdit(null);
+    setSlideForm({
+      title: "",
+      subtitle: "",
+      description: "",
+      image: "",
+    });
+  };
+
+  const handleDeleteSlide = (slideId: number) => {
+    setSlides((prev) => prev.filter((s) => s.id !== slideId));
   };
 
   if (!isLoggedIn) return null;
@@ -129,6 +221,53 @@ const AdminDashboard = () => {
         </button>
       </header>
       <main className="max-w-6xl mx-auto py-8 px-4">
+        <section className="mb-12">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-semibold text-trndsky-darkblue">
+              إدارة السلايدات الرئيسية
+            </h2>
+            <Button onClick={openNewSlideDialog} className="flex items-center gap-2">
+              <Plus size={18} /> إضافة سلايد
+            </Button>
+          </div>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {slides.map((slide) => (
+              <div key={slide.id} className="bg-white rounded-xl shadow p-4 flex flex-col">
+                <img
+                  src={slide.image}
+                  alt={slide.title}
+                  className="rounded-lg h-40 object-cover mb-3 w-full"
+                />
+                <h3 className="font-bold text-trndsky-teal text-lg mb-1">{slide.title}</h3>
+                <div className="text-trndsky-darkblue font-medium">{slide.subtitle}</div>
+                <div className="text-gray-700 text-sm mt-1">{slide.description}</div>
+                <div className="flex gap-2 mt-4">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => openEditSlideDialog(slide)}
+                    title="تعديل"
+                  >
+                    <Edit size={18} />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => handleDeleteSlide(slide.id)}
+                    title="حذف"
+                  >
+                    <Trash2 size={18} className="text-red-500" />
+                  </Button>
+                </div>
+              </div>
+            ))}
+            {slides.length === 0 && (
+              <div className="text-gray-400 col-span-3 text-center py-12">
+                لا توجد سلايدات حاليًا.
+              </div>
+            )}
+          </div>
+        </section>
         <section>
           <h2 className="text-xl font-semibold mb-4 text-trndsky-darkblue">
             طلبات برمجة بأفكارك (جديدة/مفتوحة)
@@ -300,7 +439,6 @@ const AdminDashboard = () => {
                         {new Date(o.created_at).toLocaleString("ar-EG")}
                       </td>
                       <td className="px-4 py-2 flex items-center gap-1">
-                        {/* زر استعراض الطلب بالكامل */}
                         <Dialog>
                           <DialogTrigger asChild>
                             <Button
@@ -377,8 +515,81 @@ const AdminDashboard = () => {
           )}
         </section>
       </main>
+      <Dialog open={slideDialogOpen} onOpenChange={setSlideDialogOpen}>
+        <DialogContent dir="rtl">
+          <DialogHeader>
+            <DialogTitle>{slideToEdit ? "تعديل السلايد" : "إضافة سلايد جديد"}</DialogTitle>
+            <DialogDescription>
+              {slideToEdit
+                ? "يمكنك تعديل بيانات السلايد أدناه"
+                : "قم بإضافة سلايد جديد للواجهة الرئيسية"}
+            </DialogDescription>
+          </DialogHeader>
+          <form
+            className="space-y-4"
+            onSubmit={e => {
+              e.preventDefault();
+              handleSaveSlide();
+            }}
+          >
+            <div>
+              <label className="font-medium block mb-1">عنوان السلايد</label>
+              <input
+                name="title"
+                value={slideForm.title}
+                onChange={handleSlideFormChange}
+                required
+                className="input border px-3 py-2 w-full rounded"
+                placeholder="عنوان السلايد"
+              />
+            </div>
+            <div>
+              <label className="font-medium block mb-1">العنوان الفرعي</label>
+              <input
+                name="subtitle"
+                value={slideForm.subtitle}
+                onChange={handleSlideFormChange}
+                required
+                className="input border px-3 py-2 w-full rounded"
+                placeholder="العنوان الفرعي"
+              />
+            </div>
+            <div>
+              <label className="font-medium block mb-1">الوصف</label>
+              <textarea
+                name="description"
+                value={slideForm.description}
+                onChange={handleSlideFormChange}
+                rows={3}
+                required
+                className="input border px-3 py-2 w-full rounded"
+                placeholder="وصف السلايد"
+              />
+            </div>
+            <div>
+              <label className="font-medium block mb-1">رابط صورة السلايد</label>
+              <input
+                name="image"
+                value={slideForm.image}
+                onChange={handleSlideFormChange}
+                required
+                className="input border px-3 py-2 w-full rounded"
+                placeholder="رابط الصورة"
+              />
+            </div>
+            <DialogFooter>
+              <Button type="submit" disabled={isSavingSlide}>
+                {isSavingSlide ? "جارٍ الحفظ..." : slideToEdit ? "حفظ التعديلات" : "إضافة السلايد"}
+              </Button>
+              <DialogClose asChild>
+                <Button variant="secondary">إلغاء</Button>
+              </DialogClose>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
-export default AdminDashboard;
 
+export default AdminDashboard;
