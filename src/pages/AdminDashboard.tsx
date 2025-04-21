@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useAdminAuth } from "@/components/AdminAuthContext";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { Check, FolderOpen, X } from "lucide-react";
 
 type ProjectRequest = {
   id: string;
@@ -24,6 +25,18 @@ type SoftwareOrder = {
   created_at: string;
 };
 
+const statusLabels: Record<string, string> = {
+  new: "جديد",
+  open: "مفتوح",
+  closed: "مغلق",
+};
+
+const statusColors: Record<string, string> = {
+  new: "bg-yellow-100 text-yellow-800",
+  open: "bg-green-100 text-green-800",
+  closed: "bg-red-100 text-red-800",
+};
+
 const AdminDashboard = () => {
   const { isLoggedIn, logout } = useAdminAuth();
   const navigate = useNavigate();
@@ -37,32 +50,42 @@ const AdminDashboard = () => {
       return;
     }
 
-    async function fetchData() {
-      setLoading(true);
-      // Fetch project_requests
-      const { data: reqData } = await supabase
-        .from("project_requests")
-        .select("*")
-        .in("status", ["new", "open"])
-        .order("created_at", { ascending: false });
-
-      // Fetch software_orders
-      const { data: ordData } = await supabase
-        .from("software_orders")
-        .select("*")
-        .in("status", ["new", "open"])
-        .order("created_at", { ascending: false });
-
-      setRequests(reqData || []);
-      setOrders(ordData || []);
-      setLoading(false);
-    }
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoggedIn, navigate]);
+
+  async function fetchData() {
+    setLoading(true);
+    // Fetch project_requests
+    const { data: reqData } = await supabase
+      .from("project_requests")
+      .select("*")
+      .in("status", ["new", "open"])
+      .order("created_at", { ascending: false });
+
+    // Fetch software_orders
+    const { data: ordData } = await supabase
+      .from("software_orders")
+      .select("*")
+      .in("status", ["new", "open"])
+      .order("created_at", { ascending: false });
+
+    setRequests(reqData || []);
+    setOrders(ordData || []);
+    setLoading(false);
+  }
 
   const handleLogout = () => {
     logout();
     navigate("/adminlogin");
+  };
+
+  const updateStatus = async (id: string, newStatus: string) => {
+    await supabase
+      .from("project_requests")
+      .update({ status: newStatus })
+      .eq("id", id);
+    fetchData();
   };
 
   if (!isLoggedIn) return null;
@@ -70,7 +93,9 @@ const AdminDashboard = () => {
   return (
     <div className="min-h-screen bg-gray-50 font-tajawal">
       <header className="flex items-center justify-between px-8 py-6 bg-white shadow">
-        <h1 className="text-2xl font-bold text-trndsky-blue">لوحة تحكم المسؤول</h1>
+        <h1 className="text-2xl font-bold text-trndsky-blue">
+          لوحة تحكم المسؤول
+        </h1>
         <button
           onClick={handleLogout}
           className="bg-trndsky-teal text-white px-4 py-2 rounded-lg font-tajawal hover:bg-trndsky-blue transition-all"
@@ -78,14 +103,19 @@ const AdminDashboard = () => {
           تسجيل خروج
         </button>
       </header>
-
       <main className="max-w-6xl mx-auto py-8 px-4">
         <section>
-          <h2 className="text-xl font-semibold mb-4 text-trndsky-darkblue">طلبات برمجة بأفكارك (جديدة/مفتوحة)</h2>
+          <h2 className="text-xl font-semibold mb-4 text-trndsky-darkblue">
+            طلبات برمجة بأفكارك (جديدة/مفتوحة)
+          </h2>
           {loading ? (
-            <div className="text-center py-8 text-trndsky-blue">جارٍ التحميل...</div>
+            <div className="text-center py-8 text-trndsky-blue">
+              جارٍ التحميل...
+            </div>
           ) : requests.length === 0 ? (
-            <div className="text-center py-4 text-gray-500">لا توجد طلبات جديدة أو مفتوحة.</div>
+            <div className="text-center py-4 text-gray-500">
+              لا توجد طلبات جديدة أو مفتوحة.
+            </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-base text-right border bg-white rounded-xl overflow-hidden">
@@ -98,6 +128,7 @@ const AdminDashboard = () => {
                     <th className="px-4 py-2">الشرح</th>
                     <th className="px-4 py-2">الحالة</th>
                     <th className="px-4 py-2">تاريخ الطلب</th>
+                    <th className="px-4 py-2">إجراءات</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -108,8 +139,35 @@ const AdminDashboard = () => {
                       <td className="px-4 py-2">{r.phone || "-"}</td>
                       <td className="px-4 py-2">{r.title}</td>
                       <td className="px-4 py-2 max-w-[300px]">{r.description}</td>
-                      <td className="px-4 py-2">{r.status}</td>
-                      <td className="px-4 py-2">{new Date(r.created_at).toLocaleString("ar-EG")}</td>
+                      <td className="px-4 py-2">
+                        <span
+                          className={`inline-block rounded px-2 py-1 text-xs font-semibold ${statusColors[r.status] || ""
+                            }`}
+                        >
+                          {statusLabels[r.status] || r.status}
+                        </span>
+                      </td>
+                      <td className="px-4 py-2">
+                        {new Date(r.created_at).toLocaleString("ar-EG")}
+                      </td>
+                      <td className="px-4 py-2 flex items-center gap-1">
+                        <button
+                          disabled={r.status === "open"}
+                          className="px-2 py-1 rounded bg-green-100 text-green-800 hover:bg-green-200 transition-all disabled:opacity-50"
+                          onClick={() => updateStatus(r.id, "open")}
+                          title="تحويل لمفتوح"
+                        >
+                          <FolderOpen size={16} />
+                        </button>
+                        <button
+                          disabled={r.status === "closed"}
+                          className="px-2 py-1 rounded bg-red-100 text-red-800 hover:bg-red-200 transition-all disabled:opacity-50"
+                          onClick={() => updateStatus(r.id, "closed")}
+                          title="إغلاق"
+                        >
+                          <X size={16} />
+                        </button>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -117,13 +175,18 @@ const AdminDashboard = () => {
             </div>
           )}
         </section>
-
         <section className="mt-12">
-          <h2 className="text-xl font-semibold mb-4 text-trndsky-darkblue">طلبات برمجيات جاهزة (جديدة/مفتوحة)</h2>
+          <h2 className="text-xl font-semibold mb-4 text-trndsky-darkblue">
+            طلبات برمجيات جاهزة (جديدة/مفتوحة)
+          </h2>
           {loading ? (
-            <div className="text-center py-8 text-trndsky-blue">جارٍ التحميل...</div>
+            <div className="text-center py-8 text-trndsky-blue">
+              جارٍ التحميل...
+            </div>
           ) : orders.length === 0 ? (
-            <div className="text-center py-4 text-gray-500">لا توجد طلبات جديدة أو مفتوحة.</div>
+            <div className="text-center py-4 text-gray-500">
+              لا توجد طلبات جديدة أو مفتوحة.
+            </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-base text-right border bg-white rounded-xl overflow-hidden">
@@ -143,7 +206,9 @@ const AdminDashboard = () => {
                       <td className="px-4 py-2">{o.company_name}</td>
                       <td className="px-4 py-2">{o.whatsapp}</td>
                       <td className="px-4 py-2">{o.status}</td>
-                      <td className="px-4 py-2">{new Date(o.created_at).toLocaleString("ar-EG")}</td>
+                      <td className="px-4 py-2">
+                        {new Date(o.created_at).toLocaleString("ar-EG")}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -156,3 +221,4 @@ const AdminDashboard = () => {
   );
 };
 export default AdminDashboard;
+

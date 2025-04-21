@@ -1,18 +1,22 @@
 
-import { useState } from 'react';
-import { useToast } from '@/components/ui/use-toast';
+import { useState } from "react";
+import { useToast } from "@/components/ui/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 const ProjectRequestForm = () => {
   const { toast } = useToast();
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    title: '',
-    description: '',
+    name: "",
+    email: "",
+    phone: "",
+    title: "",
+    description: "",
   });
+  const [loading, setLoading] = useState(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
@@ -20,22 +24,44 @@ const ProjectRequestForm = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
-    
+    setLoading(true);
+    // إرسال البيانات إلى Supabase
+    const { data, error } = await supabase.from("project_requests").insert([
+      {
+        name: formData.name,
+        email: formData.email || null,
+        phone: formData.phone || null,
+        title: formData.title,
+        description: formData.description,
+        status: "new",
+      },
+    ]);
+    setLoading(false);
+
+    if (error) {
+      toast({
+        title: "حدث خطأ!",
+        description: "تعذر إرسال الطلب. حاول مرة أخرى لاحقاً.",
+        variant: "destructive",
+        duration: 5000,
+      });
+      return;
+    }
+
     toast({
       title: "تم استلام طلبك",
       description: "سنتواصل معك قريباً لمناقشة تفاصيل المشروع",
       duration: 5000,
     });
-    
+
     setFormData({
-      name: '',
-      email: '',
-      phone: '',
-      title: '',
-      description: '',
+      name: "",
+      email: "",
+      phone: "",
+      title: "",
+      description: "",
     });
   };
 
@@ -49,11 +75,13 @@ const ProjectRequestForm = () => {
           <h2 className="text-4xl font-extrabold text-center mb-8 font-tajawal text-trndsky-blue drop-shadow-md">
             اطلب برمجة <span className="text-trndsky-teal">بأفكارك</span>
           </h2>
-          
           <form onSubmit={handleSubmit} className="space-y-7">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <label htmlFor="name" className="block text-lg font-bold text-right font-tajawal text-trndsky-darkblue">
+                <label
+                  htmlFor="name"
+                  className="block text-lg font-bold text-right font-tajawal text-trndsky-darkblue"
+                >
                   الاسم الثنائي / اسم الشركة
                 </label>
                 <input
@@ -67,9 +95,11 @@ const ProjectRequestForm = () => {
                   dir="rtl"
                 />
               </div>
-              
               <div className="space-y-2">
-                <label htmlFor="contact" className="block text-lg font-bold text-right font-tajawal text-trndsky-darkblue">
+                <label
+                  htmlFor="contact"
+                  className="block text-lg font-bold text-right font-tajawal text-trndsky-darkblue"
+                >
                   البريد الإلكتروني / رقم التواصل
                 </label>
                 <div className="grid grid-cols-2 gap-4">
@@ -96,9 +126,11 @@ const ProjectRequestForm = () => {
                 </div>
               </div>
             </div>
-            
             <div className="space-y-2">
-              <label htmlFor="title" className="block text-lg font-bold text-right font-tajawal text-trndsky-darkblue">
+              <label
+                htmlFor="title"
+                className="block text-lg font-bold text-right font-tajawal text-trndsky-darkblue"
+              >
                 عنوان الفكرة
               </label>
               <input
@@ -112,9 +144,11 @@ const ProjectRequestForm = () => {
                 dir="rtl"
               />
             </div>
-            
             <div className="space-y-2">
-              <label htmlFor="description" className="block text-lg font-bold text-right font-tajawal text-trndsky-darkblue">
+              <label
+                htmlFor="description"
+                className="block text-lg font-bold text-right font-tajawal text-trndsky-darkblue"
+              >
                 شرح الفكرة
               </label>
               <textarea
@@ -128,13 +162,13 @@ const ProjectRequestForm = () => {
                 dir="rtl"
               ></textarea>
             </div>
-            
             <div className="flex justify-center">
               <button
                 type="submit"
-                className="bg-gradient-to-l from-trndsky-teal to-trndsky-blue hover:from-trndsky-blue hover:to-trndsky-teal text-white py-3 px-12 rounded-full shadow-lg text-xl font-tajawal tracking-widest transition-all hover:scale-105"
+                disabled={loading}
+                className="bg-gradient-to-l from-trndsky-teal to-trndsky-blue hover:from-trndsky-blue hover:to-trndsky-teal text-white py-3 px-12 rounded-full shadow-lg text-xl font-tajawal tracking-widest transition-all hover:scale-105 disabled:opacity-60"
               >
-                إرسال الطلب
+                {loading ? "يتم الإرسال..." : "إرسال الطلب"}
               </button>
             </div>
           </form>
@@ -145,3 +179,4 @@ const ProjectRequestForm = () => {
 };
 
 export default ProjectRequestForm;
+
