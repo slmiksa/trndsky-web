@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import { useAdminAuth } from "@/components/AdminAuthContext";
 import { useNavigate } from "react-router-dom";
@@ -14,6 +15,12 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import {
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
+} from "@/components/ui/tabs";
 
 const initialSlides = [
   {
@@ -221,375 +228,394 @@ const AdminDashboard = () => {
         </button>
       </header>
       <main className="max-w-6xl mx-auto py-8 px-4">
-        <section className="mb-12">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-semibold text-trndsky-darkblue">
-              إدارة السلايدات الرئيسية
-            </h2>
-            <Button onClick={openNewSlideDialog} className="flex items-center gap-2">
-              <Plus size={18} /> إضافة سلايد
-            </Button>
-          </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {slides.map((slide) => (
-              <div key={slide.id} className="bg-white rounded-xl shadow p-4 flex flex-col">
-                <img
-                  src={slide.image}
-                  alt={slide.title}
-                  className="rounded-lg h-40 object-cover mb-3 w-full"
-                />
-                <h3 className="font-bold text-trndsky-teal text-lg mb-1">{slide.title}</h3>
-                <div className="text-trndsky-darkblue font-medium">{slide.subtitle}</div>
-                <div className="text-gray-700 text-sm mt-1">{slide.description}</div>
-                <div className="flex gap-2 mt-4">
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={() => openEditSlideDialog(slide)}
-                    title="تعديل"
-                  >
-                    <Edit size={18} />
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={() => handleDeleteSlide(slide.id)}
-                    title="حذف"
-                  >
-                    <Trash2 size={18} className="text-red-500" />
-                  </Button>
+        <Tabs defaultValue="requests" className="w-full">
+          <TabsList className="flex justify-center mb-8 bg-trndsky-blue/5 border border-trndsky-blue/20 rounded-xl">
+            <TabsTrigger value="requests" className="text-lg px-8 font-bold data-[state=active]:bg-trndsky-blue data-[state=active]:text-white">
+              تذاكر الطلبات
+            </TabsTrigger>
+            <TabsTrigger value="slides" className="text-lg px-8 font-bold data-[state=active]:bg-trndsky-blue data-[state=active]:text-white">
+              السلايدات
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="requests">
+            {/* قسم تذاكر الطلبات (يشمل تذاكر برمجيات بأفكارك وطلبات برمجيات جاهزة) */}
+            <section>
+              <h2 className="text-xl font-semibold mb-4 text-trndsky-darkblue">
+                طلبات برمجة بأفكارك (جديدة/مفتوحة)
+              </h2>
+              {loading ? (
+                <div className="text-center py-8 text-trndsky-blue">
+                  جارٍ التحميل...
                 </div>
-              </div>
-            ))}
-            {slides.length === 0 && (
-              <div className="text-gray-400 col-span-3 text-center py-12">
-                لا توجد سلايدات حاليًا.
-              </div>
-            )}
-          </div>
-        </section>
-        <section>
-          <h2 className="text-xl font-semibold mb-4 text-trndsky-darkblue">
-            طلبات برمجة بأفكارك (جديدة/مفتوحة)
-          </h2>
-          {loading ? (
-            <div className="text-center py-8 text-trndsky-blue">
-              جارٍ التحميل...
-            </div>
-          ) : requests.length === 0 ? (
-            <div className="text-center py-4 text-gray-500">
-              لا توجد طلبات جديدة أو مفتوحة.
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-base text-right border bg-white rounded-xl overflow-hidden">
-                <thead>
-                  <tr className="bg-trndsky-teal/10">
-                    <th className="px-4 py-2">الاسم</th>
-                    <th className="px-4 py-2">البريد الإلكتروني</th>
-                    <th className="px-4 py-2">رقم الهاتف</th>
-                    <th className="px-4 py-2">العنوان</th>
-                    <th className="px-4 py-2">الشرح</th>
-                    <th className="px-4 py-2">الحالة</th>
-                    <th className="px-4 py-2">تاريخ الطلب</th>
-                    <th className="px-4 py-2">إجراءات</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {requests.map((r) => (
-                    <tr key={r.id} className="border-t hover:bg-gray-50">
-                      <td className="px-4 py-2">{r.name}</td>
-                      <td className="px-4 py-2">{r.email || "-"}</td>
-                      <td className="px-4 py-2">{r.phone || "-"}</td>
-                      <td className="px-4 py-2">{r.title}</td>
-                      <td className="px-4 py-2 max-w-[300px]">{r.description}</td>
-                      <td className="px-4 py-2">
-                        <span
-                          className={`inline-block rounded px-2 py-1 text-xs font-semibold ${statusColors[r.status] || ""
-                            }`}
-                        >
-                          {statusLabels[r.status] || r.status}
-                        </span>
-                      </td>
-                      <td className="px-4 py-2">
-                        {new Date(r.created_at).toLocaleString("ar-EG")}
-                      </td>
-                      <td className="px-4 py-2 flex items-center gap-1">
-                        <Dialog>
-                          <DialogTrigger asChild>
-                            <Button
-                              variant="outline"
-                              size="icon"
-                              title="استعراض كامل التذكرة"
-                              onClick={() => setViewedRequest(r)}
+              ) : requests.length === 0 ? (
+                <div className="text-center py-4 text-gray-500">
+                  لا توجد طلبات جديدة أو مفتوحة.
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-base text-right border bg-white rounded-xl overflow-hidden">
+                    <thead>
+                      <tr className="bg-trndsky-teal/10">
+                        <th className="px-4 py-2">الاسم</th>
+                        <th className="px-4 py-2">البريد الإلكتروني</th>
+                        <th className="px-4 py-2">رقم الهاتف</th>
+                        <th className="px-4 py-2">العنوان</th>
+                        <th className="px-4 py-2">الشرح</th>
+                        <th className="px-4 py-2">الحالة</th>
+                        <th className="px-4 py-2">تاريخ الطلب</th>
+                        <th className="px-4 py-2">إجراءات</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {requests.map((r) => (
+                        <tr key={r.id} className="border-t hover:bg-gray-50">
+                          <td className="px-4 py-2">{r.name}</td>
+                          <td className="px-4 py-2">{r.email || "-"}</td>
+                          <td className="px-4 py-2">{r.phone || "-"}</td>
+                          <td className="px-4 py-2">{r.title}</td>
+                          <td className="px-4 py-2 max-w-[300px]">{r.description}</td>
+                          <td className="px-4 py-2">
+                            <span
+                              className={`inline-block rounded px-2 py-1 text-xs font-semibold ${statusColors[r.status] || ""
+                                }`}
                             >
-                              <Eye />
-                            </Button>
-                          </DialogTrigger>
-                          <DialogContent dir="rtl">
-                            <DialogHeader>
-                              <DialogTitle>تفاصيل التذكرة</DialogTitle>
-                              <DialogDescription>
-                                معلومات الطلب بشكل كامل
-                              </DialogDescription>
-                            </DialogHeader>
-                            {viewedRequest && viewedRequest.id === r.id && (
-                              <div className="text-base space-y-4 py-4">
-                                <div>
-                                  <span className="font-medium">الاسم: </span>
-                                  {viewedRequest.name}
-                                </div>
-                                <div>
-                                  <span className="font-medium">البريد الإلكتروني: </span>
-                                  {viewedRequest.email || "-"}
-                                </div>
-                                <div>
-                                  <span className="font-medium">رقم الهاتف: </span>
-                                  {viewedRequest.phone || "-"}
-                                </div>
-                                <div>
-                                  <span className="font-medium">العنوان: </span>
-                                  {viewedRequest.title}
-                                </div>
-                                <div>
-                                  <span className="font-medium">الشرح: </span>
-                                  {viewedRequest.description}
-                                </div>
-                                <div>
-                                  <span className="font-medium">الحالة: </span>
-                                  <span className={`rounded px-2 py-1 text-xs font-semibold ${statusColors[viewedRequest.status] || ""
-                                    }`}>
-                                    {statusLabels[viewedRequest.status] || viewedRequest.status}
-                                  </span>
-                                </div>
-                                <div>
-                                  <span className="font-medium">تاريخ الطلب: </span>
-                                  {new Date(viewedRequest.created_at).toLocaleString("ar-EG")}
-                                </div>
-                              </div>
-                            )}
-                            <DialogFooter>
-                              <DialogClose asChild>
-                                <Button variant="secondary">إغلاق</Button>
-                              </DialogClose>
-                            </DialogFooter>
-                          </DialogContent>
-                        </Dialog>
-                        <button
-                          disabled={r.status === "open"}
-                          className="px-2 py-1 rounded bg-green-100 text-green-800 hover:bg-green-200 transition-all disabled:opacity-50"
-                          onClick={() => updateStatus(r.id, "open")}
-                          title="تحويل لمفتوح"
-                        >
-                          <FolderOpen size={16} />
-                        </button>
-                        <button
-                          disabled={r.status === "closed"}
-                          className="px-2 py-1 rounded bg-red-100 text-red-800 hover:bg-red-200 transition-all disabled:opacity-50"
-                          onClick={() => updateStatus(r.id, "closed")}
-                          title="إغلاق"
-                        >
-                          <X size={16} />
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </section>
-        <section className="mt-12">
-          <h2 className="text-xl font-semibold mb-4 text-trndsky-darkblue">
-            طلبات برمجيات جاهزة (جديدة/مفتوحة)
-          </h2>
-          {loading ? (
-            <div className="text-center py-8 text-trndsky-blue">
-              جارٍ التحميل...
-            </div>
-          ) : orders.length === 0 ? (
-            <div className="text-center py-4 text-gray-500">
-              لا توجد طلبات جديدة أو مفتوحة.
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-base text-right border bg-white rounded-xl overflow-hidden">
-                <thead>
-                  <tr className="bg-trndsky-teal/10">
-                    <th className="px-4 py-2">رقم المنتج</th>
-                    <th className="px-4 py-2">اسم الشركة / العميل</th>
-                    <th className="px-4 py-2">واتساب</th>
-                    <th className="px-4 py-2">الحالة</th>
-                    <th className="px-4 py-2">تاريخ الطلب</th>
-                    <th className="px-4 py-2">إجراءات</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {orders.map((o) => (
-                    <tr key={o.id} className="border-t hover:bg-gray-50">
-                      <td className="px-4 py-2">{o.software_id}</td>
-                      <td className="px-4 py-2">{o.company_name}</td>
-                      <td className="px-4 py-2">{o.whatsapp}</td>
-                      <td className="px-4 py-2">
-                        <span className={`inline-block rounded px-2 py-1 text-xs font-semibold ${statusColors[o.status] || ""}`}>
-                          {statusLabels[o.status] || o.status}
-                        </span>
-                      </td>
-                      <td className="px-4 py-2">
-                        {new Date(o.created_at).toLocaleString("ar-EG")}
-                      </td>
-                      <td className="px-4 py-2 flex items-center gap-1">
-                        <Dialog>
-                          <DialogTrigger asChild>
-                            <Button
-                              variant="outline"
-                              size="icon"
-                              title="استعراض كامل الطلب"
-                              onClick={() => setViewedOrder(o)}
+                              {statusLabels[r.status] || r.status}
+                            </span>
+                          </td>
+                          <td className="px-4 py-2">
+                            {new Date(r.created_at).toLocaleString("ar-EG")}
+                          </td>
+                          <td className="px-4 py-2 flex items-center gap-1">
+                            <Dialog>
+                              <DialogTrigger asChild>
+                                <Button
+                                  variant="outline"
+                                  size="icon"
+                                  title="استعراض كامل التذكرة"
+                                  onClick={() => setViewedRequest(r)}
+                                >
+                                  <Eye />
+                                </Button>
+                              </DialogTrigger>
+                              <DialogContent dir="rtl">
+                                <DialogHeader>
+                                  <DialogTitle>تفاصيل التذكرة</DialogTitle>
+                                  <DialogDescription>
+                                    معلومات الطلب بشكل كامل
+                                  </DialogDescription>
+                                </DialogHeader>
+                                {viewedRequest && viewedRequest.id === r.id && (
+                                  <div className="text-base space-y-4 py-4">
+                                    <div>
+                                      <span className="font-medium">الاسم: </span>
+                                      {viewedRequest.name}
+                                    </div>
+                                    <div>
+                                      <span className="font-medium">البريد الإلكتروني: </span>
+                                      {viewedRequest.email || "-"}
+                                    </div>
+                                    <div>
+                                      <span className="font-medium">رقم الهاتف: </span>
+                                      {viewedRequest.phone || "-"}
+                                    </div>
+                                    <div>
+                                      <span className="font-medium">العنوان: </span>
+                                      {viewedRequest.title}
+                                    </div>
+                                    <div>
+                                      <span className="font-medium">الشرح: </span>
+                                      {viewedRequest.description}
+                                    </div>
+                                    <div>
+                                      <span className="font-medium">الحالة: </span>
+                                      <span className={`rounded px-2 py-1 text-xs font-semibold ${statusColors[viewedRequest.status] || ""
+                                        }`}>
+                                        {statusLabels[viewedRequest.status] || viewedRequest.status}
+                                      </span>
+                                    </div>
+                                    <div>
+                                      <span className="font-medium">تاريخ الطلب: </span>
+                                      {new Date(viewedRequest.created_at).toLocaleString("ar-EG")}
+                                    </div>
+                                  </div>
+                                )}
+                                <DialogFooter>
+                                  <DialogClose asChild>
+                                    <Button variant="secondary">إغلاق</Button>
+                                  </DialogClose>
+                                </DialogFooter>
+                              </DialogContent>
+                            </Dialog>
+                            <button
+                              disabled={r.status === "open"}
+                              className="px-2 py-1 rounded bg-green-100 text-green-800 hover:bg-green-200 transition-all disabled:opacity-50"
+                              onClick={() => updateStatus(r.id, "open")}
+                              title="تحويل لمفتوح"
                             >
-                              <Eye />
-                            </Button>
-                          </DialogTrigger>
-                          <DialogContent dir="rtl">
-                            <DialogHeader>
-                              <DialogTitle>تفاصيل الطلب البرمجي الجاهز</DialogTitle>
-                              <DialogDescription>
-                                جميع معلومات الطلب
-                              </DialogDescription>
-                            </DialogHeader>
-                            {viewedOrder && viewedOrder.id === o.id && (
-                              <div className="text-base space-y-4 py-4">
-                                <div>
-                                  <span className="font-medium">رقم المنتج: </span>
-                                  {viewedOrder.software_id}
-                                </div>
-                                <div>
-                                  <span className="font-medium">اسم الشركة / العميل: </span>
-                                  {viewedOrder.company_name}
-                                </div>
-                                <div>
-                                  <span className="font-medium">رقم الواتساب: </span>
-                                  {viewedOrder.whatsapp}
-                                </div>
-                                <div>
-                                  <span className="font-medium">الحالة: </span>
-                                  <span className={`rounded px-2 py-1 text-xs font-semibold ${statusColors[viewedOrder.status] || ""}`}>
-                                    {statusLabels[viewedOrder.status] || viewedOrder.status}
-                                  </span>
-                                </div>
-                                <div>
-                                  <span className="font-medium">تاريخ الطلب: </span>
-                                  {new Date(viewedOrder.created_at).toLocaleString("ar-EG")}
-                                </div>
-                              </div>
-                            )}
-                            <DialogFooter>
-                              <DialogClose asChild>
-                                <Button variant="secondary">إغلاق</Button>
-                              </DialogClose>
-                            </DialogFooter>
-                          </DialogContent>
-                        </Dialog>
-                        <button
-                          disabled={o.status === "open"}
-                          className="px-2 py-1 rounded bg-green-100 text-green-800 hover:bg-green-200 transition-all disabled:opacity-50"
-                          onClick={() => updateOrderStatus(o.id, "open")}
-                          title="تحويل لمفتوح"
-                        >
-                          <FolderOpen size={16} />
-                        </button>
-                        <button
-                          disabled={o.status === "closed"}
-                          className="px-2 py-1 rounded bg-red-100 text-red-800 hover:bg-red-200 transition-all disabled:opacity-50"
-                          onClick={() => updateOrderStatus(o.id, "closed")}
-                          title="إغلاق"
-                        >
-                          <X size={16} />
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </section>
+                              <FolderOpen size={16} />
+                            </button>
+                            <button
+                              disabled={r.status === "closed"}
+                              className="px-2 py-1 rounded bg-red-100 text-red-800 hover:bg-red-200 transition-all disabled:opacity-50"
+                              onClick={() => updateStatus(r.id, "closed")}
+                              title="إغلاق"
+                            >
+                              <X size={16} />
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </section>
+            <section className="mt-12">
+              <h2 className="text-xl font-semibold mb-4 text-trndsky-darkblue">
+                طلبات برمجيات جاهزة (جديدة/مفتوحة)
+              </h2>
+              {loading ? (
+                <div className="text-center py-8 text-trndsky-blue">
+                  جارٍ التحميل...
+                </div>
+              ) : orders.length === 0 ? (
+                <div className="text-center py-4 text-gray-500">
+                  لا توجد طلبات جديدة أو مفتوحة.
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-base text-right border bg-white rounded-xl overflow-hidden">
+                    <thead>
+                      <tr className="bg-trndsky-teal/10">
+                        <th className="px-4 py-2">رقم المنتج</th>
+                        <th className="px-4 py-2">اسم الشركة / العميل</th>
+                        <th className="px-4 py-2">واتساب</th>
+                        <th className="px-4 py-2">الحالة</th>
+                        <th className="px-4 py-2">تاريخ الطلب</th>
+                        <th className="px-4 py-2">إجراءات</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {orders.map((o) => (
+                        <tr key={o.id} className="border-t hover:bg-gray-50">
+                          <td className="px-4 py-2">{o.software_id}</td>
+                          <td className="px-4 py-2">{o.company_name}</td>
+                          <td className="px-4 py-2">{o.whatsapp}</td>
+                          <td className="px-4 py-2">
+                            <span className={`inline-block rounded px-2 py-1 text-xs font-semibold ${statusColors[o.status] || ""}`}>
+                              {statusLabels[o.status] || o.status}
+                            </span>
+                          </td>
+                          <td className="px-4 py-2">
+                            {new Date(o.created_at).toLocaleString("ar-EG")}
+                          </td>
+                          <td className="px-4 py-2 flex items-center gap-1">
+                            <Dialog>
+                              <DialogTrigger asChild>
+                                <Button
+                                  variant="outline"
+                                  size="icon"
+                                  title="استعراض كامل الطلب"
+                                  onClick={() => setViewedOrder(o)}
+                                >
+                                  <Eye />
+                                </Button>
+                              </DialogTrigger>
+                              <DialogContent dir="rtl">
+                                <DialogHeader>
+                                  <DialogTitle>تفاصيل الطلب البرمجي الجاهز</DialogTitle>
+                                  <DialogDescription>
+                                    جميع معلومات الطلب
+                                  </DialogDescription>
+                                </DialogHeader>
+                                {viewedOrder && viewedOrder.id === o.id && (
+                                  <div className="text-base space-y-4 py-4">
+                                    <div>
+                                      <span className="font-medium">رقم المنتج: </span>
+                                      {viewedOrder.software_id}
+                                    </div>
+                                    <div>
+                                      <span className="font-medium">اسم الشركة / العميل: </span>
+                                      {viewedOrder.company_name}
+                                    </div>
+                                    <div>
+                                      <span className="font-medium">رقم الواتساب: </span>
+                                      {viewedOrder.whatsapp}
+                                    </div>
+                                    <div>
+                                      <span className="font-medium">الحالة: </span>
+                                      <span className={`rounded px-2 py-1 text-xs font-semibold ${statusColors[viewedOrder.status] || ""}`}>
+                                        {statusLabels[viewedOrder.status] || viewedOrder.status}
+                                      </span>
+                                    </div>
+                                    <div>
+                                      <span className="font-medium">تاريخ الطلب: </span>
+                                      {new Date(viewedOrder.created_at).toLocaleString("ar-EG")}
+                                    </div>
+                                  </div>
+                                )}
+                                <DialogFooter>
+                                  <DialogClose asChild>
+                                    <Button variant="secondary">إغلاق</Button>
+                                  </DialogClose>
+                                </DialogFooter>
+                              </DialogContent>
+                            </Dialog>
+                            <button
+                              disabled={o.status === "open"}
+                              className="px-2 py-1 rounded bg-green-100 text-green-800 hover:bg-green-200 transition-all disabled:opacity-50"
+                              onClick={() => updateOrderStatus(o.id, "open")}
+                              title="تحويل لمفتوح"
+                            >
+                              <FolderOpen size={16} />
+                            </button>
+                            <button
+                              disabled={o.status === "closed"}
+                              className="px-2 py-1 rounded bg-red-100 text-red-800 hover:bg-red-200 transition-all disabled:opacity-50"
+                              onClick={() => updateOrderStatus(o.id, "closed")}
+                              title="إغلاق"
+                            >
+                              <X size={16} />
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </section>
+          </TabsContent>
+
+          <TabsContent value="slides">
+            {/* قسم السلايدات */}
+            <section>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-semibold text-trndsky-darkblue">
+                  إدارة السلايدات الرئيسية
+                </h2>
+                <Button onClick={openNewSlideDialog} className="flex items-center gap-2">
+                  <Plus size={18} /> إضافة سلايد
+                </Button>
+              </div>
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {slides.map((slide) => (
+                  <div key={slide.id} className="bg-white rounded-xl shadow p-4 flex flex-col">
+                    <img
+                      src={slide.image}
+                      alt={slide.title}
+                      className="rounded-lg h-40 object-cover mb-3 w-full"
+                    />
+                    <h3 className="font-bold text-trndsky-teal text-lg mb-1">{slide.title}</h3>
+                    <div className="text-trndsky-darkblue font-medium">{slide.subtitle}</div>
+                    <div className="text-gray-700 text-sm mt-1">{slide.description}</div>
+                    <div className="flex gap-2 mt-4">
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() => openEditSlideDialog(slide)}
+                        title="تعديل"
+                      >
+                        <Edit size={18} />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() => handleDeleteSlide(slide.id)}
+                        title="حذف"
+                      >
+                        <Trash2 size={18} className="text-red-500" />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+                {slides.length === 0 && (
+                  <div className="text-gray-400 col-span-3 text-center py-12">
+                    لا توجد سلايدات حاليًا.
+                  </div>
+                )}
+              </div>
+            </section>
+            <Dialog open={slideDialogOpen} onOpenChange={setSlideDialogOpen}>
+              <DialogContent dir="rtl">
+                <DialogHeader>
+                  <DialogTitle>{slideToEdit ? "تعديل السلايد" : "إضافة سلايد جديد"}</DialogTitle>
+                  <DialogDescription>
+                    {slideToEdit
+                      ? "يمكنك تعديل بيانات السلايد أدناه"
+                      : "قم بإضافة سلايد جديد للواجهة الرئيسية"}
+                  </DialogDescription>
+                </DialogHeader>
+                <form
+                  className="space-y-4"
+                  onSubmit={e => {
+                    e.preventDefault();
+                    handleSaveSlide();
+                  }}
+                >
+                  <div>
+                    <label className="font-medium block mb-1">عنوان السلايد</label>
+                    <input
+                      name="title"
+                      value={slideForm.title}
+                      onChange={handleSlideFormChange}
+                      required
+                      className="input border px-3 py-2 w-full rounded"
+                      placeholder="عنوان السلايد"
+                    />
+                  </div>
+                  <div>
+                    <label className="font-medium block mb-1">العنوان الفرعي</label>
+                    <input
+                      name="subtitle"
+                      value={slideForm.subtitle}
+                      onChange={handleSlideFormChange}
+                      required
+                      className="input border px-3 py-2 w-full rounded"
+                      placeholder="العنوان الفرعي"
+                    />
+                  </div>
+                  <div>
+                    <label className="font-medium block mb-1">الوصف</label>
+                    <textarea
+                      name="description"
+                      value={slideForm.description}
+                      onChange={handleSlideFormChange}
+                      rows={3}
+                      required
+                      className="input border px-3 py-2 w-full rounded"
+                      placeholder="وصف السلايد"
+                    />
+                  </div>
+                  <div>
+                    <label className="font-medium block mb-1">رابط صورة السلايد</label>
+                    <input
+                      name="image"
+                      value={slideForm.image}
+                      onChange={handleSlideFormChange}
+                      required
+                      className="input border px-3 py-2 w-full rounded"
+                      placeholder="رابط الصورة"
+                    />
+                  </div>
+                  <DialogFooter>
+                    <Button type="submit" disabled={isSavingSlide}>
+                      {isSavingSlide ? "جارٍ الحفظ..." : slideToEdit ? "حفظ التعديلات" : "إضافة السلايد"}
+                    </Button>
+                    <DialogClose asChild>
+                      <Button variant="secondary">إلغاء</Button>
+                    </DialogClose>
+                  </DialogFooter>
+                </form>
+              </DialogContent>
+            </Dialog>
+          </TabsContent>
+        </Tabs>
       </main>
-      <Dialog open={slideDialogOpen} onOpenChange={setSlideDialogOpen}>
-        <DialogContent dir="rtl">
-          <DialogHeader>
-            <DialogTitle>{slideToEdit ? "تعديل السلايد" : "إضافة سلايد جديد"}</DialogTitle>
-            <DialogDescription>
-              {slideToEdit
-                ? "يمكنك تعديل بيانات السلايد أدناه"
-                : "قم بإضافة سلايد جديد للواجهة الرئيسية"}
-            </DialogDescription>
-          </DialogHeader>
-          <form
-            className="space-y-4"
-            onSubmit={e => {
-              e.preventDefault();
-              handleSaveSlide();
-            }}
-          >
-            <div>
-              <label className="font-medium block mb-1">عنوان السلايد</label>
-              <input
-                name="title"
-                value={slideForm.title}
-                onChange={handleSlideFormChange}
-                required
-                className="input border px-3 py-2 w-full rounded"
-                placeholder="عنوان السلايد"
-              />
-            </div>
-            <div>
-              <label className="font-medium block mb-1">العنوان الفرعي</label>
-              <input
-                name="subtitle"
-                value={slideForm.subtitle}
-                onChange={handleSlideFormChange}
-                required
-                className="input border px-3 py-2 w-full rounded"
-                placeholder="العنوان الفرعي"
-              />
-            </div>
-            <div>
-              <label className="font-medium block mb-1">الوصف</label>
-              <textarea
-                name="description"
-                value={slideForm.description}
-                onChange={handleSlideFormChange}
-                rows={3}
-                required
-                className="input border px-3 py-2 w-full rounded"
-                placeholder="وصف السلايد"
-              />
-            </div>
-            <div>
-              <label className="font-medium block mb-1">رابط صورة السلايد</label>
-              <input
-                name="image"
-                value={slideForm.image}
-                onChange={handleSlideFormChange}
-                required
-                className="input border px-3 py-2 w-full rounded"
-                placeholder="رابط الصورة"
-              />
-            </div>
-            <DialogFooter>
-              <Button type="submit" disabled={isSavingSlide}>
-                {isSavingSlide ? "جارٍ الحفظ..." : slideToEdit ? "حفظ التعديلات" : "إضافة السلايد"}
-              </Button>
-              <DialogClose asChild>
-                <Button variant="secondary">إلغاء</Button>
-              </DialogClose>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };
 
 export default AdminDashboard;
+
