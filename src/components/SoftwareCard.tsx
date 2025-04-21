@@ -1,18 +1,42 @@
 
 import { useState } from 'react';
+import { Send } from 'lucide-react';
 
 interface SoftwareCardProps {
   title: string;
   description: string;
   image: string;
   id: number;
+  price: string;
 }
 
-const SoftwareCard = ({ title, description, image, id }: SoftwareCardProps) => {
+const SoftwareCard = ({ title, description, image, id, price }: SoftwareCardProps) => {
   const [showDetails, setShowDetails] = useState(false);
+  const [showOrderForm, setShowOrderForm] = useState(false);
+  const [orderData, setOrderData] = useState({ company: '', whatsapp: '' });
+  const [orderSent, setOrderSent] = useState(false);
 
   const toggleDetails = () => {
     setShowDetails(!showDetails);
+    setShowOrderForm(false);
+    setOrderSent(false);
+  };
+
+  const handleOrderClick = () => {
+    setShowOrderForm(!showOrderForm);
+    setOrderSent(false);
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setOrderData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleOrderSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setOrderSent(true);
+    setOrderData({ company: '', whatsapp: '' });
+    setTimeout(() => setShowOrderForm(false), 1800);
   };
 
   return (
@@ -26,8 +50,8 @@ const SoftwareCard = ({ title, description, image, id }: SoftwareCardProps) => {
       
       <div className="p-6">
         <h3 className="text-2xl font-bold mb-2 font-tajawal text-right text-trndsky-darkblue">{title}</h3>
-        
-        <div className="flex justify-end">
+        <div className="flex items-center justify-between mb-3">
+          <span className="font-tajawal text-xl font-bold text-trndsky-teal">{price}</span>
           <button
             onClick={toggleDetails}
             className="text-trndsky-teal hover:text-trndsky-blue font-medium transition-colors font-tajawal underline underline-offset-4"
@@ -37,11 +61,77 @@ const SoftwareCard = ({ title, description, image, id }: SoftwareCardProps) => {
         </div>
         
         {showDetails && (
-          <div className="mt-4 text-gray-600 text-right animate-fade-in font-tajawal bg-gray-50 rounded-lg p-4 border border-trndsky-blue/10">
-            <p>{description}</p>
-            <div className="mt-4 flex justify-end">
-              <button className="btn-secondary text-sm font-tajawal rounded-full shadow-md hover:bg-trndsky-darkblue">طلب المزيد من المعلومات</button>
+          <div className="mt-2 text-gray-600 text-right animate-fade-in font-tajawal bg-gray-50 rounded-lg p-4 border border-trndsky-blue/10">
+            <p className="mb-4">{description}</p>
+            <div className="mt-4 flex flex-col gap-3 md:flex-row md:justify-end">
+              {!showOrderForm && (
+                <>
+                  <button
+                    className="btn-secondary text-sm font-tajawal rounded-full shadow-md hover:bg-trndsky-darkblue min-w-[138px]"
+                    onClick={handleOrderClick}
+                    type="button"
+                  >
+                    طلب المنتج
+                  </button>
+                  <button
+                    className="btn-primary text-sm font-tajawal rounded-full shadow-md hover:bg-trndsky-teal min-w-[180px]"
+                    type="button"
+                  >
+                    طلب المزيد من المعلومات
+                  </button>
+                </>
+              )}
             </div>
+
+            {showOrderForm && (
+              <form
+                className="mt-4 bg-white border border-trndsky-blue/10 rounded-xl p-4 animate-fade-in shadow"
+                onSubmit={handleOrderSubmit}
+                dir="rtl"
+              >
+                <div className="mb-3">
+                  <label className="block mb-1 text-trndsky-darkblue font-tajawal font-semibold text-base" htmlFor={`company-${id}`}>
+                    اسم الشركة / العميل
+                  </label>
+                  <input
+                    id={`company-${id}`}
+                    name="company"
+                    required
+                    value={orderData.company}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-trndsky-teal bg-gray-50 font-tajawal"
+                    placeholder="أدخل اسم الشركة أو العميل"
+                  />
+                </div>
+                <div className="mb-3">
+                  <label className="block mb-1 text-trndsky-darkblue font-tajawal font-semibold text-base" htmlFor={`whatsapp-${id}`}>
+                    رقم الواتساب للتواصل
+                  </label>
+                  <input
+                    id={`whatsapp-${id}`}
+                    name="whatsapp"
+                    required
+                    value={orderData.whatsapp}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-trndsky-teal bg-gray-50 font-tajawal"
+                    pattern="^[0-9+]{8,15}$"
+                    placeholder="05xxxxxxxx أو +9665xxxxxxx"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  disabled={orderSent}
+                  className="flex items-center gap-2 px-6 py-2 rounded-full bg-gradient-to-l from-trndsky-teal to-trndsky-blue text-white font-tajawal shadow hover:scale-105 transition-all hover:from-trndsky-blue hover:to-trndsky-teal"
+                >
+                  <Send className="w-5 h-5" /> {orderSent ? "تم الإرسال بنجاح" : "إرسال الطلب"}
+                </button>
+                {orderSent && (
+                  <div className="mt-2 text-trndsky-teal font-tajawal text-sm">
+                    تم استلام الطلب بنجاح، سنتواصل معكم على واتساب قريباً.
+                  </div>
+                )}
+              </form>
+            )}
           </div>
         )}
       </div>
@@ -57,18 +147,21 @@ export const FeaturedSoftware = () => {
       title: "نظام إدارة المبيعات",
       description: "نظام متكامل لإدارة المبيعات والمخزون مع تقارير تحليلية متقدمة وواجهة سهلة الاستخدام",
       image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+      price: "٣,٩٩٩ ر.س",
     },
     {
       id: 2,
       title: "منصة التجارة الإلكترونية",
       description: "منصة احترافية للتجارة الإلكترونية مع دعم للدفع الإلكتروني وإدارة المنتجات والعملاء",
       image: "https://images.unsplash.com/photo-1563013544-824ae1b704d3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+      price: "٥,٥٠٠ ر.س",
     },
     {
       id: 3,
       title: "تطبيق إدارة المشاريع",
       description: "تطبيق لإدارة المشاريع وتتبع المهام والتعاون بين فرق العمل مع تقارير متقدمة",
       image: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+      price: "٤,٢٠٠ ر.س",
     },
   ];
 
@@ -90,6 +183,7 @@ export const FeaturedSoftware = () => {
               title={item.title}
               description={item.description}
               image={item.image}
+              price={item.price}
             />
           ))}
         </div>
@@ -103,3 +197,4 @@ export const FeaturedSoftware = () => {
 };
 
 export default SoftwareCard;
+
