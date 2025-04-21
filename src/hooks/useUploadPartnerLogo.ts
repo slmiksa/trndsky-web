@@ -28,8 +28,8 @@ export function useUploadPartnerLogo() {
         return null;
       }
 
-      // The getPublicUrl method doesn't return an error property in its response
-      // It just returns { data: { publicUrl: string } }
+      // The getPublicUrl method doesn't return an error property
+      // It simply returns { data: { publicUrl: string } }
       const { data: publicUrlData } = supabase.storage
         .from("partner-logos")
         .getPublicUrl(fileName);
