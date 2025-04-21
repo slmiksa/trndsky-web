@@ -10,6 +10,13 @@ import {
 } from "@/components/ui/carousel";
 import { toast } from "@/components/ui/use-toast";
 
+// شعار شركة الوصل الوطنية المرفق مباشرة ضمن المشروع
+const WISAL_PARTNER = {
+  id: -1,
+  name: "شركة الوصل الوطنية لتحصيل ديون جهات التمويل",
+  logo_url: "/lovable-uploads/aa977791-13b8-471b-92c8-d9ef4ef03f27.png",
+};
+
 type Partner = {
   id: number;
   name: string;
@@ -29,34 +36,35 @@ const PartnersSection = () => {
     try {
       setLoading(true);
       setError(null);
-      
-      // Debug: Log the start of the fetch
-      console.log("Fetching partners from database");
-      
       const { data, error } = await supabase
         .from("partners")
         .select("*")
         .order("id", { ascending: true });
-      
-      // Debug: Log the response
-      console.log("Partners data:", data);
-      console.log("Partners error:", error);
-      
       if (error) {
-        console.error("Error fetching partners:", error);
         setError("حدث خطأ أثناء تحميل بيانات الشركاء");
         toast({
           title: "خطأ في التحميل",
           description: "لم نتمكن من تحميل بيانات الشركاء، يرجى المحاولة مرة أخرى لاحقاً.",
           variant: "destructive",
         });
+        setPartners([WISAL_PARTNER]);
         return;
       }
-      
-      setPartners(data || []);
+      // إضافة شركة الوصل دائمًا أول القائمة إن لم تكن موجودة
+      const partnerList = data || [];
+      const exist = partnerList.some(
+        (p) =>
+          p.name === WISAL_PARTNER.name ||
+          p.logo_url === WISAL_PARTNER.logo_url
+      );
+      setPartners(
+        exist
+          ? partnerList
+          : [WISAL_PARTNER, ...(partnerList as Partner[])]
+      );
     } catch (err) {
-      console.error("Unexpected error:", err);
       setError("حدث خطأ غير متوقع");
+      setPartners([WISAL_PARTNER]);
     } finally {
       setLoading(false);
     }
@@ -96,8 +104,6 @@ const PartnersSection = () => {
     );
   }
 
-  // Always display the section, even with empty partners
-  // This ensures we can see if there's an issue with fetching or if there truly are no partners
   return (
     <section className="section-padding bg-gradient-to-tr from-[#f7fafc] via-[#ebf5fd] to-trndsky-gray">
       <div className="container mx-auto">
@@ -117,17 +123,19 @@ const PartnersSection = () => {
               <CarouselContent className="py-4">
                 {partners.map((partner) => (
                   <CarouselItem key={partner.id} className="md:basis-1/3 lg:basis-1/4">
-                    <div className="bg-white rounded-full border border-trndsky-blue/10 shadow-sm hover:shadow-md transition-all flex items-center justify-center h-28 w-44 md:h-32 md:w-56 p-3 mx-auto">
+                    <div className="bg-white rounded-full border border-trndsky-blue/10 shadow-sm hover:shadow-md transition-all flex flex-col items-center justify-center h-40 w-44 md:h-48 md:w-56 p-3 mx-auto">
                       <img
                         src={partner.logo_url}
                         alt={partner.name}
-                        className="object-contain max-h-14 max-w-[200px]"
+                        className="object-contain max-h-16 max-w-[200px] mb-2"
                         onError={(e) => {
-                          console.error(`Failed to load image: ${partner.logo_url}`);
                           e.currentTarget.src = "/placeholder.svg";
                           e.currentTarget.alt = "صورة غير متوفرة";
                         }}
                       />
+                      <div className="text-trndsky-darkblue font-bold text-xs text-center mt-1">
+                        {partner.name}
+                      </div>
                     </div>
                   </CarouselItem>
                 ))}
@@ -143,3 +151,4 @@ const PartnersSection = () => {
 };
 
 export default PartnersSection;
+
