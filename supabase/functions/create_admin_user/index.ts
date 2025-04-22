@@ -47,17 +47,13 @@ serve(async (req) => {
       )
     }
 
-    // Using service role client to bypass RLS
-    const { data, error } = await supabaseClient
-      .from('admin_users')
-      .insert({
-        username,
-        password,
-        user_id,
-        role,
-      })
-      .select()
-      .single();
+    // Using direct SQL query with service role to bypass any RLS issues
+    const { data, error } = await supabaseClient.rpc('create_admin_user', {
+      p_username: username,
+      p_password: password,
+      p_user_id: user_id,
+      p_role: role
+    });
 
     if (error) {
       console.error("Database insert error:", error);

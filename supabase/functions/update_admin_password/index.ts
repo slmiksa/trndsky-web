@@ -29,13 +29,16 @@ serve(async (req) => {
       )
     }
 
-    // Using service role client to bypass RLS
-    const { error } = await supabaseClient
-      .from('admin_users')
-      .update({ password: new_password })
-      .eq('id', admin_id);
+    // Using the database function to update the password
+    const { data, error } = await supabaseClient.rpc('update_admin_password', {
+      p_admin_id: admin_id,
+      p_new_password: new_password
+    });
 
-    if (error) throw error
+    if (error) {
+      console.error("Database update error:", error);
+      throw error;
+    }
 
     return new Response(
       JSON.stringify({ success: true }),

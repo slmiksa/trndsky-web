@@ -29,13 +29,15 @@ serve(async (req) => {
       )
     }
 
-    // Using service role client to bypass RLS
-    const { error } = await supabaseClient
-      .from('admin_users')
-      .delete()
-      .eq('id', admin_id);
+    // Using the database function to delete the admin user
+    const { data, error } = await supabaseClient.rpc('delete_admin_user', {
+      p_admin_id: admin_id
+    });
 
-    if (error) throw error
+    if (error) {
+      console.error("Database delete error:", error);
+      throw error;
+    }
 
     return new Response(
       JSON.stringify({ success: true }),
