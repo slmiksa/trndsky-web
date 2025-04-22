@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
@@ -56,7 +56,8 @@ export function ContactManager() {
     }
   };
 
-  useState(() => {
+  // Fix: Changed useState to useEffect
+  useEffect(() => {
     fetchContactInfo();
   }, []);
 
