@@ -28,15 +28,15 @@ const Navbar = () => {
 
   return (
     <nav className={`sticky top-0 z-50 transition-all duration-300 ${
-      scrolled ? "bg-white/95 backdrop-blur-md shadow-md" : "bg-white/90"
+      scrolled ? "bg-white/90 backdrop-blur-md shadow-lg" : "bg-transparent"
     }`}>
-      <div className="container mx-auto px-4 py-4">
+      <div className="container mx-auto px-6 py-4">
         <div className="flex justify-between items-center">
           {/* Logo */}
-          <Link to="/" className="text-2xl font-bold relative group">
+          <Link to="/" className="text-3xl font-bold relative group">
             <span className="text-trndsky-teal group-hover:text-trndsky-blue transition-colors duration-300">TRND</span>
             <span className="text-trndsky-blue group-hover:text-trndsky-darkblue transition-colors duration-300">SKY</span>
-            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-trndsky-teal group-hover:w-full transition-all duration-300"></span>
+            <div className="absolute -bottom-1 left-0 h-1 w-0 bg-gradient-to-r from-trndsky-teal to-trndsky-blue group-hover:w-full transition-all duration-500 rounded-full"></div>
           </Link>
 
           {/* Desktop Navigation */}
@@ -67,7 +67,7 @@ const Navbar = () => {
       {/* Mobile Menu */}
       {isMenuOpen && (
         <div className="md:hidden bg-white/95 backdrop-blur-md shadow-lg animate-slide-in">
-          <div className="container mx-auto px-4 py-5 flex flex-col space-y-6 font-tajawal">
+          <div className="container mx-auto px-6 py-6 flex flex-col space-y-4 font-tajawal">
             <MobileNavLink to="/" onClick={toggleMenu} currentPath={location.pathname}>الرئيسية</MobileNavLink>
             <MobileNavLink to="/software" onClick={toggleMenu} currentPath={location.pathname}>البرمجيات الجاهزة</MobileNavLink>
             <MobileNavLink to="/about" onClick={toggleMenu} currentPath={location.pathname}>من نحن</MobileNavLink>
@@ -85,15 +85,15 @@ const NavLink = ({ to, children, currentPath }: { to: string; children: React.Re
   return (
     <Link 
       to={to} 
-      className={`px-4 py-2 rounded-md text-lg transition-all duration-200 relative font-tajawal ${
+      className={`px-4 py-2 rounded-full text-lg transition-all duration-300 relative font-tajawal ${
         isActive 
-          ? "text-trndsky-teal font-bold" 
+          ? "text-trndsky-teal font-bold bg-trndsky-blue/5" 
           : "text-gray-700 hover:text-trndsky-teal"
       }`}
     >
       {children}
       {isActive && (
-        <span className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1/2 h-0.5 bg-trndsky-teal"></span>
+        <span className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1/2 h-0.5 bg-trndsky-teal rounded-full"></span>
       )}
     </Link>
   );
@@ -117,14 +117,14 @@ const MobileNavLink = ({
       to={to} 
       className={`block text-right text-xl py-3 px-4 rounded-lg transition-all duration-200 ${
         isActive 
-          ? "bg-trndsky-blue/10 text-trndsky-blue font-bold" 
-          : "text-gray-700 hover:bg-gray-100"
+          ? "bg-gradient-to-r from-trndsky-blue/10 to-trndsky-teal/10 text-trndsky-blue font-bold" 
+          : "text-gray-700 hover:bg-gray-50"
       }`}
       onClick={onClick}
     >
-      <div className="flex justify-end items-center">
+      <div className="flex justify-end items-center gap-3">
         {children}
-        <ChevronDown className={`mr-1 h-5 w-5 transition-transform ${isActive ? "rotate-180 text-trndsky-teal" : ""}`} />
+        <ChevronDown className={`h-5 w-5 transition-transform ${isActive ? "rotate-180 text-trndsky-teal" : ""}`} />
       </div>
     </Link>
   );

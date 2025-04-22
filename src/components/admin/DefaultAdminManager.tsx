@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
 import { useAdminAuth } from "@/components/AdminAuthContext";
+import { LockKeyhole, User, Save } from "lucide-react";
 
 export function DefaultAdminManager() {
   const [username, setUsername] = useState("admin");
@@ -63,14 +64,19 @@ export function DefaultAdminManager() {
   };
   
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>إدارة المدير الافتراضي</CardTitle>
+    <Card className="border border-gray-100 shadow-md overflow-hidden relative">
+      <div className="absolute inset-0 bg-gradient-to-br from-trndsky-blue/5 to-trndsky-teal/5 pointer-events-none"></div>
+      <CardHeader className="border-b border-gray-100 bg-gradient-to-r from-gray-50 to-gray-100/50">
+        <CardTitle className="flex items-center gap-2 text-trndsky-blue">
+          <LockKeyhole className="h-5 w-5" />
+          إدارة المدير الافتراضي
+        </CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="p-6 relative z-10">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-2">
+            <label className="block text-sm font-medium mb-2 text-gray-700 flex items-center gap-2">
+              <User className="h-4 w-4" />
               اسم المستخدم الجديد
             </label>
             <Input
@@ -78,11 +84,13 @@ export function DefaultAdminManager() {
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               placeholder="اسم المستخدم الجديد"
+              className="border-gray-200 focus:border-trndsky-teal focus:ring-trndsky-teal/20"
               required
             />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-2">
+            <label className="block text-sm font-medium mb-2 text-gray-700 flex items-center gap-2">
+              <LockKeyhole className="h-4 w-4" />
               كلمة المرور الجديدة
             </label>
             <Input
@@ -90,11 +98,13 @@ export function DefaultAdminManager() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="كلمة المرور الجديدة"
+              className="border-gray-200 focus:border-trndsky-teal focus:ring-trndsky-teal/20"
               required
             />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-2">
+            <label className="block text-sm font-medium mb-2 text-gray-700 flex items-center gap-2">
+              <LockKeyhole className="h-4 w-4" />
               تأكيد كلمة المرور الجديدة
             </label>
             <Input
@@ -102,11 +112,23 @@ export function DefaultAdminManager() {
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               placeholder="تأكيد كلمة المرور الجديدة"
+              className="border-gray-200 focus:border-trndsky-teal focus:ring-trndsky-teal/20"
               required
             />
           </div>
-          <Button type="submit" disabled={loading}>
-            {loading ? "جاري الحفظ..." : "حفظ التغييرات"}
+          <Button 
+            type="submit" 
+            disabled={loading}
+            className="bg-gradient-to-r from-trndsky-blue to-trndsky-teal hover:from-trndsky-darkblue hover:to-trndsky-blue text-white transition-all duration-300"
+          >
+            {loading ? (
+              <span className="flex items-center gap-2">جاري الحفظ...</span>
+            ) : (
+              <span className="flex items-center gap-2">
+                حفظ التغييرات
+                <Save className="h-4 w-4" />
+              </span>
+            )}
           </Button>
         </form>
       </CardContent>

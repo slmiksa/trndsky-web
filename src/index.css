@@ -36,7 +36,7 @@
     --input: 214.3 31.8% 91.4%;
     --ring: 222.2 84% 4.9%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
   }
 
   .dark {
@@ -100,23 +100,23 @@
 
 @layer components {
   .hero-gradient {
-    background: linear-gradient(90deg, rgba(10, 36, 99, 0.95) 0%, rgba(11, 61, 145, 0.9) 100%);
+    @apply bg-gradient-to-r from-trndsky-darkblue/95 to-trndsky-blue/90;
   }
   
   .section-padding {
-    @apply py-20 px-4 md:px-8 lg:px-16;
+    @apply py-24 px-6 md:px-8 lg:px-16;
   }
   
   .card-hover {
-    @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
+    @apply transition-all duration-300 hover:shadow-xl hover:-translate-y-1;
   }
   
   .btn-primary {
-    @apply bg-trndsky-blue text-white hover:bg-trndsky-darkblue transition-colors px-6 py-3 rounded-md font-medium shadow-md hover:shadow-lg active:scale-95 transform transition-all duration-200;
+    @apply bg-gradient-to-r from-trndsky-teal to-trndsky-blue text-white transition-all px-6 py-3 rounded-full font-medium shadow-md hover:shadow-xl hover:scale-105 active:scale-95 duration-300;
   }
   
   .btn-secondary {
-    @apply bg-trndsky-teal text-white hover:bg-opacity-90 transition-colors px-6 py-3 rounded-md font-medium shadow-md hover:shadow-lg active:scale-95 transform transition-all duration-200;
+    @apply bg-white/20 backdrop-blur-md border border-white/30 text-white hover:bg-white/30 transition-all px-6 py-3 rounded-full font-medium;
   }
   
   .glass-card {
@@ -161,6 +161,29 @@
     background: linear-gradient(90deg, #0B3D91, #10B9B3, #7CC6FE, #0B3D91);
     background-size: 400% 400%;
     animation: border-animation 8s linear infinite;
+  }
+  
+  .animate-on-scroll {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+  }
+  
+  .animate-on-scroll.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  .text-gradient {
+    @apply bg-gradient-to-r from-trndsky-darkblue to-trndsky-blue bg-clip-text text-transparent;
+  }
+  
+  .shadow-soft {
+    @apply shadow-[0_10px_40px_-15px_rgba(0,0,0,0.1)];
+  }
+  
+  .glassmorphism {
+    @apply backdrop-blur-md bg-white/70 border border-white/20 shadow-lg;
   }
 }
 
@@ -237,4 +260,34 @@
     opacity: 1;
     transform: translateX(0);
   }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes shine {
+  0% {
+    background-position: -200% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+
+.shine-effect {
+  background: linear-gradient(
+    to right,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.2) 25%,
+    rgba(255, 255, 255, 0.2) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  background-size: 200% 100%;
+  animation: shine 3s infinite;
 }
