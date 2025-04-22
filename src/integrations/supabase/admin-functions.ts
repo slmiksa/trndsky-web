@@ -11,53 +11,68 @@ export async function createAdminUser(username: string, password: string) {
   // This is because we're not using actual auth users, only admin users in a separate table
   const userId = crypto.randomUUID();
   
-  const { data, error } = await supabase.functions.invoke('create_admin_user', {
-    body: {
-      username,
-      password,
-      user_id: userId,
-      role: 'admin'
+  try {
+    const { data, error } = await supabase.functions.invoke('create_admin_user', {
+      body: {
+        username,
+        password,
+        user_id: userId,
+        role: 'admin'
+      }
+    });
+    
+    if (error) {
+      console.error("Error creating admin user:", error);
+      throw error;
     }
-  });
-  
-  if (error) {
-    console.error("Error creating admin user:", error);
+    return data;
+  } catch (error) {
+    console.error("Exception creating admin user:", error);
     throw error;
   }
-  return data;
 }
 
 /**
  * Updates an admin user's password bypassing RLS
  */
 export async function updateAdminPassword(adminId: string, newPassword: string) {
-  const { data, error } = await supabase.functions.invoke('update_admin_password', {
-    body: {
-      admin_id: adminId,
-      new_password: newPassword
+  try {
+    const { data, error } = await supabase.functions.invoke('update_admin_password', {
+      body: {
+        admin_id: adminId,
+        new_password: newPassword
+      }
+    });
+    
+    if (error) {
+      console.error("Error updating admin password:", error);
+      throw error;
     }
-  });
-  
-  if (error) {
-    console.error("Error updating admin password:", error);
+    return data;
+  } catch (error) {
+    console.error("Exception updating admin password:", error);
     throw error;
   }
-  return data;
 }
 
 /**
  * Deletes an admin user bypassing RLS
  */
 export async function deleteAdminUser(adminId: string) {
-  const { data, error } = await supabase.functions.invoke('delete_admin_user', {
-    body: {
-      admin_id: adminId
+  try {
+    const { data, error } = await supabase.functions.invoke('delete_admin_user', {
+      body: {
+        admin_id: adminId
+      }
+    });
+    
+    if (error) {
+      console.error("Error deleting admin user:", error);
+      throw error;
     }
-  });
-  
-  if (error) {
-    console.error("Error deleting admin user:", error);
+    return data;
+  } catch (error) {
+    console.error("Exception deleting admin user:", error);
     throw error;
   }
-  return data;
 }

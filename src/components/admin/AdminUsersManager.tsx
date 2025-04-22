@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/components/ui/use-toast";
@@ -14,6 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { createAdminUser, updateAdminPassword, deleteAdminUser } from "@/integrations/supabase/admin-functions";
 
 type AdminUser = {
   id: string;
@@ -36,7 +36,6 @@ export function AdminUsersManager() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // تحميل المشرفين
   useEffect(() => {
     fetchAdminUsers();
   }, []);
@@ -92,28 +91,22 @@ export function AdminUsersManager() {
         .eq("username", newAdminData.username)
         .maybeSingle();
 
+      if (checkError) {
+        console.error("Error checking existing user:", checkError);
+      }
+      
       if (existingUser) {
         toast({
           title: "خطأ",
           description: "اسم المستخدم موجود بالفعل",
           variant: "destructive",
         });
+        setIsProcessing(false);
         return;
       }
 
-      // Using the special Edge function to bypass RLS for admin creation
-      const { data, error: rpcError } = await supabase.functions.invoke('create_admin_user', {
-        body: {
-          username: newAdminData.username,
-          password: newAdminData.password,
-          user_id: crypto.randomUUID(),
-          role: 'admin'
-        }
-      });
-
-      if (rpcError) {
-        throw rpcError;
-      }
+      // Using the admin function to create the admin user
+      const data = await createAdminUser(newAdminData.username, newAdminData.password);
 
       toast({
         title: "تم بنجاح",
@@ -150,15 +143,8 @@ export function AdminUsersManager() {
       setIsProcessing(true);
       setError(null);
 
-      // Using the special Edge function to bypass RLS for password reset
-      const { error: rpcError } = await supabase.functions.invoke('update_admin_password', {
-        body: {
-          admin_id: resetPasswordData.id,
-          new_password: resetPasswordData.password
-        }
-      });
-
-      if (rpcError) throw rpcError;
+      // Using the admin function to update the password
+      await updateAdminPassword(resetPasswordData.id, resetPasswordData.password);
 
       toast({
         title: "تم بنجاح",
@@ -188,14 +174,8 @@ export function AdminUsersManager() {
     try {
       setError(null);
       
-      // Using the special Edge function to bypass RLS for admin deletion
-      const { error: rpcError } = await supabase.functions.invoke('delete_admin_user', {
-        body: {
-          admin_id: adminId
-        }
-      });
-
-      if (rpcError) throw rpcError;
+      // Using the admin function to delete the admin user
+      await deleteAdminUser(adminId);
       
       toast({
         title: "تم بنجاح",

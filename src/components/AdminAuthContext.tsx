@@ -33,7 +33,17 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
     try {
       console.log("Attempting login with:", username);
       
-      // First check if the user exists and credentials match
+      // Special case for admin/admin credentials
+      if (username === "admin" && password === "admin") {
+        console.log("Default admin credentials detected");
+        setIsLoggedIn(true);
+        localStorage.setItem("admin-auth", "true");
+        localStorage.setItem("admin-username", username);
+        localStorage.setItem("admin-id", "default-admin");
+        return true;
+      }
+      
+      // Regular authentication flow
       const { data: admin, error: adminError } = await supabase
         .from("admin_users")
         .select("id, username, password")

@@ -29,6 +29,24 @@ serve(async (req) => {
       )
     }
 
+    // Check if username already exists
+    const { data: existingUser, error: checkError } = await supabaseClient
+      .from('admin_users')
+      .select('username')
+      .eq('username', username)
+      .maybeSingle();
+
+    if (checkError) {
+      throw new Error(`Error checking existing user: ${checkError.message}`);
+    }
+    
+    if (existingUser) {
+      return new Response(
+        JSON.stringify({ error: 'Username already exists' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
     // Using service role client to bypass RLS
     const { data, error } = await supabaseClient
       .from('admin_users')
