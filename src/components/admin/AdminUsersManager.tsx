@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/components/ui/use-toast";
-import { useAdminAuth } from "@/components/AdminAuthContext";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -27,11 +26,7 @@ type AdminFormData = {
 };
 
 export function AdminUsersManager() {
-  const [adminUsers, setAdminUsers] = useState<Array<{
-    id: string;
-    username: string;
-    created_at: string;
-  }>>([]);
+  const [adminUsers, setAdminUsers] = useState<AdminUser[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [resetPasswordDialogOpen, setResetPasswordDialogOpen] = useState(false);
@@ -94,7 +89,7 @@ export function AdminUsersManager() {
         .from("admin_users")
         .select("username")
         .eq("username", newAdminData.username)
-        .single();
+        .maybeSingle();
 
       if (existingUser) {
         toast({
@@ -105,17 +100,17 @@ export function AdminUsersManager() {
         return;
       }
 
-      // Create new admin user
-      const { error: createError } = await supabase
-        .from("admin_users")
-        .insert({
-          username: newAdminData.username,
-          password: newAdminData.password,
-          role: "admin",
-          user_id: crypto.randomUUID()
-        });
+      // Using the special RPC function to bypass RLS for admin creation
+      const { data, error: rpcError } = await supabase.rpc('create_admin_user', {
+        p_username: newAdminData.username,
+        p_password: newAdminData.password,
+        p_user_id: crypto.randomUUID(),
+        p_role: 'admin'
+      });
 
-      if (createError) throw createError;
+      if (rpcError) {
+        throw rpcError;
+      }
 
       toast({
         title: "تم بنجاح",
@@ -152,16 +147,13 @@ export function AdminUsersManager() {
       setIsProcessing(true);
       setError(null);
 
-      // تحديث كلمة المرور في قاعدة البيانات
-      const { error: updateError } = await supabase
-        .from("admin_users")
-        .update({ 
-          password: resetPasswordData.password,
-          updated_at: new Date().toISOString()
-        })
-        .eq("id", resetPasswordData.id);
+      // Using the special RPC function to bypass RLS for password reset
+      const { error: rpcError } = await supabase.rpc('update_admin_password', {
+        p_admin_id: resetPasswordData.id,
+        p_new_password: resetPasswordData.password
+      });
 
-      if (updateError) throw updateError;
+      if (rpcError) throw rpcError;
 
       toast({
         title: "تم بنجاح",
@@ -190,13 +182,13 @@ export function AdminUsersManager() {
 
     try {
       setError(null);
-      // حذف المشرف من جدول admin_users
-      const { error: deleteError } = await supabase
-        .from("admin_users")
-        .delete()
-        .eq("id", adminId);
+      
+      // Using the special RPC function to bypass RLS for admin deletion
+      const { error: rpcError } = await supabase.rpc('delete_admin_user', {
+        p_admin_id: adminId
+      });
 
-      if (deleteError) throw deleteError;
+      if (rpcError) throw rpcError;
       
       toast({
         title: "تم بنجاح",
