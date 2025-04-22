@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Textarea } from "@/components/ui/textarea";
+import { ImageUpload } from "./ImageUpload";
 
 type SoftwareProduct = {
   id?: number;
@@ -130,6 +131,14 @@ export function SoftwareProductDialog({
     }
   };
 
+  const handleImageUpload = (url: string) => {
+    setForm({ ...form, image_url: url });
+    toast({ 
+      title: "تم رفع الصورة", 
+      description: "تم إضافة رابط الصورة إلى النموذج" 
+    });
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent dir="rtl" className="max-w-2xl">
@@ -176,13 +185,29 @@ export function SoftwareProductDialog({
             />
           </div>
           <div>
-            <label className="font-medium block mb-1">رابط الصورة</label>
-            <Input
-              value={form.image_url}
-              onChange={(e) => setForm({ ...form, image_url: e.target.value })}
-              required
-              placeholder="رابط صورة البرنامج"
-            />
+            <label className="font-medium block mb-1">صورة البرنامج</label>
+            <div className="space-y-2">
+              <ImageUpload onUpload={handleImageUpload} label="رفع صورة للبرنامج" />
+              {form.image_url && (
+                <div className="mt-2 flex items-center gap-2">
+                  <img src={form.image_url} alt="معاينة الصورة" className="w-16 h-16 object-cover rounded" />
+                  <div className="flex-1">
+                    <Input
+                      value={form.image_url}
+                      onChange={(e) => setForm({ ...form, image_url: e.target.value })}
+                      placeholder="رابط صورة البرنامج"
+                    />
+                  </div>
+                </div>
+              )}
+              {!form.image_url && (
+                <Input
+                  value={form.image_url}
+                  onChange={(e) => setForm({ ...form, image_url: e.target.value })}
+                  placeholder="أو أدخل رابط صورة البرنامج يدوياً"
+                />
+              )}
+            </div>
           </div>
           <DialogFooter>
             <Button type="submit" disabled={isSaving}>
