@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useAdminAuth } from "@/components/AdminAuthContext";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -485,310 +485,315 @@ const AdminDashboard = () => {
   if (!isLoggedIn) return null;
 
   return (
-    <div className="min-h-screen bg-gray-50 font-tajawal">
-      <header className="flex items-center justify-between px-8 py-4 bg-gradient-to-r from-blue-900 to-blue-800 shadow-lg">
-        <h1 className="text-2xl font-bold text-white">
-          لوحة تحكم المسؤول
-        </h1>
-        <button
-          onClick={handleLogout}
-          className="bg-white/10 text-white px-4 py-2 rounded-lg font-tajawal hover:bg-white/20 transition-all flex items-center gap-2"
-        >
-          تسجيل خروج
-        </button>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+      <header className="relative z-10 px-8 py-6 bg-gradient-to-r from-blue-900 to-blue-800">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          <h1 className="text-3xl font-bold text-white font-tajawal tracking-wide">
+            لوحة تحكم المسؤول
+          </h1>
+          <button
+            onClick={handleLogout}
+            className="bg-white/10 text-white px-6 py-2.5 rounded-lg font-tajawal hover:bg-white/20 transition-all flex items-center gap-2 backdrop-blur-sm border border-white/10"
+          >
+            تسجيل خروج
+          </button>
+        </div>
       </header>
-      <main className="max-w-7xl mx-auto py-8 px-4">
+
+      <main className="max-w-7xl mx-auto py-8 px-4 relative z-0">
         <Tabs defaultValue="requests" className="w-full">
-          <TabsList className="flex justify-center mb-8 bg-white shadow-md rounded-xl border border-gray-100 p-1">
+          <TabsList className="flex justify-center mb-8 bg-white shadow-lg rounded-2xl border border-gray-100 p-2 backdrop-blur-sm sticky top-4 z-50">
             <TabsTrigger 
               value="requests" 
-              className="text-lg px-6 py-2 font-medium data-[state=active]:bg-blue-900 data-[state=active]:text-white rounded-lg transition-all"
+              className="text-lg px-6 py-3 font-medium data-[state=active]:bg-gradient-to-br data-[state=active]:from-blue-900 data-[state=active]:to-blue-800 data-[state=active]:text-white rounded-xl transition-all duration-300"
             >
               تذاكر الطلبات
             </TabsTrigger>
             <TabsTrigger 
               value="slides" 
-              className="text-lg px-6 py-2 font-medium data-[state=active]:bg-blue-900 data-[state=active]:text-white rounded-lg transition-all"
+              className="text-lg px-6 py-3 font-medium data-[state=active]:bg-gradient-to-br data-[state=active]:from-blue-900 data-[state=active]:to-blue-800 data-[state=active]:text-white rounded-xl transition-all duration-300"
             >
               السلايدات
             </TabsTrigger>
             <TabsTrigger 
               value="partners" 
-              className="text-lg px-6 py-2 font-medium data-[state=active]:bg-blue-900 data-[state=active]:text-white rounded-lg transition-all"
+              className="text-lg px-6 py-3 font-medium data-[state=active]:bg-gradient-to-br data-[state=active]:from-blue-900 data-[state=active]:to-blue-800 data-[state=active]:text-white rounded-xl transition-all duration-300"
             >
               شركاء النجاح
             </TabsTrigger>
             <TabsTrigger 
               value="software" 
-              className="text-lg px-6 py-2 font-medium data-[state=active]:bg-blue-900 data-[state=active]:text-white rounded-lg transition-all"
+              className="text-lg px-6 py-3 font-medium data-[state=active]:bg-gradient-to-br data-[state=active]:from-blue-900 data-[state=active]:to-blue-800 data-[state=active]:text-white rounded-xl transition-all duration-300"
             >
               البرمجيات الجاهزة
             </TabsTrigger>
             <TabsTrigger 
               value="about" 
-              className="text-lg px-6 py-2 font-medium data-[state=active]:bg-blue-900 data-[state=active]:text-white rounded-lg transition-all"
+              className="text-lg px-6 py-3 font-medium data-[state=active]:bg-gradient-to-br data-[state=active]:from-blue-900 data-[state=active]:to-blue-800 data-[state=active]:text-white rounded-xl transition-all duration-300"
             >
               من نحن
             </TabsTrigger>
             <TabsTrigger 
               value="contact" 
-              className="text-lg px-6 py-2 font-medium data-[state=active]:bg-blue-900 data-[state=active]:text-white rounded-lg transition-all"
+              className="text-lg px-6 py-3 font-medium data-[state=active]:bg-gradient-to-br data-[state=active]:from-blue-900 data-[state=active]:to-blue-800 data-[state=active]:text-white rounded-xl transition-all duration-300"
             >
               التواصل معنا
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="requests">
-            <section>
-              <h2 className="text-xl font-semibold mb-4 text-trndsky-darkblue">
-                طلبات برمجة بأفكارك (جديدة/مفتوحة)
-              </h2>
-              {loading ? (
-                <div className="text-center py-8 text-trndsky-blue">
-                  جارٍ التحميل...
-                </div>
-              ) : requests.length === 0 ? (
-                <div className="text-center py-4 text-gray-500">
-                  لا توجد طلبات جديدة أو مفتوحة.
-                </div>
-              ) : (
-                <div className="overflow-x-auto">
-                  <table className="w-full text-base text-right border bg-white rounded-xl overflow-hidden">
-                    <thead>
-                      <tr className="bg-trndsky-teal/10">
-                        <th className="px-4 py-2">الاسم</th>
-                        <th className="px-4 py-2">البريد الإلكتروني</th>
-                        <th className="px-4 py-2">رقم الهاتف</th>
-                        <th className="px-4 py-2">العنوان</th>
-                        <th className="px-4 py-2">الشرح</th>
-                        <th className="px-4 py-2">الحالة</th>
-                        <th className="px-4 py-2">تاريخ الطلب</th>
-                        <th className="px-4 py-2">إجراءات</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {requests.map((r) => (
-                        <tr key={r.id} className="border-t hover:bg-gray-50">
-                          <td className="px-4 py-2">{r.name}</td>
-                          <td className="px-4 py-2">{r.email || "-"}</td>
-                          <td className="px-4 py-2">{r.phone || "-"}</td>
-                          <td className="px-4 py-2">{r.title}</td>
-                          <td className="px-4 py-2 max-w-[300px]">{r.description}</td>
-                          <td className="px-4 py-2">
-                            <span
-                              className={`inline-block rounded px-2 py-1 text-xs font-semibold ${statusColors[r.status] || ""
-                                }`}
-                            >
-                              {statusLabels[r.status] || r.status}
-                            </span>
-                          </td>
-                          <td className="px-4 py-2">
-                            {new Date(r.created_at).toLocaleString("ar-EG")}
-                          </td>
-                          <td className="px-4 py-2 flex items-center gap-1">
-                            <Dialog>
-                              <DialogTrigger asChild>
-                                <Button
-                                  variant="outline"
-                                  size="icon"
-                                  title="استعراض كامل التذكرة"
-                                  onClick={() => setViewedRequest(r)}
-                                >
-                                  <Eye />
-                                </Button>
-                              </DialogTrigger>
-                              <DialogContent dir="rtl">
-                                <DialogHeader>
-                                  <DialogTitle>تفاصيل التذكرة</DialogTitle>
-                                  <DialogDescription>
-                                    معلومات الطلب بشكل كامل
-                                  </DialogDescription>
-                                </DialogHeader>
-                                {viewedRequest && viewedRequest.id === r.id && (
-                                  <div className="text-base space-y-4 py-4">
-                                    <div>
-                                      <span className="font-medium">الاسم: </span>
-                                      {viewedRequest.name}
-                                    </div>
-                                    <div>
-                                      <span className="font-medium">البريد الإلكتروني: </span>
-                                      {viewedRequest.email || "-"}
-                                    </div>
-                                    <div>
-                                      <span className="font-medium">رقم الهاتف: </span>
-                                      {viewedRequest.phone || "-"}
-                                    </div>
-                                    <div>
-                                      <span className="font-medium">العنوان: </span>
-                                      {viewedRequest.title}
-                                    </div>
-                                    <div>
-                                      <span className="font-medium">الشرح: </span>
-                                      {viewedRequest.description}
-                                    </div>
-                                    <div>
-                                      <span className="font-medium">الحالة: </span>
-                                      <span className={`rounded px-2 py-1 text-xs font-semibold ${statusColors[viewedRequest.status] || ""
-                                        }`}>
-                                        {statusLabels[viewedRequest.status] || viewedRequest.status}
-                                      </span>
-                                    </div>
-                                    <div>
-                                      <span className="font-medium">تاريخ الطلب: </span>
-                                      {new Date(viewedRequest.created_at).toLocaleString("ar-EG")}
-                                    </div>
-                                  </div>
-                                )}
-                                <DialogFooter>
-                                  <DialogClose asChild>
-                                    <Button variant="secondary">إغلاق</Button>
-                                  </DialogClose>
-                                </DialogFooter>
-                              </DialogContent>
-                            </Dialog>
-                            <button
-                              disabled={r.status === "open"}
-                              className="px-2 py-1 rounded bg-green-100 text-green-800 hover:bg-green-200 transition-all disabled:opacity-50"
-                              onClick={() => updateStatus(r.id, "open")}
-                              title="تحويل لمفتوح"
-                            >
-                              <FolderOpen size={16} />
-                            </button>
-                            <button
-                              disabled={r.status === "closed"}
-                              className="px-2 py-1 rounded bg-red-100 text-red-800 hover:bg-red-200 transition-all disabled:opacity-50"
-                              onClick={() => updateStatus(r.id, "closed")}
-                              title="إغلاق"
-                            >
-                              <X size={16} />
-                            </button>
-                          </td>
+            <div className="space-y-8">
+              <section className="bg-white rounded-2xl shadow-lg p-8 backdrop-blur-sm border border-gray-100">
+                <h2 className="text-2xl font-semibold mb-6 text-blue-900 border-b pb-4">
+                  طلبات برمجة بأفكارك (جديدة/مفتوحة)
+                </h2>
+                {loading ? (
+                  <div className="text-center py-8 text-trndsky-blue">
+                    جارٍ التحميل...
+                  </div>
+                ) : requests.length === 0 ? (
+                  <div className="text-center py-4 text-gray-500">
+                    لا توجد طلبات جديدة أو مفتوحة.
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-base text-right border bg-white rounded-xl overflow-hidden">
+                      <thead>
+                        <tr className="bg-trndsky-teal/10">
+                          <th className="px-4 py-2">الاسم</th>
+                          <th className="px-4 py-2">البريد الإلكتروني</th>
+                          <th className="px-4 py-2">رقم الهاتف</th>
+                          <th className="px-4 py-2">العنوان</th>
+                          <th className="px-4 py-2">الشرح</th>
+                          <th className="px-4 py-2">الحالة</th>
+                          <th className="px-4 py-2">تاريخ الطلب</th>
+                          <th className="px-4 py-2">إجراءات</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-            </section>
-            <section className="mt-12">
-              <h2 className="text-xl font-semibold mb-4 text-trndsky-darkblue">
-                طلبات برمجيات جاهزة (جديدة/مفتوحة)
-              </h2>
-              {loading ? (
-                <div className="text-center py-8 text-trndsky-blue">
-                  جارٍ التحميل...
-                </div>
-              ) : orders.length === 0 ? (
-                <div className="text-center py-4 text-gray-500">
-                  لا توجد طلبات جديدة أو مفتوحة.
-                </div>
-              ) : (
-                <div className="overflow-x-auto">
-                  <table className="w-full text-base text-right border bg-white rounded-xl overflow-hidden">
-                    <thead>
-                      <tr className="bg-trndsky-teal/10">
-                        <th className="px-4 py-2">اسم المنتج</th>
-                        <th className="px-4 py-2">اسم الشركة / العميل</th>
-                        <th className="px-4 py-2">واتساب</th>
-                        <th className="px-4 py-2">الحالة</th>
-                        <th className="px-4 py-2">تاريخ الطلب</th>
-                        <th className="px-4 py-2">إجراءات</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {orders.map((o) => (
-                        <tr key={o.id} className="border-t hover:bg-gray-50">
-                          <td className="px-4 py-2">{productTitlesMap[o.software_id] || o.software_id}</td>
-                          <td className="px-4 py-2">{o.company_name}</td>
-                          <td className="px-4 py-2">{o.whatsapp}</td>
-                          <td className="px-4 py-2">
-                            <span className={`inline-block rounded px-2 py-1 text-xs font-semibold ${statusColors[o.status] || ""}`}>
-                              {statusLabels[o.status] || o.status}
-                            </span>
-                          </td>
-                          <td className="px-4 py-2">
-                            {new Date(o.created_at).toLocaleString("ar-EG")}
-                          </td>
-                          <td className="px-4 py-2 flex items-center gap-1">
-                            <Dialog>
-                              <DialogTrigger asChild>
-                                <Button
-                                  variant="outline"
-                                  size="icon"
-                                  title="استعراض كامل الطلب"
-                                  onClick={() => setViewedOrder(o)}
-                                >
-                                  <Eye />
-                                </Button>
-                              </DialogTrigger>
-                              <DialogContent dir="rtl">
-                                <DialogHeader>
-                                  <DialogTitle>تفاصيل الطلب البرمجي الجاهز</DialogTitle>
-                                  <DialogDescription>
-                                    جميع معلومات الطلب
-                                  </DialogDescription>
-                                </DialogHeader>
-                                {viewedOrder && viewedOrder.id === o.id && (
-                                  <div className="text-base space-y-4 py-4">
-                                    <div>
-                                      <span className="font-medium">اسم المنتج: </span>
-                                      {productTitlesMap[viewedOrder.software_id] || viewedOrder.software_id}
+                      </thead>
+                      <tbody>
+                        {requests.map((r) => (
+                          <tr key={r.id} className="border-t hover:bg-gray-50">
+                            <td className="px-4 py-2">{r.name}</td>
+                            <td className="px-4 py-2">{r.email || "-"}</td>
+                            <td className="px-4 py-2">{r.phone || "-"}</td>
+                            <td className="px-4 py-2">{r.title}</td>
+                            <td className="px-4 py-2 max-w-[300px]">{r.description}</td>
+                            <td className="px-4 py-2">
+                              <span
+                                className={`inline-block rounded px-2 py-1 text-xs font-semibold ${statusColors[r.status] || ""
+                                  }`}
+                              >
+                                {statusLabels[r.status] || r.status}
+                              </span>
+                            </td>
+                            <td className="px-4 py-2">
+                              {new Date(r.created_at).toLocaleString("ar-EG")}
+                            </td>
+                            <td className="px-4 py-2 flex items-center gap-1">
+                              <Dialog>
+                                <DialogTrigger asChild>
+                                  <Button
+                                    variant="outline"
+                                    size="icon"
+                                    title="استعراض كامل التذكرة"
+                                    onClick={() => setViewedRequest(r)}
+                                  >
+                                    <Eye />
+                                  </Button>
+                                </DialogTrigger>
+                                <DialogContent dir="rtl">
+                                  <DialogHeader>
+                                    <DialogTitle>تفاصيل التذكرة</DialogTitle>
+                                    <DialogDescription>
+                                      معلومات الطلب بشكل كامل
+                                    </DialogDescription>
+                                  </DialogHeader>
+                                  {viewedRequest && viewedRequest.id === r.id && (
+                                    <div className="text-base space-y-4 py-4">
+                                      <div>
+                                        <span className="font-medium">الاسم: </span>
+                                        {viewedRequest.name}
+                                      </div>
+                                      <div>
+                                        <span className="font-medium">البريد الإلكتروني: </span>
+                                        {viewedRequest.email || "-"}
+                                      </div>
+                                      <div>
+                                        <span className="font-medium">رقم الهاتف: </span>
+                                        {viewedRequest.phone || "-"}
+                                      </div>
+                                      <div>
+                                        <span className="font-medium">العنوان: </span>
+                                        {viewedRequest.title}
+                                      </div>
+                                      <div>
+                                        <span className="font-medium">الشرح: </span>
+                                        {viewedRequest.description}
+                                      </div>
+                                      <div>
+                                        <span className="font-medium">الحالة: </span>
+                                        <span className={`rounded px-2 py-1 text-xs font-semibold ${statusColors[viewedRequest.status] || ""
+                                          }`}>
+                                          {statusLabels[viewedRequest.status] || viewedRequest.status}
+                                        </span>
+                                      </div>
+                                      <div>
+                                        <span className="font-medium">تاريخ الطلب: </span>
+                                        {new Date(viewedRequest.created_at).toLocaleString("ar-EG")}
+                                      </div>
                                     </div>
-                                    <div>
-                                      <span className="font-medium">اسم الشركة / العميل: </span>
-                                      {viewedOrder.company_name}
-                                    </div>
-                                    <div>
-                                      <span className="font-medium">رقم الواتساب: </span>
-                                      {viewedOrder.whatsapp}
-                                    </div>
-                                    <div>
-                                      <span className="font-medium">الحالة: </span>
-                                      <span className={`rounded px-2 py-1 text-xs font-semibold ${statusColors[viewedOrder.status] || ""}`}>
-                                        {statusLabels[viewedOrder.status] || viewedOrder.status}
-                                      </span>
-                                    </div>
-                                    <div>
-                                      <span className="font-medium">تاريخ الطلب: </span>
-                                      {new Date(viewedOrder.created_at).toLocaleString("ar-EG")}
-                                    </div>
-                                  </div>
-                                )}
-                                <DialogFooter>
-                                  <DialogClose asChild>
-                                    <Button variant="secondary">إغلاق</Button>
-                                  </DialogClose>
-                                </DialogFooter>
-                              </DialogContent>
-                            </Dialog>
-                            <button
-                              disabled={o.status === "open"}
-                              className="px-2 py-1 rounded bg-green-100 text-green-800 hover:bg-green-200 transition-all disabled:opacity-50"
-                              onClick={() => updateOrderStatus(o.id, "open")}
-                              title="تحويل لمفتوح"
-                            >
-                              <FolderOpen size={16} />
-                            </button>
-                            <button
-                              disabled={o.status === "closed"}
-                              className="px-2 py-1 rounded bg-red-100 text-red-800 hover:bg-red-200 transition-all disabled:opacity-50"
-                              onClick={() => updateOrderStatus(o.id, "closed")}
-                              title="إغلاق"
-                            >
-                              <X size={16} />
-                            </button>
-                          </td>
+                                  )}
+                                  <DialogFooter>
+                                    <DialogClose asChild>
+                                      <Button variant="secondary">إغلاق</Button>
+                                    </DialogClose>
+                                  </DialogFooter>
+                                </DialogContent>
+                              </Dialog>
+                              <button
+                                disabled={r.status === "open"}
+                                className="px-2 py-1 rounded bg-green-100 text-green-800 hover:bg-green-200 transition-all disabled:opacity-50"
+                                onClick={() => updateStatus(r.id, "open")}
+                                title="تحويل لمفتوح"
+                              >
+                                <FolderOpen size={16} />
+                              </button>
+                              <button
+                                disabled={r.status === "closed"}
+                                className="px-2 py-1 rounded bg-red-100 text-red-800 hover:bg-red-200 transition-all disabled:opacity-50"
+                                onClick={() => updateStatus(r.id, "closed")}
+                                title="إغلاق"
+                              >
+                                <X size={16} />
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </section>
+              <section className="bg-white rounded-2xl shadow-lg p-8 backdrop-blur-sm border border-gray-100">
+                <h2 className="text-2xl font-semibold mb-6 text-blue-900 border-b pb-4">
+                  طلبات برمجيات جاهزة (جديدة/مفتوحة)
+                </h2>
+                {loading ? (
+                  <div className="text-center py-8 text-trndsky-blue">
+                    جارٍ التحميل...
+                  </div>
+                ) : orders.length === 0 ? (
+                  <div className="text-center py-4 text-gray-500">
+                    لا توجد طلبات جديدة أو مفتوحة.
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-base text-right border bg-white rounded-xl overflow-hidden">
+                      <thead>
+                        <tr className="bg-trndsky-teal/10">
+                          <th className="px-4 py-2">اسم المنتج</th>
+                          <th className="px-4 py-2">اسم الشركة / العميل</th>
+                          <th className="px-4 py-2">واتساب</th>
+                          <th className="px-4 py-2">الحالة</th>
+                          <th className="px-4 py-2">تاريخ الطلب</th>
+                          <th className="px-4 py-2">إجراءات</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-            </section>
+                      </thead>
+                      <tbody>
+                        {orders.map((o) => (
+                          <tr key={o.id} className="border-t hover:bg-gray-50">
+                            <td className="px-4 py-2">{productTitlesMap[o.software_id] || o.software_id}</td>
+                            <td className="px-4 py-2">{o.company_name}</td>
+                            <td className="px-4 py-2">{o.whatsapp}</td>
+                            <td className="px-4 py-2">
+                              <span className={`inline-block rounded px-2 py-1 text-xs font-semibold ${statusColors[o.status] || ""}`}>
+                                {statusLabels[o.status] || o.status}
+                              </span>
+                            </td>
+                            <td className="px-4 py-2">
+                              {new Date(o.created_at).toLocaleString("ar-EG")}
+                            </td>
+                            <td className="px-4 py-2 flex items-center gap-1">
+                              <Dialog>
+                                <DialogTrigger asChild>
+                                  <Button
+                                    variant="outline"
+                                    size="icon"
+                                    title="استعراض كامل الطلب"
+                                    onClick={() => setViewedOrder(o)}
+                                  >
+                                    <Eye />
+                                  </Button>
+                                </DialogTrigger>
+                                <DialogContent dir="rtl">
+                                  <DialogHeader>
+                                    <DialogTitle>تفاصيل الطلب البرمجي الجاهز</DialogTitle>
+                                    <DialogDescription>
+                                      جميع معلومات الطلب
+                                    </DialogDescription>
+                                  </DialogHeader>
+                                  {viewedOrder && viewedOrder.id === o.id && (
+                                    <div className="text-base space-y-4 py-4">
+                                      <div>
+                                        <span className="font-medium">اسم المنتج: </span>
+                                        {productTitlesMap[viewedOrder.software_id] || viewedOrder.software_id}
+                                      </div>
+                                      <div>
+                                        <span className="font-medium">اسم الشركة / العميل: </span>
+                                        {viewedOrder.company_name}
+                                      </div>
+                                      <div>
+                                        <span className="font-medium">رقم الواتساب: </span>
+                                        {viewedOrder.whatsapp}
+                                      </div>
+                                      <div>
+                                        <span className="font-medium">الحالة: </span>
+                                        <span className={`rounded px-2 py-1 text-xs font-semibold ${statusColors[viewedOrder.status] || ""}`}>
+                                          {statusLabels[viewedOrder.status] || viewedOrder.status}
+                                        </span>
+                                      </div>
+                                      <div>
+                                        <span className="font-medium">تاريخ الطلب: </span>
+                                        {new Date(viewedOrder.created_at).toLocaleString("ar-EG")}
+                                      </div>
+                                    </div>
+                                  )}
+                                  <DialogFooter>
+                                    <DialogClose asChild>
+                                      <Button variant="secondary">إغلاق</Button>
+                                    </DialogClose>
+                                  </DialogFooter>
+                                </DialogContent>
+                              </Dialog>
+                              <button
+                                disabled={o.status === "open"}
+                                className="px-2 py-1 rounded bg-green-100 text-green-800 hover:bg-green-200 transition-all disabled:opacity-50"
+                                onClick={() => updateOrderStatus(o.id, "open")}
+                                title="تحويل لمفتوح"
+                              >
+                                <FolderOpen size={16} />
+                              </button>
+                              <button
+                                disabled={o.status === "closed"}
+                                className="px-2 py-1 rounded bg-red-100 text-red-800 hover:bg-red-200 transition-all disabled:opacity-50"
+                                onClick={() => updateOrderStatus(o.id, "closed")}
+                                title="إغلاق"
+                              >
+                                <X size={16} />
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </section>
+            </div>
           </TabsContent>
 
           <TabsContent value="slides">
-            <section className="bg-white rounded-2xl shadow-sm p-6">
+            <section className="bg-white rounded-2xl shadow-lg p-8 backdrop-blur-sm border border-gray-100">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-semibold text-trndsky-darkblue">
                   إدارة السلايدات الرئيسية
@@ -911,7 +916,7 @@ const AdminDashboard = () => {
           </TabsContent>
 
           <TabsContent value="partners">
-            <section className="bg-white rounded-2xl shadow-sm p-6">
+            <section className="bg-white rounded-2xl shadow-lg p-8 backdrop-blur-sm border border-gray-100">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-semibold text-trndsky-darkblue">
                   إدارة شركاء النجاح
@@ -1049,7 +1054,7 @@ const AdminDashboard = () => {
           </TabsContent>
 
           <TabsContent value="software">
-            <section className="bg-white rounded-2xl shadow-sm p-6">
+            <section className="bg-white rounded-2xl shadow-lg p-8 backdrop-blur-sm border border-gray-100">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-semibold text-trndsky-darkblue">
                   إدارة البرمجيات الجاهزة
@@ -1123,7 +1128,7 @@ const AdminDashboard = () => {
           </TabsContent>
 
           <TabsContent value="about">
-            <section className="bg-white rounded-2xl shadow-sm p-6">
+            <section className="bg-white rounded-2xl shadow-lg p-8 backdrop-blur-sm border border-gray-100">
               <h2 className="text-xl font-semibold mb-6 text-trndsky-darkblue">
                 إدارة محتوى صفحة "من نحن"
               </h2>
@@ -1132,7 +1137,7 @@ const AdminDashboard = () => {
           </TabsContent>
 
           <TabsContent value="contact">
-            <section className="bg-white rounded-2xl shadow-sm p-6">
+            <section className="bg-white rounded-2xl shadow-lg p-8 backdrop-blur-sm border border-gray-100">
               <h2 className="text-xl font-semibold mb-6 text-trndsky-darkblue">
                 إدارة بيانات التواصل
               </h2>
