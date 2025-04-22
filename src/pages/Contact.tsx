@@ -11,7 +11,7 @@ const Contact = () => {
     <div className="min-h-screen flex flex-col">
       <Navbar />
       
-      <div className="bg-trndsky-blue text-white py-16">
+      <div className="pt-32 pb-16 bg-trndsky-darkblue text-white">
         <div className="container mx-auto px-4">
           <h1 className="text-4xl md:text-5xl font-bold text-center mb-6 font-tajawal">تواصل معنا</h1>
           <p className="text-xl text-center max-w-3xl mx-auto font-tajawal">
