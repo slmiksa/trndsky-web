@@ -28,9 +28,10 @@ type AdminFormData = {
 };
 
 // Define the shape of the user object returned from auth.admin.listUsers()
+// Making email optional to match the actual Supabase User type
 type SupabaseUser = {
   id: string;
-  email: string | null;
+  email?: string | null;
   created_at: string;
   // Add other properties you might need, but these are the minimum required
 };
