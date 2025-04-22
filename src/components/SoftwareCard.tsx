@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Send } from 'lucide-react';
 import { supabase } from "@/integrations/supabase/client";
@@ -171,29 +172,33 @@ const SoftwareCard = ({ title, description, image, id, price }: SoftwareCardProp
 
 // Featured Software Section Component 
 export const FeaturedSoftware = () => {
-  const softwareItems = [
-    {
-      id: 1,
-      title: "نظام إدارة المبيعات",
-      description: "نظام متكامل لإدارة المبيعات والمخزون مع تقارير تحليلية متقدمة وواجهة سهلة الاستخدام",
-      image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
-      price: "٣,٩٩٩ ر.س",
-    },
-    {
-      id: 2,
-      title: "منصة التجارة الإلكترونية",
-      description: "منصة احترافية للتجارة الإلكترونية مع دعم للدفع الإلكتروني وإدارة المنتجات والعملاء",
-      image: "https://images.unsplash.com/photo-1563013544-824ae1b704d3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
-      price: "٥,٥٠٠ ر.س",
-    },
-    {
-      id: 3,
-      title: "تطبيق إدارة المشاريع",
-      description: "تطبيق لإدارة المشاريع وتتبع المهام والتعاون بين فرق العمل مع تقارير متقدمة",
-      image: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
-      price: "٤,٢٠٠ ر.س",
-    },
-  ];
+  const [softwareItems, setSoftwareItems] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useState(() => {
+    fetchFeaturedSoftware();
+  });
+
+  const fetchFeaturedSoftware = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('software_products')
+        .select('*')
+        .order('id', { ascending: true })
+        .limit(3);
+
+      if (error) {
+        console.error('Error fetching featured software products:', error);
+        return;
+      }
+
+      setSoftwareItems(data || []);
+    } catch (error) {
+      console.error('Error:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <section className="section-padding bg-white">
@@ -205,18 +210,28 @@ export const FeaturedSoftware = () => {
           مجموعة من الحلول البرمجية الجاهزة التي يمكن تخصيصها لتناسب احتياجات عملك
         </p>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-9">
-          {softwareItems.map((item) => (
-            <SoftwareCard
-              key={item.id}
-              id={item.id}
-              title={item.title}
-              description={item.description}
-              image={item.image}
-              price={item.price}
-            />
-          ))}
-        </div>
+        {loading ? (
+          <div className="text-center py-8">
+            <p className="text-xl text-trndsky-blue">جاري تحميل البرمجيات...</p>
+          </div>
+        ) : softwareItems.length === 0 ? (
+          <div className="text-center py-8">
+            <p className="text-gray-500">لا توجد برمجيات متاحة حالياً</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-9">
+            {softwareItems.map((item) => (
+              <SoftwareCard
+                key={item.id}
+                id={item.id}
+                title={item.title}
+                description={item.description}
+                image={item.image_url}
+                price={`${item.price.toLocaleString()} ر.س`}
+              />
+            ))}
+          </div>
+        )}
         
         <div className="mt-12 text-center">
           <a href="/software" className="btn-primary inline-block font-tajawal rounded-full shadow-xl hover:bg-trndsky-teal hover:text-white text-lg px-10 py-3 transition-all">عرض جميع البرمجيات</a>
