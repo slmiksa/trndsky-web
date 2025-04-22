@@ -49,11 +49,18 @@ export function AboutContentManager() {
 
       if (error) throw error;
       
-      // Parse JSON strings to objects if needed
+      // Parse JSON strings to properly typed objects
       const parsedData: AboutContent = {
         ...data,
-        stats: Array.isArray(data.stats) ? data.stats : [],
-        team_members: Array.isArray(data.team_members) ? data.team_members : []
+        stats: Array.isArray(data.stats) ? data.stats.map((stat: any) => ({
+          number: stat.number || "",
+          label: stat.label || ""
+        })) : [],
+        team_members: Array.isArray(data.team_members) ? data.team_members.map((member: any) => ({
+          name: member.name || "",
+          title: member.title || "",
+          image: member.image || ""
+        })) : []
       };
       
       setContent(parsedData);
@@ -150,24 +157,24 @@ export function AboutContentManager() {
           <div>
             <label className="block font-medium mb-1">العنوان الرئيسي</label>
             <Input
-              value={content.title}
-              onChange={(e) => setContent({ ...content, title: e.target.value })}
+              value={content?.title || ""}
+              onChange={(e) => content && setContent({ ...content, title: e.target.value })}
             />
           </div>
 
           <div>
             <label className="block font-medium mb-1">العنوان الفرعي</label>
             <Input
-              value={content.subtitle}
-              onChange={(e) => setContent({ ...content, subtitle: e.target.value })}
+              value={content?.subtitle || ""}
+              onChange={(e) => content && setContent({ ...content, subtitle: e.target.value })}
             />
           </div>
 
           <div>
             <label className="block font-medium mb-1">الرؤية</label>
             <Textarea
-              value={content.vision || ""}
-              onChange={(e) => setContent({ ...content, vision: e.target.value })}
+              value={content?.vision || ""}
+              onChange={(e) => content && setContent({ ...content, vision: e.target.value })}
               rows={4}
             />
           </div>
@@ -175,8 +182,8 @@ export function AboutContentManager() {
           <div>
             <label className="block font-medium mb-1">الرسالة</label>
             <Textarea
-              value={content.mission || ""}
-              onChange={(e) => setContent({ ...content, mission: e.target.value })}
+              value={content?.mission || ""}
+              onChange={(e) => content && setContent({ ...content, mission: e.target.value })}
               rows={4}
             />
           </div>
@@ -184,8 +191,8 @@ export function AboutContentManager() {
           <div>
             <label className="block font-medium mb-1">صورة الغلاف</label>
             <Input
-              value={content.cover_image || ""}
-              onChange={(e) => setContent({ ...content, cover_image: e.target.value })}
+              value={content?.cover_image || ""}
+              onChange={(e) => content && setContent({ ...content, cover_image: e.target.value })}
               placeholder="رابط الصورة"
             />
           </div>
@@ -196,7 +203,7 @@ export function AboutContentManager() {
         <CardContent className="pt-6">
           <h3 className="text-xl font-semibold mb-4">الإحصائيات</h3>
           <div className="grid gap-4">
-            {content.stats.map((stat, index) => (
+            {content?.stats?.map((stat, index) => (
               <div key={index} className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block font-medium mb-1">الرقم</label>
@@ -223,13 +230,13 @@ export function AboutContentManager() {
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-xl font-semibold">أعضاء الفريق</h3>
             <Input
-              value={content.team_title}
-              onChange={(e) => setContent({ ...content, team_title: e.target.value })}
+              value={content?.team_title || ""}
+              onChange={(e) => content && setContent({ ...content, team_title: e.target.value })}
               className="max-w-xs"
             />
           </div>
           <div className="grid gap-6">
-            {content.team_members.map((member, index) => (
+            {content?.team_members?.map((member, index) => (
               <div key={index} className="grid md:grid-cols-3 gap-4 items-start">
                 <div>
                   <label className="block font-medium mb-1">الاسم</label>
