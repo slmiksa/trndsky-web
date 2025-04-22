@@ -101,7 +101,7 @@ export function AdminUsersManager() {
         return;
       }
 
-      // Using the special RPC function to bypass RLS for admin creation
+      // Using the special Edge function to bypass RLS for admin creation
       const { data, error: rpcError } = await supabase.functions.invoke('create_admin_user', {
         body: {
           username: newAdminData.username,
@@ -150,7 +150,7 @@ export function AdminUsersManager() {
       setIsProcessing(true);
       setError(null);
 
-      // Using the special RPC function to bypass RLS for password reset
+      // Using the special Edge function to bypass RLS for password reset
       const { error: rpcError } = await supabase.functions.invoke('update_admin_password', {
         body: {
           admin_id: resetPasswordData.id,
@@ -188,7 +188,7 @@ export function AdminUsersManager() {
     try {
       setError(null);
       
-      // Using the special RPC function to bypass RLS for admin deletion
+      // Using the special Edge function to bypass RLS for admin deletion
       const { error: rpcError } = await supabase.functions.invoke('delete_admin_user', {
         body: {
           admin_id: adminId
