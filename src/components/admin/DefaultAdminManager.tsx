@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -7,10 +7,16 @@ import { toast } from "@/components/ui/use-toast";
 import { useAdminAuth } from "@/components/AdminAuthContext";
 
 export function DefaultAdminManager() {
-  const [username, setUsername] = useState("");
+  const [username, setUsername] = useState("admin");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const { updateDefaultAdmin } = useAdminAuth();
+  
+  useEffect(() => {
+    // Load current values from localStorage or use defaults
+    const storedUsername = localStorage.getItem("default-admin-username") || "admin";
+    setUsername(storedUsername);
+  }, []);
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,7 +38,6 @@ export function DefaultAdminManager() {
       });
       
       // Reset form
-      setUsername("");
       setPassword("");
     } catch (error) {
       toast({

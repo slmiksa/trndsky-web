@@ -18,14 +18,15 @@ export function useAdminAuth() {
   return ctx;
 }
 
+// Setting the default admin credentials as requested
 const DEFAULT_ADMIN = {
   username: "admin",
-  password: "admin123",
+  password: "Salemss1412",
 };
 
 const getDefaultAdmin = () => ({
   username: localStorage.getItem("default-admin-username") || "admin",
-  password: localStorage.getItem("default-admin-password") || "admin123",
+  password: localStorage.getItem("default-admin-password") || "Salemss1412",
 });
 
 export function AdminAuthProvider({ children }: { children: ReactNode }) {
