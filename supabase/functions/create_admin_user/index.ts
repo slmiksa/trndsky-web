@@ -47,21 +47,47 @@ serve(async (req) => {
       )
     }
 
-    // Using direct SQL query with service role to bypass any RLS issues
-    const { data, error } = await supabaseClient.rpc('create_admin_user', {
+    // First insert a dummy user in auth.users to satisfy the foreign key constraint
+    // Note: This is a workaround for the foreign key constraint - we could also
+    // modify the database schema to remove this constraint if desired
+    const { data: authUser, error: authError } = await supabaseClient.auth.admin.createUser({
+      email: `${username}_${Date.now()}@example.com`, // Using timestamp to ensure uniqueness
+      password: password,
+      email_confirm: true
+    });
+
+    if (authError) {
+      console.error("Error creating auth user:", authError);
+      return new Response(
+        JSON.stringify({ error: `Could not create user: ${authError.message}` }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Now use the real auth user ID for admin_users table
+    const realUserId = authUser.user.id;
+
+    // Create the admin user with the auth user ID
+    const { data: adminUser, error: adminError } = await supabaseClient.rpc('create_admin_user', {
       p_username: username,
       p_password: password,
-      p_user_id: user_id,
+      p_user_id: realUserId,
       p_role: role
     });
 
-    if (error) {
-      console.error("Database insert error:", error);
-      throw error;
+    if (adminError) {
+      console.error("Database insert error:", adminError);
+      // Try to clean up the auth user if admin creation failed
+      try {
+        await supabaseClient.auth.admin.deleteUser(realUserId);
+      } catch (cleanupError) {
+        console.error("Error cleaning up auth user:", cleanupError);
+      }
+      throw adminError;
     }
 
     return new Response(
-      JSON.stringify({ success: true, data }),
+      JSON.stringify({ success: true, data: adminUser }),
       { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )
   } catch (error) {
