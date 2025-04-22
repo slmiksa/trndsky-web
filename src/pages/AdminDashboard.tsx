@@ -712,8 +712,8 @@ const AdminDashboard = () => {
                                 {viewedOrder && viewedOrder.id === o.id && (
                                   <div className="text-base space-y-4 py-4">
                                     <div>
-                                      <span className="font-medium">رقم المنتج: </span>
-                                      {viewedOrder.software_id}
+                                      <span className="font-medium">اسم المنتج: </span>
+                                      {productTitlesMap[viewedOrder.software_id] || viewedOrder.software_id}
                                     </div>
                                     <div>
                                       <span className="font-medium">اسم الشركة / العميل: </span>
@@ -841,4 +841,3 @@ const AdminDashboard = () => {
                       onChange={handleSlideFormChange}
                       required
                       className="input border px-3 py-2 w-full rounded"
-                      placeholder="عنوان السلايد
