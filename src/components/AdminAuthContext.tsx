@@ -8,7 +8,7 @@ interface AdminAuthContextType {
   logout: () => void;
   checkAuth: () => Promise<boolean>;
   supabaseAuth: {
-    signIn: (email: string, password: string) => Promise<boolean>;
+    signIn: (username: string, password: string) => Promise<boolean>;
     signOut: () => Promise<void>;
   };
 }
@@ -69,8 +69,11 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
     return false;
   };
 
-  const signIn = async (email: string, password: string) => {
+  const signIn = async (username: string, password: string) => {
     try {
+      // سنستخدم اسم المستخدم كبريد إلكتروني مع نطاق وهمي
+      const email = `${username}@admin.trndsky.com`;
+      
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password

@@ -18,12 +18,12 @@ import {
 
 type AdminUser = {
   id: string;
-  email: string;
+  username: string;
   created_at: string;
 };
 
 type AdminFormData = {
-  email: string;
+  username: string;
   password: string;
 };
 
@@ -32,6 +32,9 @@ type AdminFormData = {
 type SupabaseUser = {
   id: string;
   email?: string | null;
+  user_metadata?: {
+    username?: string;
+  };
   created_at: string;
   // Add other properties you might need, but these are the minimum required
 };
@@ -41,8 +44,8 @@ export function AdminUsersManager() {
   const [isLoading, setIsLoading] = useState(true);
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [resetPasswordDialogOpen, setResetPasswordDialogOpen] = useState(false);
-  const [newAdminData, setNewAdminData] = useState<AdminFormData>({ email: "", password: "" });
-  const [resetPasswordData, setResetPasswordData] = useState<{ id: string; email: string; password: string }>({ id: "", email: "", password: "" });
+  const [newAdminData, setNewAdminData] = useState<AdminFormData>({ username: "", password: "" });
+  const [resetPasswordData, setResetPasswordData] = useState<{ id: string; username: string; password: string }>({ id: "", username: "", password: "" });
   const [isProcessing, setIsProcessing] = useState(false);
 
   const { supabaseAuth } = useAdminAuth();
@@ -80,7 +83,7 @@ export function AdminUsersManager() {
           .filter(user => userIdMap.has(user.id))
           .map(user => ({
             id: user.id,
-            email: user.email || "لا يوجد بريد إلكتروني",
+            username: user.user_metadata?.username || "مستخدم بدون اسم",
             created_at: user.created_at
           }));
         
@@ -101,10 +104,10 @@ export function AdminUsersManager() {
   };
 
   const handleCreateAdmin = async () => {
-    if (!newAdminData.email || !newAdminData.password) {
+    if (!newAdminData.username || !newAdminData.password) {
       toast({
         title: "خطأ",
-        description: "يرجى إدخال البريد الإلكتروني وكلمة المرور",
+        description: "يرجى إدخال اسم المستخدم وكلمة المرور",
         variant: "destructive",
       });
       return;
@@ -113,11 +116,17 @@ export function AdminUsersManager() {
     try {
       setIsProcessing(true);
 
-      // إنشاء مستخدم جديد
+      // إنشاء مستخدم جديد - استخدام اسم المستخدم كبريد إلكتروني مع نطاق وهمي
+      const email = `${newAdminData.username}@admin.trndsky.com`;
+      
+      // إنشاء مستخدم جديد مع البيانات الوصفية للاسم المستخدم
       const { data: newUser, error: signUpError } = await supabase.auth.admin.createUser({
-        email: newAdminData.email,
+        email: email,
         password: newAdminData.password,
-        email_confirm: true
+        email_confirm: true,
+        user_metadata: {
+          username: newAdminData.username
+        }
       });
 
       if (signUpError) throw signUpError;
@@ -141,7 +150,7 @@ export function AdminUsersManager() {
         // تحديث القائمة
         fetchAdminUsers();
         setCreateDialogOpen(false);
-        setNewAdminData({ email: "", password: "" });
+        setNewAdminData({ username: "", password: "" });
       }
     } catch (error: any) {
       console.error("Error creating admin user:", error);
@@ -182,7 +191,7 @@ export function AdminUsersManager() {
       });
 
       setResetPasswordDialogOpen(false);
-      setResetPasswordData({ id: "", email: "", password: "" });
+      setResetPasswordData({ id: "", username: "", password: "" });
     } catch (error: any) {
       console.error("Error resetting password:", error);
       toast({
@@ -195,8 +204,8 @@ export function AdminUsersManager() {
     }
   };
 
-  const handleDeleteAdmin = async (adminId: string, adminEmail: string) => {
-    if (!confirm(`هل أنت متأكد من حذف المشرف ${adminEmail}؟`)) {
+  const handleDeleteAdmin = async (adminId: string, adminUsername: string) => {
+    if (!confirm(`هل أنت متأكد من حذف المشرف ${adminUsername}؟`)) {
       return;
     }
 
@@ -234,7 +243,7 @@ export function AdminUsersManager() {
   const openResetPasswordDialog = (admin: AdminUser) => {
     setResetPasswordData({
       id: admin.id,
-      email: admin.email,
+      username: admin.username,
       password: ""
     });
     setResetPasswordDialogOpen(true);
@@ -258,7 +267,7 @@ export function AdminUsersManager() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="text-right font-tajawal">البريد الإلكتروني</TableHead>
+                <TableHead className="text-right font-tajawal">اسم المستخدم</TableHead>
                 <TableHead className="text-right font-tajawal">تاريخ الإنشاء</TableHead>
                 <TableHead className="text-center font-tajawal">الإجراءات</TableHead>
               </TableRow>
@@ -266,7 +275,7 @@ export function AdminUsersManager() {
             <TableBody>
               {adminUsers.map((admin) => (
                 <TableRow key={admin.id}>
-                  <TableCell>{admin.email}</TableCell>
+                  <TableCell>{admin.username}</TableCell>
                   <TableCell>{new Date(admin.created_at).toLocaleString("ar-SA")}</TableCell>
                   <TableCell>
                     <div className="flex justify-center gap-2">
@@ -281,7 +290,7 @@ export function AdminUsersManager() {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => handleDeleteAdmin(admin.id, admin.email)}
+                        onClick={() => handleDeleteAdmin(admin.id, admin.username)}
                         title="حذف المشرف"
                       >
                         <Trash2 className="h-4 w-4 text-red-600" />
@@ -306,18 +315,17 @@ export function AdminUsersManager() {
           <DialogHeader>
             <DialogTitle>إضافة مشرف جديد</DialogTitle>
             <DialogDescription>
-              أدخل البريد الإلكتروني وكلمة المرور للمشرف الجديد
+              أدخل اسم المستخدم وكلمة المرور للمشرف الجديد
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div>
-              <label className="block text-sm font-medium mb-1">البريد الإلكتروني</label>
+              <label className="block text-sm font-medium mb-1">اسم المستخدم</label>
               <Input
-                value={newAdminData.email}
-                onChange={(e) => setNewAdminData({...newAdminData, email: e.target.value})}
-                placeholder="example@example.com"
-                type="email"
-                dir="ltr"
+                value={newAdminData.username}
+                onChange={(e) => setNewAdminData({...newAdminData, username: e.target.value})}
+                placeholder="اسم المستخدم"
+                dir="rtl"
               />
             </div>
             <div>
@@ -356,7 +364,7 @@ export function AdminUsersManager() {
           <DialogHeader>
             <DialogTitle>تغيير كلمة المرور</DialogTitle>
             <DialogDescription>
-              أدخل كلمة المرور الجديدة للمشرف: {resetPasswordData.email}
+              أدخل كلمة المرور الجديدة للمشرف: {resetPasswordData.username}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
