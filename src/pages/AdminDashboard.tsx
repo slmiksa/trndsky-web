@@ -1095,7 +1095,7 @@ const AdminDashboard = () => {
 
               <SoftwareProductDialog
                 open={productDialogOpen}
-                setOpen={setProductDialogOpen}
+                onOpenChange={setProductDialogOpen}
                 product={productToEdit}
                 onSuccess={fetchProducts}
               />
