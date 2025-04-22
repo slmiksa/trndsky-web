@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
@@ -17,11 +18,8 @@ const Navbar = () => {
   }, []);
 
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-      scrolled 
-        ? "bg-white shadow-md" 
-        : "bg-white"
-    }`}>
+    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 
+      ${scrolled ? "bg-white shadow-md" : "bg-white"}`}>
       <div className="container mx-auto px-6">
         <div className="flex justify-between items-center h-20">
           <Link to="/" className="text-2xl font-bold text-trndsky-darkblue flex items-center gap-2">
@@ -32,23 +30,25 @@ const Navbar = () => {
           </Link>
 
           {/* Desktop Navigation - Centered */}
-          <div className="hidden md:flex items-center justify-center flex-1 font-tajawal">
+          <div className="hidden md:flex items-center justify-center flex-1 font-tajawal space-x-6">
             {navLinks.map((link) => (
               <Link
                 key={link.path}
                 to={link.path}
-                className={`px-6 py-2 mx-1 transition-all duration-300 relative ${
+                className={`transition-all duration-300 relative group ${
                   location.pathname === link.path
-                    ? "text-trndsky-blue font-medium"
+                    ? "text-trndsky-blue font-medium" 
                     : "text-gray-600 hover:text-trndsky-blue"
                 }`}
               >
+                <span className="block px-3 py-2">
+                  {link.label}
+                </span>
                 {location.pathname === link.path && (
                   <span 
-                    className="absolute bottom-0 left-0 right-0 h-1 bg-trndsky-blue rounded-full"
+                    className="absolute bottom-0 left-0 right-0 h-1 bg-trndsky-blue rounded-full transition-all duration-300"
                   ></span>
                 )}
-                {link.label}
               </Link>
             ))}
           </div>
