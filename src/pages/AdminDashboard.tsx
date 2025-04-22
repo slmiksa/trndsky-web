@@ -486,43 +486,55 @@ const AdminDashboard = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 font-tajawal">
-      <header className="flex items-center justify-between px-8 py-6 bg-white shadow">
-        <h1 className="text-2xl font-bold text-trndsky-blue">
+      <header className="flex items-center justify-between px-8 py-4 bg-gradient-to-r from-blue-900 to-blue-800 shadow-lg">
+        <h1 className="text-2xl font-bold text-white">
           لوحة تحكم المسؤول
         </h1>
         <button
           onClick={handleLogout}
-          className="bg-trndsky-teal text-white px-4 py-2 rounded-lg font-tajawal hover:bg-trndsky-blue transition-all"
+          className="bg-white/10 text-white px-4 py-2 rounded-lg font-tajawal hover:bg-white/20 transition-all flex items-center gap-2"
         >
           تسجيل خروج
         </button>
       </header>
-      <main className="max-w-6xl mx-auto py-8 px-4">
+      <main className="max-w-7xl mx-auto py-8 px-4">
         <Tabs defaultValue="requests" className="w-full">
-          <TabsList className="flex justify-center mb-8 bg-trndsky-blue/5 border border-trndsky-blue/20 rounded-xl">
-            <TabsTrigger value="requests" className="text-lg px-8 font-bold data-[state=active]:bg-trndsky-blue data-[state=active]:text-white">
+          <TabsList className="flex justify-center mb-8 bg-white shadow-md rounded-xl border border-gray-100 p-1">
+            <TabsTrigger 
+              value="requests" 
+              className="text-lg px-6 py-2 font-medium data-[state=active]:bg-blue-900 data-[state=active]:text-white rounded-lg transition-all"
+            >
               تذاكر الطلبات
             </TabsTrigger>
-            <TabsTrigger value="slides" className="text-lg px-8 font-bold data-[state=active]:bg-trndsky-blue data-[state=active]:text-white">
+            <TabsTrigger 
+              value="slides" 
+              className="text-lg px-6 py-2 font-medium data-[state=active]:bg-blue-900 data-[state=active]:text-white rounded-lg transition-all"
+            >
               السلايدات
             </TabsTrigger>
-            <TabsTrigger value="partners" className="text-lg px-8 font-bold data-[state=active]:bg-trndsky-blue data-[state=active]:text-white">
+            <TabsTrigger 
+              value="partners" 
+              className="text-lg px-6 py-2 font-medium data-[state=active]:bg-blue-900 data-[state=active]:text-white rounded-lg transition-all"
+            >
               شركاء النجاح
             </TabsTrigger>
-            <TabsTrigger value="software" className="text-lg px-8 font-bold data-[state=active]:bg-trndsky-blue data-[state=active]:text-white">
+            <TabsTrigger 
+              value="software" 
+              className="text-lg px-6 py-2 font-medium data-[state=active]:bg-blue-900 data-[state=active]:text-white rounded-lg transition-all"
+            >
               البرمجيات الجاهزة
             </TabsTrigger>
-            <TabsTrigger value="about" className="text-lg px-8 font-bold data-[state=active]:bg-trndsky-blue data-[state=active]:text-white">
+            <TabsTrigger 
+              value="about" 
+              className="text-lg px-6 py-2 font-medium data-[state=active]:bg-blue-900 data-[state=active]:text-white rounded-lg transition-all"
+            >
               من نحن
             </TabsTrigger>
-            <TabsTrigger value="contact" className="text-lg px-8 font-bold data-[state=active]:bg-trndsky-blue data-[state=active]:text-white">
+            <TabsTrigger 
+              value="contact" 
+              className="text-lg px-6 py-2 font-medium data-[state=active]:bg-blue-900 data-[state=active]:text-white rounded-lg transition-all"
+            >
               التواصل معنا
-            </TabsTrigger>
-            <TabsTrigger value="admins" className="text-lg px-8 font-bold data-[state=active]:bg-trndsky-blue data-[state=active]:text-white">
-              المشرفون
-            </TabsTrigger>
-            <TabsTrigger value="settings" className="text-lg px-8 font-bold data-[state=active]:bg-trndsky-blue data-[state=active]:text-white">
-              الإعدادات
             </TabsTrigger>
           </TabsList>
 
@@ -776,7 +788,7 @@ const AdminDashboard = () => {
           </TabsContent>
 
           <TabsContent value="slides">
-            <section>
+            <section className="bg-white rounded-2xl shadow-sm p-6">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-semibold text-trndsky-darkblue">
                   إدارة السلايدات الرئيسية
@@ -899,7 +911,7 @@ const AdminDashboard = () => {
           </TabsContent>
 
           <TabsContent value="partners">
-            <section>
+            <section className="bg-white rounded-2xl shadow-sm p-6">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-semibold text-trndsky-darkblue">
                   إدارة شركاء النجاح
@@ -1037,7 +1049,7 @@ const AdminDashboard = () => {
           </TabsContent>
 
           <TabsContent value="software">
-            <section>
+            <section className="bg-white rounded-2xl shadow-sm p-6">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-semibold text-trndsky-darkblue">
                   إدارة البرمجيات الجاهزة
@@ -1111,7 +1123,7 @@ const AdminDashboard = () => {
           </TabsContent>
 
           <TabsContent value="about">
-            <section>
+            <section className="bg-white rounded-2xl shadow-sm p-6">
               <h2 className="text-xl font-semibold mb-6 text-trndsky-darkblue">
                 إدارة محتوى صفحة "من نحن"
               </h2>
@@ -1120,7 +1132,7 @@ const AdminDashboard = () => {
           </TabsContent>
 
           <TabsContent value="contact">
-            <section>
+            <section className="bg-white rounded-2xl shadow-sm p-6">
               <h2 className="text-xl font-semibold mb-6 text-trndsky-darkblue">
                 إدارة بيانات التواصل
               </h2>
