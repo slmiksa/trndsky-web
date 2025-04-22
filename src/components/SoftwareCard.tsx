@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Send } from 'lucide-react';
 import { supabase } from "@/integrations/supabase/client";
@@ -40,7 +39,6 @@ const SoftwareCard = ({ title, description, image, id, price }: SoftwareCardProp
     setIsSubmitting(true);
     
     try {
-      // Insert order into the database
       const { error } = await supabase.from('software_orders').insert({
         software_id: id,
         company_name: orderData.company,
@@ -98,14 +96,14 @@ const SoftwareCard = ({ title, description, image, id, price }: SoftwareCardProp
               {!showOrderForm && (
                 <>
                   <button
-                    className="btn-secondary text-sm font-tajawal rounded-full shadow-md hover:bg-trndsky-darkblue min-w-[138px]"
+                    className="px-6 py-2 bg-white text-trndsky-blue border-2 border-trndsky-blue/20 hover:bg-gradient-to-l hover:from-trndsky-teal hover:to-trndsky-blue hover:text-white text-sm font-tajawal rounded-full shadow-md transition-all duration-300"
                     onClick={handleOrderClick}
                     type="button"
                   >
                     طلب المنتج
                   </button>
                   <button
-                    className="btn-primary text-sm font-tajawal rounded-full shadow-md hover:bg-trndsky-teal min-w-[180px]"
+                    className="px-6 py-2 bg-white text-trndsky-blue border-2 border-trndsky-blue/20 hover:bg-gradient-to-l hover:from-trndsky-teal hover:to-trndsky-blue hover:text-white text-sm font-tajawal rounded-full shadow-md transition-all duration-300"
                     type="button"
                   >
                     طلب المزيد من المعلومات
@@ -170,12 +168,10 @@ const SoftwareCard = ({ title, description, image, id, price }: SoftwareCardProp
   );
 };
 
-// Featured Software Section Component 
 export const FeaturedSoftware = () => {
   const [softwareItems, setSoftwareItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Define the fetchFeaturedSoftware function before using it
   const fetchFeaturedSoftware = async () => {
     try {
       const { data, error } = await supabase
@@ -197,7 +193,6 @@ export const FeaturedSoftware = () => {
     }
   };
 
-  // Use useEffect with the function defined above
   useEffect(() => {
     fetchFeaturedSoftware();
   }, []);

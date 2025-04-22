@@ -18,12 +18,7 @@ const Footer = () => {
       
       <div className="bg-[#1A1A1A] pt-16 pb-8">
         <div className="container mx-auto px-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-16">
-            {/* Contact Info Column - Removed direct contact details */}
-            <div className="text-right">
-              <h3 className="text-xl font-bold mb-6 font-tajawal text-white">اتصل بنا</h3>
-            </div>
-
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-16">
             {/* Quick Links Column */}
             <div className="text-right">
               <h3 className="text-xl font-bold mb-6 font-tajawal text-white">روابط سريعة</h3>
