@@ -41,7 +41,7 @@ const HeroSlider = () => {
   };
 
   return (
-    <div className="relative min-h-[90vh] flex items-center overflow-hidden bg-gradient-to-br from-slate-50 to-blue-50">
+    <div className="relative pt-16 flex items-center overflow-hidden bg-black border-b-4 border-trndsky-teal">
       {/* Full-width hero image with overlay */}
       <div className="absolute inset-0 z-0">
         {slides.map((slide, index) => (
@@ -53,7 +53,7 @@ const HeroSlider = () => {
             style={{ display: index === currentSlide ? 'block' : 'none' }}
           >
             <div 
-              className="absolute inset-0 bg-gradient-to-r from-blue-900/80 to-transparent mix-blend-multiply"
+              className="absolute inset-0 bg-gradient-to-r from-black/90 to-black/50 mix-blend-multiply"
             ></div>
             <div 
               className="absolute inset-0" 
@@ -69,7 +69,7 @@ const HeroSlider = () => {
       </div>
 
       {/* Content */}
-      <div className="relative z-10 container mx-auto px-6 pt-24">
+      <div className="relative z-10 container mx-auto px-6 py-32 md:py-40">
         <div className="max-w-3xl ml-auto">
           {slides.map((slide, index) => (
             <div
@@ -81,13 +81,13 @@ const HeroSlider = () => {
               }`}
               style={{ display: index === currentSlide ? 'block' : 'none' }}
             >
-              <span className="inline-block text-white/90 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full text-sm mb-4 font-tajawal">
+              <span className="inline-block text-white/90 bg-trndsky-blue/30 backdrop-blur-sm px-4 py-2 rounded-full text-sm mb-4 font-tajawal border border-trndsky-blue/40">
                 TRNDSKY+ تكنولوجيا المستقبل
               </span>
               <h1 className="text-5xl md:text-7xl font-bold mb-6 text-white font-tajawal leading-tight">
                 {slide.title}
               </h1>
-              <p className="text-xl md:text-2xl text-white/80 mb-8 font-tajawal max-w-2xl">
+              <p className="text-xl md:text-2xl text-white/90 mb-8 font-tajawal max-w-2xl">
                 {slide.description}
               </p>
               <div className="flex flex-wrap gap-4">
@@ -101,7 +101,7 @@ const HeroSlider = () => {
                 </Link>
                 <Link
                   to="/software"
-                  className="px-8 py-4 bg-transparent border-2 border-white/30 hover:border-white/60 
+                  className="px-8 py-4 bg-transparent border-2 border-white/40 hover:border-white/80 
                     text-white rounded-full font-tajawal text-lg transition-all duration-300"
                 >
                   استعرض البرمجيات
@@ -139,7 +139,7 @@ const HeroSlider = () => {
             key={index}
             onClick={() => goToSlide(index)}
             className={`w-3 h-3 rounded-full transition-all duration-300 ${
-              index === currentSlide ? 'w-10 bg-white' : 'bg-white/40 hover:bg-white/60'
+              index === currentSlide ? 'w-10 bg-trndsky-teal' : 'bg-white/40 hover:bg-white/60'
             }`}
             aria-label={`Go to slide ${index + 1}`}
           />

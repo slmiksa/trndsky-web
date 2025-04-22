@@ -31,10 +31,10 @@ const services = [
 
 const ServicesSection = () => {
   return (
-    <section className="py-24">
+    <section className="py-24 bg-gradient-to-b from-white to-gray-50">
       <div className="container mx-auto px-6">
         <div className="text-center mb-16">
-          <span className="inline-block py-1 px-3 bg-trndsky-blue/10 text-trndsky-blue rounded-full text-sm mb-4 font-tajawal">
+          <span className="inline-block py-1 px-4 bg-trndsky-blue/10 text-trndsky-blue rounded-full text-sm mb-4 font-tajawal border border-trndsky-blue/20">
             خدماتنا المتميزة
           </span>
           <h2 className="text-4xl font-bold text-gray-800 font-tajawal mb-4">
@@ -48,19 +48,19 @@ const ServicesSection = () => {
           </p>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
           {services.map((service, index) => (
             <div 
               key={index}
-              className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300
-                hover:transform hover:-translate-y-1 border border-gray-100 group"
+              className="bg-white rounded-xl p-6 shadow hover:shadow-md transition-all duration-300
+                hover:transform hover:translate-y-[-5px] border border-gray-100 group"
             >
-              <div className="mb-6 inline-flex items-center justify-center w-20 h-20 rounded-2xl 
-                bg-gradient-to-br from-trndsky-blue/10 to-trndsky-teal/10 group-hover:from-trndsky-blue/20 
-                group-hover:to-trndsky-teal/20 text-trndsky-blue transition-all duration-300">
+              <div className="mb-6 inline-flex items-center justify-center w-16 h-16 rounded-xl 
+                bg-gradient-to-br from-trndsky-blue to-trndsky-teal text-white group-hover:shadow-lg 
+                group-hover:shadow-trndsky-blue/20 transition-all duration-300">
                 {service.icon}
               </div>
-              <h3 className="text-2xl font-bold mb-3 font-tajawal text-gray-800">
+              <h3 className="text-xl font-bold mb-3 font-tajawal text-gray-800">
                 {service.title}
               </h3>
               <p className="text-gray-600 font-tajawal leading-relaxed">

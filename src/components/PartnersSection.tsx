@@ -72,83 +72,80 @@ const PartnersSection = () => {
 
   if (loading) {
     return (
-      <section className="section-padding bg-gradient-to-tr from-[#f7fafc] via-[#ebf5fd] to-trndsky-gray">
-        <div className="container mx-auto">
-          <h2 className="text-4xl font-extrabold text-center mb-12 font-tajawal text-trndsky-darkblue drop-shadow">
-            شركاء <span className="text-trndsky-teal">النجاح</span>
-          </h2>
-          <div className="text-center text-gray-500">جاري التحميل...</div>
+      <div className="container mx-auto px-6 py-8">
+        <div className="text-center py-12">
+          <div className="w-12 h-12 border-4 border-trndsky-blue border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <p className="mt-4 text-trndsky-blue">جاري تحميل بيانات الشركاء...</p>
         </div>
-      </section>
+      </div>
     );
   }
 
   if (error) {
     return (
-      <section className="section-padding bg-gradient-to-tr from-[#f7fafc] via-[#ebf5fd] to-trndsky-gray">
-        <div className="container mx-auto">
-          <h2 className="text-4xl font-extrabold text-center mb-12 font-tajawal text-trndsky-darkblue drop-shadow">
-            شركاء <span className="text-trndsky-teal">النجاح</span>
-          </h2>
-          <div className="text-center text-red-500">{error}</div>
-          <div className="text-center mt-4">
-            <button 
-              onClick={fetchPartners}
-              className="bg-trndsky-teal text-white px-4 py-2 rounded-lg hover:bg-trndsky-blue transition-colors"
-            >
-              إعادة المحاولة
-            </button>
-          </div>
+      <div className="container mx-auto px-6 py-8">
+        <div className="text-center py-12">
+          <div className="text-red-500 mb-4 text-lg">{error}</div>
+          <button 
+            onClick={fetchPartners}
+            className="bg-trndsky-teal text-white px-4 py-2 rounded-lg hover:bg-trndsky-blue transition-colors"
+          >
+            إعادة المحاولة
+          </button>
         </div>
-      </section>
+      </div>
     );
   }
 
   return (
-    <section className="section-padding bg-gradient-to-tr from-[#f7fafc] via-[#ebf5fd] to-trndsky-gray">
-      <div className="container mx-auto">
-        <h2 className="text-4xl font-extrabold text-center mb-12 font-tajawal text-trndsky-darkblue drop-shadow">
-          شركاء <span className="text-trndsky-teal">النجاح</span>
-        </h2>
+    <div className="container mx-auto px-6 py-8">
+      <div className="relative mx-auto max-w-5xl">
         {partners.length === 0 ? (
-          <div className="text-center text-gray-500">لا يوجد شركاء حالياً</div>
+          <div className="text-center py-12">
+            <p className="text-xl text-gray-500">لا يوجد شركاء حالياً</p>
+          </div>
         ) : (
-          <div className="px-8 md:px-16">
+          <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
             <Carousel
               opts={{
-                align: "start",
+                align: "center",
                 loop: true,
               }}
+              className="w-full"
             >
               <CarouselContent className="py-4">
                 {partners.map((partner) => (
-                  <CarouselItem key={partner.id} className="md:basis-1/3 lg:basis-1/4">
-                    <div className="bg-white rounded-full border border-trndsky-blue/10 shadow-sm hover:shadow-md transition-all flex flex-col items-center justify-center h-40 w-44 md:h-48 md:w-56 p-3 mx-auto">
-                      <img
-                        src={partner.logo_url}
-                        alt={partner.name}
-                        className="object-contain max-h-16 max-w-[200px] mb-2"
-                        onError={(e) => {
-                          e.currentTarget.src = "/placeholder.svg";
-                          e.currentTarget.alt = "صورة غير متوفرة";
-                        }}
-                      />
-                      <div className="text-trndsky-darkblue font-bold text-xs text-center mt-1">
+                  <CarouselItem key={partner.id} className="basis-1/2 md:basis-1/3 lg:basis-1/4 p-1">
+                    <div className="bg-white rounded-2xl border border-trndsky-blue/10 shadow hover:shadow-md transition-all 
+                         flex flex-col items-center justify-center h-44 p-4 mx-auto">
+                      <div className="bg-gray-50 w-full h-24 flex items-center justify-center rounded-xl p-2 mb-3">
+                        <img
+                          src={partner.logo_url}
+                          alt={partner.name}
+                          className="object-contain max-h-20 max-w-[80%]"
+                          onError={(e) => {
+                            e.currentTarget.src = "/placeholder.svg";
+                            e.currentTarget.alt = "صورة غير متوفرة";
+                          }}
+                        />
+                      </div>
+                      <div className="text-trndsky-darkblue font-bold text-sm text-center mt-2 line-clamp-2">
                         {partner.name}
                       </div>
                     </div>
                   </CarouselItem>
                 ))}
               </CarouselContent>
-              <CarouselPrevious className="left-0 opacity-80 hover:opacity-100" />
-              <CarouselNext className="right-0 opacity-80 hover:opacity-100" />
+              <div className="flex justify-center gap-2 mt-6">
+                <CarouselPrevious className="position-static mx-1 opacity-80 hover:opacity-100" />
+                <CarouselNext className="position-static mx-1 opacity-80 hover:opacity-100" />
+              </div>
             </Carousel>
           </div>
         )}
       </div>
-    </section>
+    </div>
   );
 };
 
 export default PartnersSection;
-

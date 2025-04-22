@@ -4,6 +4,7 @@ import Navbar from '../components/Navbar';
 import SoftwareCard from '../components/SoftwareCard';
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from 'sonner';
+import Footer from '../components/Footer';
 
 type SoftwareProduct = {
   id: number;
@@ -47,10 +48,12 @@ const Software = () => {
     <div className="min-h-screen flex flex-col">
       <Navbar />
       
-      <div className="bg-trndsky-blue text-white py-16">
-        <div className="container mx-auto px-4">
-          <h1 className="text-4xl md:text-5xl font-bold text-center mb-6 font-tajawal">البرمجيات الجاهزة</h1>
-          <p className="text-xl text-center max-w-3xl mx-auto font-tajawal">
+      <div className="pt-24 pb-16 bg-gradient-to-r from-trndsky-darkblue to-trndsky-blue text-white">
+        <div className="container mx-auto px-6">
+          <h1 className="text-4xl md:text-5xl font-bold text-center mb-6 font-tajawal">
+            البرمجيات الجاهزة
+          </h1>
+          <p className="text-xl text-center max-w-3xl mx-auto font-tajawal text-white/90">
             مجموعة متنوعة من الحلول البرمجية الجاهزة التي يمكن تخصيصها لتلبية احتياجات عملك
           </p>
         </div>
@@ -60,12 +63,13 @@ const Software = () => {
         <div className="container mx-auto">
           {loading ? (
             <div className="text-center py-12">
-              <p className="text-xl text-trndsky-blue">جاري تحميل البرمجيات...</p>
+              <div className="w-12 h-12 border-4 border-trndsky-blue border-t-transparent rounded-full animate-spin mx-auto"></div>
+              <p className="mt-4 text-trndsky-blue">جاري تحميل البرمجيات...</p>
             </div>
           ) : softwareItems.length === 0 ? (
-            <div className="text-center py-12">
-              <p className="text-xl text-gray-500">لا توجد برمجيات متاحة حالياً</p>
-              <p className="mt-2 text-gray-400">يمكنك إضافة برمجيات جديدة من لوحة التحكم</p>
+            <div className="text-center py-12 bg-white p-10 rounded-xl shadow-sm border border-gray-100">
+              <p className="text-xl text-gray-500 mb-3">لا توجد برمجيات متاحة حالياً</p>
+              <p className="text-gray-400">يمكنك إضافة برمجيات جديدة من لوحة التحكم</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -82,7 +86,7 @@ const Software = () => {
             </div>
           )}
           
-          <div className="mt-16 bg-white p-8 rounded-xl shadow-md">
+          <div className="mt-16 bg-white p-8 rounded-xl shadow-sm border border-gray-100">
             <h2 className="text-2xl font-bold mb-4 text-center font-tajawal text-trndsky-darkblue">
               لم تجد ما تبحث عنه؟
             </h2>
@@ -90,20 +94,15 @@ const Software = () => {
               نحن نقدم خدمات تطوير برمجي مخصصة لتلبية احتياجاتك الفريدة
             </p>
             <div className="flex justify-center">
-              <a href="/" className="btn-primary font-tajawal">اطلب تطوير مخصص</a>
+              <a href="/contact" className="px-8 py-3 bg-gradient-to-r from-trndsky-blue to-trndsky-teal text-white rounded-full font-tajawal transition-all duration-300 hover:shadow-lg">
+                اطلب تطوير مخصص
+              </a>
             </div>
           </div>
         </div>
       </main>
       
-      <footer className="bg-trndsky-darkblue text-white py-8">
-        <div className="container mx-auto text-center">
-          <div className="text-xl font-bold mb-4">
-            <span className="text-trndsky-teal">TRND</span>SKY
-          </div>
-          <p className="font-tajawal">© {new Date().getFullYear()} TRNDSKY. جميع الحقوق محفوظة</p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 };
