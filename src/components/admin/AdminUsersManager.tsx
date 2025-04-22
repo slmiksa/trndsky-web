@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/components/ui/use-toast";
@@ -24,6 +25,14 @@ type AdminUser = {
 type AdminFormData = {
   email: string;
   password: string;
+};
+
+// Define the shape of the user object returned from auth.admin.listUsers()
+type SupabaseUser = {
+  id: string;
+  email: string | null;
+  created_at: string;
+  // Add other properties you might need, but these are the minimum required
 };
 
 export function AdminUsersManager() {
@@ -62,13 +71,17 @@ export function AdminUsersManager() {
         
         // تنسيق البيانات
         const userIdMap = new Set(adminUsersData.map(admin => admin.user_id));
-        const filteredUsers = data?.users
+        
+        // Ensure data.users exists and is typed correctly
+        const users: SupabaseUser[] = data?.users || [];
+        
+        const filteredUsers = users
           .filter(user => userIdMap.has(user.id))
           .map(user => ({
             id: user.id,
             email: user.email || "لا يوجد بريد إلكتروني",
             created_at: user.created_at
-          })) || [];
+          }));
         
         setAdminUsers(filteredUsers);
       } else {
