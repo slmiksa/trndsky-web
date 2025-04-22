@@ -90,6 +90,36 @@ export type Database = {
         }
         Relationships: []
       }
+      software_products: {
+        Row: {
+          created_at: string | null
+          description: string
+          id: number
+          image_url: string
+          price: number
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description: string
+          id?: number
+          image_url: string
+          price: number
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string
+          id?: number
+          image_url?: string
+          price?: number
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

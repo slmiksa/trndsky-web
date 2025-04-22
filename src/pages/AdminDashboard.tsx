@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { useAdminAuth } from "@/components/AdminAuthContext";
 import { useNavigate } from "react-router-dom";
@@ -23,6 +22,8 @@ import {
 } from "@/components/ui/tabs";
 import { toast } from "@/components/ui/use-toast";
 import { useUploadPartnerLogo } from "@/hooks/useUploadPartnerLogo";
+import { Card, CardContent } from "@/components/ui/card";
+import { SoftwareProductDialog } from "@/components/admin/SoftwareProductDialog";
 
 const initialSlides = [
   {
@@ -48,7 +49,6 @@ const initialSlides = [
   },
 ];
 
-// شريك الوصل الوطنية الإفتراضي
 const WISAL_PARTNER = {
   id: -1,
   name: "شركة الوصل الوطنية لتحصيل ديون جهات التمويل",
@@ -88,6 +88,15 @@ type Partner = {
   id: number;
   name: string;
   logo_url: string;
+  created_at: string;
+};
+
+type SoftwareProduct = {
+  id: number;
+  title: string;
+  description: string;
+  price: number;
+  image_url: string;
   created_at: string;
 };
 
@@ -137,6 +146,11 @@ const AdminDashboard = () => {
 
   const [logoFile, setLogoFile] = useState<File | null>(null);
 
+  const [products, setProducts] = useState<SoftwareProduct[]>([]);
+  const [loadingProducts, setLoadingProducts] = useState(true);
+  const [productDialogOpen, setProductDialogOpen] = useState(false);
+  const [productToEdit, setProductToEdit] = useState<SoftwareProduct | null>(null);
+
   const { uploadLogo, uploading: logoUploading, error: logoUploadError } = useUploadPartnerLogo();
 
   useEffect(() => {
@@ -146,7 +160,7 @@ const AdminDashboard = () => {
     }
     fetchData();
     fetchPartners();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    fetchProducts();
   }, [isLoggedIn, navigate]);
 
   async function fetchData() {
@@ -178,17 +192,14 @@ const AdminDashboard = () => {
     if (error) {
       console.error("Error fetching partners:", error);
       toast({ title: "خطأ", description: "حدث خطأ أثناء جلب بيانات الشركاء", variant: "destructive" });
-      // إضافة الشريك الإفتراضي عند حدوث خطأ
       setPartners([WISAL_PARTNER]);
     } else {
-      // التحقق ما إذا كان شريك الوصل موجود بالفعل في قاعدة البيانات
       const partnerList = data || [];
       const wisalExists = partnerList.some(p => 
         p.name === WISAL_PARTNER.name || 
         p.logo_url === WISAL_PARTNER.logo_url
       );
       
-      // إضافة شريك الوصل الوطنية إلى القائمة إن لم يكن موجوداً بالفعل
       if (!wisalExists) {
         setPartners([WISAL_PARTNER, ...partnerList]);
       } else {
@@ -196,6 +207,26 @@ const AdminDashboard = () => {
       }
     }
     setLoadingPartners(false);
+  }
+
+  async function fetchProducts() {
+    setLoadingProducts(true);
+    const { data, error } = await supabase
+      .from("software_products")
+      .select("*")
+      .order("id", { ascending: true });
+
+    if (error) {
+      console.error("Error fetching products:", error);
+      toast({
+        title: "خطأ",
+        description: "حدث خطأ أثناء جلب البرمجيات",
+        variant: "destructive",
+      });
+    } else {
+      setProducts(data || []);
+    }
+    setLoadingProducts(false);
   }
 
   const handleLogout = () => {
@@ -235,14 +266,12 @@ const AdminDashboard = () => {
     }
   };
 
-  // عند حفظ الشريك، نتحقق إذا كان شريك الوصل الوطنية ونتعامل معه بطريقة خاصة
   const handleSavePartner = async () => {
     setIsSavingPartner(true);
 
     try {
       let logo_url = partnerForm.logo_url;
 
-      // إذا كان هناك ملف جديد للشعار، نرفعه
       if (logoFile) {
         const uploadedUrl = await uploadLogo(logoFile);
         if (!uploadedUrl) {
@@ -251,26 +280,20 @@ const AdminDashboard = () => {
         logo_url = uploadedUrl;
       }
 
-      // إذا كان التعديل على شريك الوصل الإفتراضي
       if (partnerToEdit && partnerToEdit.id === -1) {
-        // تعديل الشريك الإفتراضي في الذاكرة فقط
-        // وسيتم تحديثه في العرض دون إرساله لقاعدة البيانات
         const updatedWisal = {
           ...WISAL_PARTNER,
           name: partnerForm.name,
           logo_url: logo_url
         };
         
-        // تحديث قائمة الشركاء مع الشريك الإفتراضي المعدل
         setPartners(prev => {
           const withoutWisal = prev.filter(p => p.id !== -1);
           return [updatedWisal, ...withoutWisal];
         });
         
         toast({ title: "تم التحديث", description: "تم تحديث بيانات الشريك الإفتراضي بنجاح" });
-      }
-      // إذا كان تعديل على شريك موجود في قاعدة البيانات
-      else if (partnerToEdit) {
+      } else if (partnerToEdit) {
         const { error } = await supabase
           .from("partners")
           .update({
@@ -281,9 +304,7 @@ const AdminDashboard = () => {
 
         if (error) throw error;
         toast({ title: "تم التحديث", description: "تم تحديث بيانات الشريك بنجاح" });
-      }
-      // إذا كان إضافة شريك جديد
-      else {
+      } else {
         const { error } = await supabase
           .from("partners")
           .insert({
@@ -311,21 +332,18 @@ const AdminDashboard = () => {
     }
   };
 
-  // حذف شريك - تعديل للتعامل مع شريك الوصل الإفتراضي
   const handleDeletePartner = async (partnerId: number) => {
     if (!confirm("هل أنت متأكد من حذف هذا الشريك؟")) {
       return;
     }
     
     try {
-      // إذا كان الشريك هو الإفتراضي، نحذفه فقط من العرض
       if (partnerId === -1) {
         setPartners(prev => prev.filter(p => p.id !== -1));
         toast({ title: "تم الحذف", description: "تم إزالة الشريك الإفتراضي من العرض" });
         return;
       }
       
-      // إذا كان شريك عادي من قاعدة البيانات
       const { error } = await supabase
         .from("partners")
         .delete()
@@ -416,6 +434,41 @@ const AdminDashboard = () => {
     setSlides((prev) => prev.filter((s) => s.id !== slideId));
   };
 
+  const openNewProductDialog = () => {
+    setProductToEdit(null);
+    setProductDialogOpen(true);
+  };
+
+  const openEditProductDialog = (product: SoftwareProduct) => {
+    setProductToEdit(product);
+    setProductDialogOpen(true);
+  };
+
+  const handleDeleteProduct = async (productId: number) => {
+    if (!confirm("هل أنت متأكد من حذف هذا البرنامج؟")) {
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from("software_products")
+        .delete()
+        .eq("id", productId);
+
+      if (error) throw error;
+
+      toast({ title: "تم الحذف", description: "تم حذف البرنامج بنجاح" });
+      fetchProducts();
+    } catch (error: any) {
+      console.error("Error deleting product:", error);
+      toast({
+        title: "خطأ",
+        description: error.message || "حدث خطأ أثناء حذف البرنامج",
+        variant: "destructive",
+      });
+    }
+  };
+
   if (!isLoggedIn) return null;
 
   return (
@@ -442,6 +495,9 @@ const AdminDashboard = () => {
             </TabsTrigger>
             <TabsTrigger value="partners" className="text-lg px-8 font-bold data-[state=active]:bg-trndsky-blue data-[state=active]:text-white">
               شركاء النجاح
+            </TabsTrigger>
+            <TabsTrigger value="software" className="text-lg px-8 font-bold data-[state=active]:bg-trndsky-blue data-[state=active]:text-white">
+              البرمجيات الجاهزة
             </TabsTrigger>
           </TabsList>
 
@@ -946,6 +1002,82 @@ const AdminDashboard = () => {
                 </form>
               </DialogContent>
             </Dialog>
+          </TabsContent>
+
+          <TabsContent value="software">
+            <section>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-semibold text-trndsky-darkblue">
+                  إدارة البرمجيات الجاهزة
+                </h2>
+                <Button onClick={openNewProductDialog} className="flex items-center gap-2">
+                  <Plus size={18} /> إضافة برنامج
+                </Button>
+              </div>
+
+              {loadingProducts ? (
+                <div className="text-center py-12 text-trndsky-blue">
+                  جارٍ التحميل...
+                </div>
+              ) : (
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {products.map((product) => (
+                    <Card key={product.id} className="overflow-hidden">
+                      <div className="h-48 overflow-hidden">
+                        <img
+                          src={product.image_url}
+                          alt={product.title}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      <CardContent className="p-4">
+                        <h3 className="font-bold text-trndsky-teal text-lg mb-2">
+                          {product.title}
+                        </h3>
+                        <p className="text-gray-600 text-sm mb-3 line-clamp-2">
+                          {product.description}
+                        </p>
+                        <div className="text-trndsky-blue font-semibold mb-3">
+                          {product.price.toLocaleString()} ريال
+                        </div>
+                        <div className="flex gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => openEditProductDialog(product)}
+                            className="flex-1"
+                          >
+                            <Edit size={16} className="ml-2" />
+                            تعديل
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleDeleteProduct(product.id)}
+                            className="flex-1 text-red-500 hover:text-red-700"
+                          >
+                            <Trash2 size={16} className="ml-2" />
+                            حذف
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                  {products.length === 0 && (
+                    <div className="text-gray-400 col-span-3 text-center py-12">
+                      لا توجد برمجيات حالياً. أضف برمجيات جديدة باستخدام الزر أعلاه.
+                    </div>
+                  )}
+                </div>
+              )}
+            </section>
+
+            <SoftwareProductDialog
+              open={productDialogOpen}
+              onOpenChange={setProductDialogOpen}
+              product={productToEdit || undefined}
+              onSuccess={fetchProducts}
+            />
           </TabsContent>
         </Tabs>
       </main>
