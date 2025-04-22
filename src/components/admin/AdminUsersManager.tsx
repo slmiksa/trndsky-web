@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/components/ui/use-toast";
@@ -57,19 +56,19 @@ export function AdminUsersManager() {
 
       if (adminUsersData && adminUsersData.length > 0) {
         // الحصول على بيانات المستخدمين من جدول auth.users
-        const { data: authUsers, error: authUsersError } = await supabase.auth.admin.listUsers();
+        const { data, error: authUsersError } = await supabase.auth.admin.listUsers();
         
         if (authUsersError) throw authUsersError;
         
         // تنسيق البيانات
         const userIdMap = new Set(adminUsersData.map(admin => admin.user_id));
-        const filteredUsers = authUsers.users
+        const filteredUsers = data?.users
           .filter(user => userIdMap.has(user.id))
           .map(user => ({
             id: user.id,
             email: user.email || "لا يوجد بريد إلكتروني",
             created_at: user.created_at
-          }));
+          })) || [];
         
         setAdminUsers(filteredUsers);
       } else {
@@ -288,7 +287,6 @@ export function AdminUsersManager() {
         </div>
       )}
 
-      {/* مربع حوار إضافة مشرف جديد */}
       <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
         <DialogContent dir="rtl">
           <DialogHeader>
@@ -339,7 +337,6 @@ export function AdminUsersManager() {
         </DialogContent>
       </Dialog>
 
-      {/* مربع حوار تغيير كلمة المرور */}
       <Dialog open={resetPasswordDialogOpen} onOpenChange={setResetPasswordDialogOpen}>
         <DialogContent dir="rtl">
           <DialogHeader>
