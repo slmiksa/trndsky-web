@@ -5,40 +5,56 @@ import ServicesSection from '../components/ServicesSection';
 import { FeaturedSoftware } from '../components/SoftwareCard';
 import ProjectRequestForm from '../components/ProjectRequestForm';
 import PartnersSection from '../components/PartnersSection';
-import Footer from '../components/Footer';
 
 const Index = () => {
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-gray-50">
       <Navbar />
       <main className="flex-grow">
         <HeroSlider />
+        
         <ServicesSection />
         
         {/* Featured Software Section */}
-        <section className="py-20 bg-white">
+        <section className="py-24 bg-white">
           <div className="container mx-auto px-6">
-            <div className="text-center mb-12">
-              <h2 className="text-4xl font-bold text-trndsky-darkblue font-tajawal mb-4">
-                برمجياتنا المميزة
+            <div className="text-center mb-16">
+              <span className="inline-block py-1 px-3 bg-trndsky-blue/10 text-trndsky-blue rounded-full text-sm mb-4 font-tajawal">
+                منتجاتنا المميزة
+              </span>
+              <h2 className="text-4xl font-bold text-gray-800 font-tajawal mb-4">
+                <span className="relative">
+                  برمجياتنا الجاهزة
+                  <span className="absolute -bottom-2 left-0 right-0 h-1 bg-gradient-to-r from-trndsky-teal to-trndsky-blue rounded-full"></span>
+                </span>
               </h2>
-              <div className="w-24 h-1 mx-auto bg-trndsky-blue rounded-full"></div>
+              <p className="text-gray-600 max-w-2xl mx-auto font-tajawal">
+                اكتشف مجموعة برمجياتنا المتطورة المصممة خصيصًا لتلبية احتياجات مختلف القطاعات
+              </p>
             </div>
             <FeaturedSoftware />
           </div>
         </section>
         
         {/* Project Request Section */}
-        <section className="py-20 modern-gradient">
+        <section className="py-24 bg-gradient-to-br from-trndsky-darkblue to-trndsky-blue text-white">
           <div className="container mx-auto px-6">
             <div className="max-w-4xl mx-auto">
-              <div className="text-center mb-12">
-                <h2 className="text-4xl font-bold text-trndsky-darkblue font-tajawal mb-4">
-                  طلب مشروع
+              <div className="text-center mb-16">
+                <span className="inline-block py-1 px-3 bg-white/20 text-white rounded-full text-sm mb-4 font-tajawal">
+                  ابدأ مشروعك
+                </span>
+                <h2 className="text-4xl font-bold text-white font-tajawal mb-4">
+                  <span className="relative">
+                    طلب مشروع جديد
+                    <span className="absolute -bottom-2 left-0 right-0 h-1 bg-gradient-to-r from-white/70 to-white/30 rounded-full"></span>
+                  </span>
                 </h2>
-                <div className="w-24 h-1 mx-auto bg-trndsky-blue rounded-full"></div>
+                <p className="text-white/80 max-w-2xl mx-auto font-tajawal">
+                  أخبرنا بفكرتك ودعنا نحولها إلى واقع ملموس بأحدث التقنيات
+                </p>
               </div>
-              <div className="modern-card p-8">
+              <div className="backdrop-blur-md bg-white/10 rounded-2xl p-8 shadow-xl border border-white/20">
                 <ProjectRequestForm />
               </div>
             </div>
@@ -46,19 +62,26 @@ const Index = () => {
         </section>
         
         {/* Partners Section */}
-        <section className="py-20 bg-white">
+        <section className="py-24 bg-white">
           <div className="container mx-auto px-6">
-            <div className="text-center mb-12">
-              <h2 className="text-4xl font-bold text-trndsky-darkblue font-tajawal mb-4">
-                شركاؤنا
+            <div className="text-center mb-16">
+              <span className="inline-block py-1 px-3 bg-trndsky-blue/10 text-trndsky-blue rounded-full text-sm mb-4 font-tajawal">
+                شركاء النجاح
+              </span>
+              <h2 className="text-4xl font-bold text-gray-800 font-tajawal mb-4">
+                <span className="relative">
+                  شركاؤنا المميزون
+                  <span className="absolute -bottom-2 left-0 right-0 h-1 bg-gradient-to-r from-trndsky-teal to-trndsky-blue rounded-full"></span>
+                </span>
               </h2>
-              <div className="w-24 h-1 mx-auto bg-trndsky-blue rounded-full"></div>
+              <p className="text-gray-600 max-w-2xl mx-auto font-tajawal">
+                نفخر بالتعاون مع نخبة من الشركات والمؤسسات الرائدة في مختلف القطاعات
+              </p>
             </div>
             <PartnersSection />
           </div>
         </section>
       </main>
-      <Footer />
     </div>
   );
 };
