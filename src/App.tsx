@@ -13,6 +13,7 @@ import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
 import { AdminAuthProvider } from "@/components/AdminAuthContext";
 import ProtectedAdminRoute from "@/components/ProtectedAdminRoute";
+import Footer from "./components/Footer";
 
 const queryClient = new QueryClient();
 
@@ -23,23 +24,26 @@ const App = () => (
       <Sonner />
       <AdminAuthProvider>
         <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/software" element={<Software />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/adminlogin" element={<AdminLogin />} />
-            <Route
-              path="/admin"
-              element={
-                <ProtectedAdminRoute>
-                  <AdminDashboard />
-                </ProtectedAdminRoute>
-              }
-            />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <div className="min-h-screen flex flex-col">
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/software" element={<Software />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/adminlogin" element={<AdminLogin />} />
+              <Route
+                path="/admin"
+                element={
+                  <ProtectedAdminRoute>
+                    <AdminDashboard />
+                  </ProtectedAdminRoute>
+                }
+              />
+              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+            <Footer />
+          </div>
         </BrowserRouter>
       </AdminAuthProvider>
     </TooltipProvider>
