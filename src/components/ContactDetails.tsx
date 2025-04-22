@@ -29,16 +29,8 @@ export function ContactDetails({ variant = 'footer' }: { variant?: 'footer' | 'c
   if (variant === 'footer') {
     return (
       <div className="text-center space-y-4">
-        {details.map((info, index) => (
-          <a 
-            key={index}
-            href={info.link}
-            className="flex flex-col items-center text-white hover:text-gray-300 transition-colors"
-          >
-            {info.icon}
-            <span className="mt-2 text-sm font-tajawal">{info.details}</span>
-          </a>
-        ))}
+        {/* Intentionally left empty to hide contact details */}
+        <p className="text-white font-tajawal">اتصل بنا</p>
       </div>
     );
   }

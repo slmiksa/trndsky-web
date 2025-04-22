@@ -1,6 +1,5 @@
 
 import { Link } from 'react-router-dom';
-import { Mail, Phone, MapPin } from 'lucide-react';
 
 const Footer = () => {
   return (
@@ -20,20 +19,9 @@ const Footer = () => {
       <div className="bg-[#1A1A1A] pt-16 pb-8">
         <div className="container mx-auto px-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-16">
-            {/* Contact Info Column */}
+            {/* Contact Info Column - Removed direct contact details */}
             <div className="text-right">
               <h3 className="text-xl font-bold mb-6 font-tajawal text-white">اتصل بنا</h3>
-              <div className="space-y-4 font-tajawal">
-                <ContactLink href="mailto:info@trndsky.com" icon={<Mail className="h-4 w-4" />}>
-                  info@trndsky.com
-                </ContactLink>
-                <ContactLink href="tel:+966789456123" icon={<Phone className="h-4 w-4" />}>
-                  <span dir="ltr">789 456 123 966+</span>
-                </ContactLink>
-                <ContactLink href="#" icon={<MapPin className="h-4 w-4" />}>
-                  المملكة العربية السعودية، الرياض
-                </ContactLink>
-              </div>
             </div>
 
             {/* Quick Links Column */}
@@ -83,18 +71,6 @@ const FooterLink = ({ to, children }: { to: string; children: React.ReactNode })
       {children}
     </Link>
   </li>
-);
-
-const ContactLink = ({ href, icon, children }: { href: string; icon: React.ReactNode; children: React.ReactNode }) => (
-  <a 
-    href={href}
-    className="flex items-center justify-end gap-3 text-gray-400 hover:text-trndsky-teal transition-all duration-300 group"
-  >
-    <span>{children}</span>
-    <span className="p-2 rounded-full bg-gray-800 group-hover:bg-gray-700 transition-all duration-300">
-      {icon}
-    </span>
-  </a>
 );
 
 export default Footer;
