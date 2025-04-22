@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import Navbar from '../components/Navbar';
 import ContactForm from '../components/ContactForm';
@@ -112,19 +111,6 @@ const Contact = () => {
               <h2 className="text-3xl font-bold mb-6 text-trndsky-darkblue font-tajawal">
                 موقعنا
               </h2>
-              <div className="rounded-lg overflow-hidden shadow-lg h-[400px] mb-8">
-                <iframe 
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3624.674457331385!2d46.675331711233605!3d24.7135517774737!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3e2f1df57e6dc5a3%3A0x1d108112e5d6fcba!2sRiyadh%20Saudi%20Arabia!5e0!3m2!1sen!2sus!4v1682915877158!5m2!1sen!2sus" 
-                  width="100%" 
-                  height="100%" 
-                  style={{ border: 0 }} 
-                  allowFullScreen 
-                  loading="lazy" 
-                  referrerPolicy="no-referrer-when-downgrade"
-                  title="TRNDSKY Location"
-                ></iframe>
-              </div>
-              
               <div className="bg-white p-6 rounded-lg shadow-md font-tajawal text-right">
                 <h3 className="text-xl font-bold mb-3">ساعات العمل</h3>
                 <div className="space-y-2 text-gray-700">
