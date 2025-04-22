@@ -21,6 +21,11 @@ const DEFAULT_ADMIN = {
   password: "admin123",
 };
 
+const getDefaultAdmin = () => ({
+  username: localStorage.getItem("default-admin-username") || "admin",
+  password: localStorage.getItem("default-admin-password") || "admin123",
+});
+
 export function AdminAuthProvider({ children }: { children: ReactNode }) {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
 
@@ -37,7 +42,8 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
     try {
       console.log("Attempting login with:", username);
       
-      if (username === DEFAULT_ADMIN.username && password === DEFAULT_ADMIN.password) {
+      const defaultAdmin = getDefaultAdmin();
+      if (username === defaultAdmin.username && password === defaultAdmin.password) {
         console.log("Default admin credentials detected");
         setIsLoggedIn(true);
         localStorage.setItem("admin-auth", "true");

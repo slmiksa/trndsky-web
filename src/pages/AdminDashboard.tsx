@@ -27,6 +27,7 @@ import { SoftwareProductDialog } from "@/components/admin/SoftwareProductDialog"
 import { AboutContentManager } from "@/components/admin/AboutContentManager";
 import { ContactManager } from "@/components/admin/ContactManager";
 import { AdminUsersManager } from "@/components/admin/AdminUsersManager";
+import { DefaultAdminManager } from "@/components/admin/DefaultAdminManager";
 
 const initialSlides = [
   {
@@ -519,6 +520,9 @@ const AdminDashboard = () => {
             </TabsTrigger>
             <TabsTrigger value="admins" className="text-lg px-8 font-bold data-[state=active]:bg-trndsky-blue data-[state=active]:text-white">
               المشرفون
+            </TabsTrigger>
+            <TabsTrigger value="settings" className="text-lg px-8 font-bold data-[state=active]:bg-trndsky-blue data-[state=active]:text-white">
+              الإعدادات
             </TabsTrigger>
           </TabsList>
 
@@ -1127,6 +1131,15 @@ const AdminDashboard = () => {
           <TabsContent value="admins">
             <section>
               <AdminUsersManager />
+            </section>
+          </TabsContent>
+
+          <TabsContent value="settings">
+            <section>
+              <h2 className="text-xl font-semibold mb-6 text-trndsky-darkblue">
+                إعدادات لوحة التحكم
+              </h2>
+              <DefaultAdminManager />
             </section>
           </TabsContent>
         </Tabs>
