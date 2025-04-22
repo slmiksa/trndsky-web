@@ -499,6 +499,9 @@ const AdminDashboard = () => {
             <TabsTrigger value="software" className="text-lg px-8 font-bold data-[state=active]:bg-trndsky-blue data-[state=active]:text-white">
               البرمجيات الجاهزة
             </TabsTrigger>
+            <TabsTrigger value="about" className="text-lg px-8 font-bold data-[state=active]:bg-trndsky-blue data-[state=active]:text-white">
+              من نحن
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="requests">
@@ -805,7 +808,7 @@ const AdminDashboard = () => {
                   <DialogDescription>
                     {slideToEdit
                       ? "يمكنك تعديل بيانات السلايد أدناه"
-                      : "قم بإضافة سلايد جديد للواجهة الرئيسية"}
+                      : "قم بإضافة سلايد ج��يد للواجهة الرئيسية"}
                   </DialogDescription>
                 </DialogHeader>
                 <form
@@ -1078,6 +1081,10 @@ const AdminDashboard = () => {
               product={productToEdit || undefined}
               onSuccess={fetchProducts}
             />
+          </TabsContent>
+
+          <TabsContent value="about">
+            <AboutContentManager />
           </TabsContent>
         </Tabs>
       </main>
