@@ -25,6 +25,7 @@ import { useUploadPartnerLogo } from "@/hooks/useUploadPartnerLogo";
 import { Card, CardContent } from "@/components/ui/card";
 import { SoftwareProductDialog } from "@/components/admin/SoftwareProductDialog";
 import { AboutContentManager } from "@/components/admin/AboutContentManager";
+import { ContactManager } from "@/components/admin/ContactManager";
 
 const initialSlides = [
   {
@@ -503,6 +504,9 @@ const AdminDashboard = () => {
             <TabsTrigger value="about" className="text-lg px-8 font-bold data-[state=active]:bg-trndsky-blue data-[state=active]:text-white">
               من نحن
             </TabsTrigger>
+            <TabsTrigger value="contact" className="text-lg px-8 font-bold data-[state=active]:bg-trndsky-blue data-[state=active]:text-white">
+              التواصل معنا
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="requests">
@@ -805,7 +809,7 @@ const AdminDashboard = () => {
             <Dialog open={slideDialogOpen} onOpenChange={setSlideDialogOpen}>
               <DialogContent dir="rtl">
                 <DialogHeader>
-                  <DialogTitle>{slideToEdit ? "تعديل السلايد" : "إضافة سلايد جديد"}</DialogTitle>
+                  <DialogTitle>{slideToEdit ? "تعديل السلايد" : "إضافة س��ايد جديد"}</DialogTitle>
                   <DialogDescription>
                     {slideToEdit
                       ? "يمكنك تعديل بيانات السلايد أدناه"
@@ -958,7 +962,7 @@ const AdminDashboard = () => {
                   }}
                 >
                   <div>
-                    <label className="font-medium block mb-1">اسم الشريك</label>
+                    <label className="font-medium block mb-1">��سم الشريك</label>
                     <input
                       name="name"
                       value={partnerForm.name}
@@ -1086,6 +1090,15 @@ const AdminDashboard = () => {
 
           <TabsContent value="about">
             <AboutContentManager />
+          </TabsContent>
+
+          <TabsContent value="contact">
+            <section>
+              <h2 className="text-xl font-semibold mb-4 text-trndsky-darkblue">
+                إدارة معلومات التواصل
+              </h2>
+              <ContactManager />
+            </section>
           </TabsContent>
         </Tabs>
       </main>

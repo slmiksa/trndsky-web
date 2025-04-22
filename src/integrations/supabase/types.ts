@@ -48,6 +48,42 @@ export type Database = {
         }
         Relationships: []
       }
+      contact_info: {
+        Row: {
+          closed_days: string
+          email: string
+          id: number
+          location: string
+          phone: string
+          updated_at: string | null
+          working_days: string
+          working_hours_end: string
+          working_hours_start: string
+        }
+        Insert: {
+          closed_days?: string
+          email: string
+          id?: number
+          location: string
+          phone: string
+          updated_at?: string | null
+          working_days?: string
+          working_hours_end?: string
+          working_hours_start?: string
+        }
+        Update: {
+          closed_days?: string
+          email?: string
+          id?: number
+          location?: string
+          phone?: string
+          updated_at?: string | null
+          working_days?: string
+          working_hours_end?: string
+          working_hours_start?: string
+        }
+        Relationships: []
+      }
       partners: {
         Row: {
           created_at: string | null

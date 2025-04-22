@@ -1,26 +1,52 @@
-
+import { useEffect, useState } from 'react';
 import Navbar from '../components/Navbar';
 import ContactForm from '../components/ContactForm';
 import { Mail, Phone, Globe } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 
 const Contact = () => {
-  const contactInfo = [
+  const [contactInfo, setContactInfo] = useState({
+    email: "info@trndsky.com",
+    phone: "+966 12 345 6789",
+    location: "الرياض، المملكة العربية السعودية",
+    working_days: "الأحد - الخميس",
+    closed_days: "الجمعة - السبت",
+    working_hours_start: "9:00 صباحًا",
+    working_hours_end: "5:00 مساءً"
+  });
+
+  useEffect(() => {
+    const fetchContactInfo = async () => {
+      const { data } = await supabase
+        .from('contact_info')
+        .select('*')
+        .single();
+      
+      if (data) {
+        setContactInfo(data);
+      }
+    };
+
+    fetchContactInfo();
+  }, []);
+
+  const contactDetails = [
     {
       icon: <Mail className="h-8 w-8 text-trndsky-teal" />,
       title: "البريد الإلكتروني",
-      details: "info@trndsky.com",
-      link: "mailto:info@trndsky.com"
+      details: contactInfo.email,
+      link: `mailto:${contactInfo.email}`
     },
     {
       icon: <Phone className="h-8 w-8 text-trndsky-teal" />,
       title: "رقم الهاتف",
-      details: "+966 12 345 6789",
-      link: "tel:+966123456789"
+      details: contactInfo.phone,
+      link: `tel:${contactInfo.phone.replace(/\s+/g, '')}`
     },
     {
       icon: <Globe className="h-8 w-8 text-trndsky-teal" />,
       title: "الموقع",
-      details: "الرياض، المملكة العربية السعودية",
+      details: contactInfo.location,
       link: "#"
     },
   ];
@@ -41,7 +67,7 @@ const Contact = () => {
       <main className="flex-grow py-16 px-4 bg-gray-50">
         <div className="container mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-16">
-            {contactInfo.map((info, index) => (
+            {contactDetails.map((info, index) => (
               <div key={index} className="bg-white p-8 rounded-lg shadow-md text-center card-hover">
                 <div className="flex justify-center mb-4">
                   {info.icon}
@@ -88,8 +114,8 @@ const Contact = () => {
               <div className="bg-white p-6 rounded-lg shadow-md font-tajawal text-right">
                 <h3 className="text-xl font-bold mb-3">ساعات العمل</h3>
                 <div className="space-y-2 text-gray-700">
-                  <p>الأحد - الخميس: 9:00 صباحًا - 5:00 مساءً</p>
-                  <p>الجمعة - السبت: مغلق</p>
+                  <p>{contactInfo.working_days}: {contactInfo.working_hours_start} - {contactInfo.working_hours_end}</p>
+                  <p>{contactInfo.closed_days}: مغلق</p>
                 </div>
               </div>
             </div>
