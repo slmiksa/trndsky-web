@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -6,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/use-toast";
 import { Card, CardContent } from "@/components/ui/card";
+import { ImageUpload } from "@/components/admin/ImageUpload";
 
 type StatItem = {
   number: string;
@@ -127,6 +127,36 @@ export function AboutContentManager() {
     setContent({ ...content, stats: newStats });
   };
 
+  const addStat = () => {
+    if (!content) return;
+    setContent({
+      ...content,
+      stats: [...content.stats, { number: "", label: "" }]
+    });
+  };
+
+  const removeStat = (index: number) => {
+    if (!content) return;
+    const newStats = [...content.stats];
+    newStats.splice(index, 1);
+    setContent({ ...content, stats: newStats });
+  };
+
+  const addTeamMember = () => {
+    if (!content) return;
+    setContent({
+      ...content,
+      team_members: [...content.team_members, { name: "", title: "", image: "" }]
+    });
+  };
+
+  const removeTeamMember = (index: number) => {
+    if (!content) return;
+    const newTeamMembers = [...content.team_members];
+    newTeamMembers.splice(index, 1);
+    setContent({ ...content, team_members: newTeamMembers });
+  };
+
   if (loading) {
     return (
       <div className="text-center py-8">
@@ -171,6 +201,28 @@ export function AboutContentManager() {
           </div>
 
           <div>
+            <label className="block font-medium mb-1">صورة الغلاف</label>
+            <div className="flex items-center gap-4">
+              <Input
+                value={content?.cover_image || ""}
+                onChange={(e) => content && setContent({ ...content, cover_image: e.target.value })}
+                placeholder="رابط الصورة"
+              />
+              <ImageUpload
+                onUpload={(url) => content && setContent({ ...content, cover_image: url })}
+                label="رفع صورة الغلاف"
+              />
+            </div>
+            {content.cover_image && (
+              <img
+                src={content.cover_image}
+                alt="صورة الغلاف"
+                className="mt-2 max-h-40 rounded-lg"
+              />
+            )}
+          </div>
+
+          <div>
             <label className="block font-medium mb-1">الرؤية</label>
             <Textarea
               value={content?.vision || ""}
@@ -187,24 +239,41 @@ export function AboutContentManager() {
               rows={4}
             />
           </div>
-
-          <div>
-            <label className="block font-medium mb-1">صورة الغلاف</label>
-            <Input
-              value={content?.cover_image || ""}
-              onChange={(e) => content && setContent({ ...content, cover_image: e.target.value })}
-              placeholder="رابط الصورة"
-            />
-          </div>
         </CardContent>
       </Card>
 
       <Card>
         <CardContent className="pt-6">
-          <h3 className="text-xl font-semibold mb-4">الإحصائيات</h3>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-xl font-semibold">الإحصائيات</h3>
+            <Button onClick={addStat} className="flex items-center gap-2">
+              إضافة إحصائية
+            </Button>
+          </div>
           <div className="grid gap-4">
             {content?.stats?.map((stat, index) => (
-              <div key={index} className="grid grid-cols-2 gap-4">
+              <div key={index} className="grid grid-cols-2 gap-4 items-start border p-4 rounded-lg relative">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="absolute -top-2 -right-2 bg-white"
+                  onClick={() => removeStat(index)}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M18 6 6 18"/>
+                    <path d="m6 6 12 12"/>
+                  </svg>
+                </Button>
                 <div>
                   <label className="block font-medium mb-1">الرقم</label>
                   <Input
@@ -229,15 +298,41 @@ export function AboutContentManager() {
         <CardContent className="pt-6">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-xl font-semibold">أعضاء الفريق</h3>
-            <Input
-              value={content?.team_title || ""}
-              onChange={(e) => content && setContent({ ...content, team_title: e.target.value })}
-              className="max-w-xs"
-            />
+            <div className="flex items-center gap-4">
+              <Input
+                value={content?.team_title || ""}
+                onChange={(e) => content && setContent({ ...content, team_title: e.target.value })}
+                className="max-w-xs"
+              />
+              <Button onClick={addTeamMember} className="flex items-center gap-2">
+                إضافة عضو
+              </Button>
+            </div>
           </div>
           <div className="grid gap-6">
             {content?.team_members?.map((member, index) => (
-              <div key={index} className="grid md:grid-cols-3 gap-4 items-start">
+              <div key={index} className="grid md:grid-cols-3 gap-4 items-start border p-4 rounded-lg relative">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="absolute -top-2 -right-2 bg-white"
+                  onClick={() => removeTeamMember(index)}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M18 6 6 18"/>
+                    <path d="m6 6 12 12"/>
+                  </svg>
+                </Button>
                 <div>
                   <label className="block font-medium mb-1">الاسم</label>
                   <Input
@@ -254,10 +349,23 @@ export function AboutContentManager() {
                 </div>
                 <div>
                   <label className="block font-medium mb-1">الصورة</label>
-                  <Input
-                    value={member.image}
-                    onChange={(e) => handleTeamMemberChange(index, "image", e.target.value)}
-                  />
+                  <div className="flex items-center gap-2">
+                    <Input
+                      value={member.image}
+                      onChange={(e) => handleTeamMemberChange(index, "image", e.target.value)}
+                    />
+                    <ImageUpload
+                      onUpload={(url) => handleTeamMemberChange(index, "image", url)}
+                      label="رفع صورة"
+                    />
+                  </div>
+                  {member.image && (
+                    <img
+                      src={member.image}
+                      alt={member.name}
+                      className="mt-2 max-h-20 rounded-lg"
+                    />
+                  )}
                 </div>
               </div>
             ))}

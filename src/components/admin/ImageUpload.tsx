@@ -1,0 +1,75 @@
+
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/components/ui/use-toast";
+import { Upload } from "lucide-react";
+
+interface ImageUploadProps {
+  onUpload: (url: string) => void;
+  label?: string;
+}
+
+export function ImageUpload({ onUpload, label = "رفع صورة" }: ImageUploadProps) {
+  const [uploading, setUploading] = useState(false);
+
+  const uploadImage = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    try {
+      setUploading(true);
+
+      if (!event.target.files || event.target.files.length === 0) {
+        throw new Error("يرجى اختيار صورة للرفع.");
+      }
+
+      const file = event.target.files[0];
+      const fileExt = file.name.split(".").pop();
+      const fileName = `${Math.random()}.${fileExt}`;
+      const filePath = `${fileName}`;
+
+      const { error: uploadError, data } = await supabase.storage
+        .from("about-images")
+        .upload(filePath, file);
+
+      if (uploadError) {
+        throw uploadError;
+      }
+
+      const { data: { publicUrl } } = supabase.storage
+        .from("about-images")
+        .getPublicUrl(filePath);
+
+      onUpload(publicUrl);
+      toast({
+        title: "تم الرفع",
+        description: "تم رفع الصورة بنجاح",
+      });
+    } catch (error: any) {
+      toast({
+        title: "خطأ",
+        description: error.message || "حدث خطأ أثناء رفع الصورة",
+        variant: "destructive",
+      });
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  return (
+    <Button
+      variant="outline"
+      disabled={uploading}
+      className="relative overflow-hidden"
+      type="button"
+    >
+      <input
+        type="file"
+        className="absolute inset-0 cursor-pointer opacity-0"
+        onChange={uploadImage}
+        accept="image/*"
+        disabled={uploading}
+      />
+      <Upload className="mr-2" />
+      {uploading ? "جاري الرفع..." : label}
+    </Button>
+  );
+}
