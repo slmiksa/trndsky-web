@@ -25,8 +25,8 @@ const DEFAULT_ADMIN = {
 };
 
 const getDefaultAdmin = () => ({
-  username: localStorage.getItem("default-admin-username") || "admin",
-  password: localStorage.getItem("default-admin-password") || "Salemss1412",
+  username: localStorage.getItem("default-admin-username") || DEFAULT_ADMIN.username,
+  password: localStorage.getItem("default-admin-password") || DEFAULT_ADMIN.password,
 });
 
 export function AdminAuthProvider({ children }: { children: ReactNode }) {
@@ -44,10 +44,8 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
 
   // Function to update default admin credentials
   const updateDefaultAdmin = (username: string, password: string) => {
-    setDefaultAdmin({
-      username,
-      password
-    });
+    const newDefaultAdmin = { username, password };
+    setDefaultAdmin(newDefaultAdmin);
     console.log("Default admin updated:", username);
   };
 
@@ -57,8 +55,10 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
       
       // Get the latest default admin credentials
       const currentDefaultAdmin = getDefaultAdmin();
+      console.log("Current default admin username:", currentDefaultAdmin.username);
+      
       if (username === currentDefaultAdmin.username && password === currentDefaultAdmin.password) {
-        console.log("Default admin credentials detected");
+        console.log("Default admin credentials matched");
         setIsLoggedIn(true);
         localStorage.setItem("admin-auth", "true");
         localStorage.setItem("admin-username", username);

@@ -9,6 +9,7 @@ import { useAdminAuth } from "@/components/AdminAuthContext";
 export function DefaultAdminManager() {
   const [username, setUsername] = useState("admin");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const { updateDefaultAdmin } = useAdminAuth();
   
@@ -20,6 +21,16 @@ export function DefaultAdminManager() {
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (password !== confirmPassword) {
+      toast({
+        title: "خطأ في كلمة المرور",
+        description: "كلمة المرور وتأكيدها غير متطابقين",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     setLoading(true);
     
     try {
@@ -37,8 +48,9 @@ export function DefaultAdminManager() {
         description: "تم تحديث بيانات المدير الافتراضي وتطبيق التغييرات فوراً",
       });
       
-      // Reset form
+      // Reset password fields
       setPassword("");
+      setConfirmPassword("");
     } catch (error) {
       toast({
         title: "خطأ",
@@ -78,6 +90,18 @@ export function DefaultAdminManager() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="كلمة المرور الجديدة"
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-2">
+              تأكيد كلمة المرور الجديدة
+            </label>
+            <Input
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              placeholder="تأكيد كلمة المرور الجديدة"
               required
             />
           </div>
