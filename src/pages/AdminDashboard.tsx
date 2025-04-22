@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useAdminAuth } from "@/components/AdminAuthContext";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { FolderOpen, X, Eye, Edit, Trash2, Plus } from "lucide-react";
+import { FolderOpen, X, Eye, Edit, Trash2, Plus, Users } from "lucide-react";
 import {
   Dialog,
   DialogTrigger,
@@ -26,6 +26,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { SoftwareProductDialog } from "@/components/admin/SoftwareProductDialog";
 import { AboutContentManager } from "@/components/admin/AboutContentManager";
 import { ContactManager } from "@/components/admin/ContactManager";
+import { AdminUsersManager } from "@/components/admin/AdminUsersManager";
 
 const initialSlides = [
   {
@@ -362,7 +363,7 @@ const AdminDashboard = () => {
 
       if (error) throw error;
       
-      toast({ title: "تم الحذف", description: "تم حذف الشريك بنجاح" });
+      toast({ title: "تم الحذف", description: "تم حذ�� الشريك بنجاح" });
       fetchPartners();
     } catch (error: any) {
       console.error("Error deleting partner:", error);
@@ -515,6 +516,9 @@ const AdminDashboard = () => {
             </TabsTrigger>
             <TabsTrigger value="contact" className="text-lg px-8 font-bold data-[state=active]:bg-trndsky-blue data-[state=active]:text-white">
               التواصل معنا
+            </TabsTrigger>
+            <TabsTrigger value="admins" className="text-lg px-8 font-bold data-[state=active]:bg-trndsky-blue data-[state=active]:text-white">
+              المشرفون
             </TabsTrigger>
           </TabsList>
 
@@ -1117,6 +1121,12 @@ const AdminDashboard = () => {
                 إدارة بيانات التواصل
               </h2>
               <ContactManager />
+            </section>
+          </TabsContent>
+
+          <TabsContent value="admins">
+            <section>
+              <AdminUsersManager />
             </section>
           </TabsContent>
         </Tabs>

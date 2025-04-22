@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -28,8 +29,24 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
       const { data: { session } } = await supabase.auth.getSession();
       
       if (session) {
-        setIsLoggedIn(true);
-        localStorage.setItem("admin-auth", "true");
+        // التحقق مما إذا كان المستخدم مشرفًا
+        const { data, error } = await supabase.rpc('is_admin', {
+          user_id: session.user.id
+        });
+        
+        if (error) {
+          console.error("Error checking admin status:", error);
+          setIsLoggedIn(false);
+          return;
+        }
+        
+        if (data) {
+          setIsLoggedIn(true);
+          localStorage.setItem("admin-auth", "true");
+        } else {
+          setIsLoggedIn(false);
+          localStorage.removeItem("admin-auth");
+        }
       } else {
         const authState = localStorage.getItem("admin-auth");
         setIsLoggedIn(authState === "true");
@@ -54,7 +71,7 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
 
   const signIn = async (email: string, password: string) => {
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password
       });
@@ -64,9 +81,28 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
         return false;
       }
       
-      setIsLoggedIn(true);
-      localStorage.setItem("admin-auth", "true");
-      return true;
+      if (data.user) {
+        // التحقق مما إذا كان المستخدم مشرفًا
+        const { data: isAdminData, error: isAdminError } = await supabase.rpc('is_admin', {
+          user_id: data.user.id
+        });
+        
+        if (isAdminError) {
+          console.error("Error checking admin status:", isAdminError);
+          return false;
+        }
+        
+        if (isAdminData) {
+          setIsLoggedIn(true);
+          localStorage.setItem("admin-auth", "true");
+          return true;
+        } else {
+          await supabase.auth.signOut();
+          return false;
+        }
+      }
+      
+      return false;
     } catch (err) {
       console.error("Unexpected error during sign in:", err);
       return false;
@@ -87,11 +123,33 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
     const { data: { session } } = await supabase.auth.getSession();
     
     if (session) {
-      if (!isLoggedIn) {
-        setIsLoggedIn(true);
-        localStorage.setItem("admin-auth", "true");
+      // التحقق مما إذا كان المستخدم مشرفًا
+      const { data, error } = await supabase.rpc('is_admin', {
+        user_id: session.user.id
+      });
+      
+      if (error) {
+        console.error("Error checking admin status:", error);
+        if (isLoggedIn) {
+          setIsLoggedIn(false);
+          localStorage.removeItem("admin-auth");
+        }
+        return false;
       }
-      return true;
+      
+      if (data) {
+        if (!isLoggedIn) {
+          setIsLoggedIn(true);
+          localStorage.setItem("admin-auth", "true");
+        }
+        return true;
+      } else {
+        if (isLoggedIn) {
+          setIsLoggedIn(false);
+          localStorage.removeItem("admin-auth");
+        }
+        return false;
+      }
     }
     
     const authState = localStorage.getItem("admin-auth");
