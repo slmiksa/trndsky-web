@@ -67,11 +67,14 @@ export function SoftwareProductDialog({
         if (error) throw error;
         toast({ title: "تم التحديث", description: "تم تحديث البرنامج بنجاح" });
       } else {
+        console.log("بدء إضافة منتج جديد:", form);
+        
         // Generate a new ID for the product when inserting
         const nextId = await getNextProductId();
+        console.log("ID المنتج الجديد:", nextId);
         
-        // Add new product with explicit ID
-        const { error } = await supabase.from("software_products").insert([
+        // Add new product with explicit ID and timestamps
+        const { data, error } = await supabase.from("software_products").insert([
           {
             id: nextId,
             title: form.title,
@@ -83,7 +86,12 @@ export function SoftwareProductDialog({
           }
         ]);
         
-        if (error) throw error;
+        if (error) {
+          console.error("خطأ في إضافة المنتج:", error);
+          throw error;
+        }
+        
+        console.log("تم إضافة منتج جديد بنجاح:", data);
         toast({ title: "تمت الإضافة", description: "تم إضافة البرنامج بنجاح" });
       }
 
@@ -103,18 +111,23 @@ export function SoftwareProductDialog({
 
   // Helper function to get the next available product ID
   const getNextProductId = async (): Promise<number> => {
-    const { data, error } = await supabase
-      .from("software_products")
-      .select("id")
-      .order("id", { ascending: false })
-      .limit(1);
-    
-    if (error) {
-      console.error("Error getting max product ID:", error);
-      return 1; // Default to 1 if there's an error
+    try {
+      const { data, error } = await supabase
+        .from("software_products")
+        .select("id")
+        .order("id", { ascending: false })
+        .limit(1);
+      
+      if (error) {
+        console.error("Error getting max product ID:", error);
+        return 1; // Default to 1 if there's an error
+      }
+      
+      return data && data.length > 0 ? (data[0].id + 1) : 1;
+    } catch (err) {
+      console.error("Unexpected error getting next ID:", err);
+      return Math.floor(Date.now() / 1000); // Fallback to timestamp-based ID
     }
-    
-    return data && data.length > 0 ? (data[0].id + 1) : 1;
   };
 
   return (
