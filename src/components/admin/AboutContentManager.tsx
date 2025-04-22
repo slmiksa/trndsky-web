@@ -48,7 +48,15 @@ export function AboutContentManager() {
         .single();
 
       if (error) throw error;
-      setContent(data);
+      
+      // Parse JSON strings to objects if needed
+      const parsedData: AboutContent = {
+        ...data,
+        stats: Array.isArray(data.stats) ? data.stats : [],
+        team_members: Array.isArray(data.team_members) ? data.team_members : []
+      };
+      
+      setContent(parsedData);
     } catch (error: any) {
       console.error("Error fetching about content:", error);
       toast({

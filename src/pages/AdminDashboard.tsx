@@ -24,6 +24,7 @@ import { toast } from "@/components/ui/use-toast";
 import { useUploadPartnerLogo } from "@/hooks/useUploadPartnerLogo";
 import { Card, CardContent } from "@/components/ui/card";
 import { SoftwareProductDialog } from "@/components/admin/SoftwareProductDialog";
+import { AboutContentManager } from "@/components/admin/AboutContentManager";
 
 const initialSlides = [
   {
@@ -883,7 +884,7 @@ const AdminDashboard = () => {
                   إدارة شركاء النجاح
                 </h2>
                 <Button onClick={openNewPartnerDialog} className="flex items-center gap-2">
-                  <Plus size={18} /> إضافة شريك جديد
+                  <Plus size={18} /> إضافة شريك جد��د
                 </Button>
               </div>
               
