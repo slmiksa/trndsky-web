@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -6,6 +7,7 @@ interface AdminAuthContextType {
   login: (username: string, password: string) => Promise<boolean>;
   logout: () => void;
   checkAuth: () => Promise<boolean>;
+  updateDefaultAdmin?: (username: string, password: string) => void;
 }
 
 const AdminAuthContext = createContext<AdminAuthContextType | undefined>(undefined);
@@ -28,6 +30,7 @@ const getDefaultAdmin = () => ({
 
 export function AdminAuthProvider({ children }: { children: ReactNode }) {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  const [defaultAdmin, setDefaultAdmin] = useState(getDefaultAdmin());
 
   useEffect(() => {
     const initSession = async () => {
@@ -38,12 +41,22 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
     initSession();
   }, []);
 
+  // Function to update default admin credentials
+  const updateDefaultAdmin = (username: string, password: string) => {
+    setDefaultAdmin({
+      username,
+      password
+    });
+    console.log("Default admin updated:", username);
+  };
+
   const login = async (username: string, password: string) => {
     try {
       console.log("Attempting login with:", username);
       
-      const defaultAdmin = getDefaultAdmin();
-      if (username === defaultAdmin.username && password === defaultAdmin.password) {
+      // Get the latest default admin credentials
+      const currentDefaultAdmin = getDefaultAdmin();
+      if (username === currentDefaultAdmin.username && password === currentDefaultAdmin.password) {
         console.log("Default admin credentials detected");
         setIsLoggedIn(true);
         localStorage.setItem("admin-auth", "true");
@@ -111,6 +124,7 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
       login, 
       logout, 
       checkAuth,
+      updateDefaultAdmin
     }}>
       {children}
     </AdminAuthContext.Provider>

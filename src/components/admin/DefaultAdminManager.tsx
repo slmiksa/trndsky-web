@@ -10,6 +10,7 @@ export function DefaultAdminManager() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const { updateDefaultAdmin } = useAdminAuth();
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -20,9 +21,14 @@ export function DefaultAdminManager() {
       localStorage.setItem("default-admin-username", username);
       localStorage.setItem("default-admin-password", password);
       
+      // Call the updateDefaultAdmin function to apply changes immediately
+      if (updateDefaultAdmin) {
+        updateDefaultAdmin(username, password);
+      }
+      
       toast({
         title: "تم التحديث بنجاح",
-        description: "تم تحديث بيانات المدير الافتراضي. سيتم تطبيق التغييرات عند تسجيل الدخول القادم",
+        description: "تم تحديث بيانات المدير الافتراضي وتطبيق التغييرات فوراً",
       });
       
       // Reset form
