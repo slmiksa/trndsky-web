@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import Navbar from '../components/Navbar';
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/components/ui/use-toast";
+import { Json } from '@/integrations/supabase/types';
 
 type StatItem = {
   number: string;
@@ -45,11 +46,36 @@ const About = () => {
 
       if (error) throw error;
       
-      // Parse JSON strings to properly typed objects if needed
+      // Parse JSON strings to properly typed objects
       const parsedData: AboutContent = {
         ...data,
-        stats: Array.isArray(data.stats) ? data.stats : [],
-        team_members: Array.isArray(data.team_members) ? data.team_members : []
+        stats: Array.isArray(data.stats) 
+          ? data.stats.map((stat: Json) => {
+              // Ensure each stat item conforms to StatItem type
+              if (typeof stat === 'object' && stat !== null) {
+                return {
+                  number: String(stat.number || ''),
+                  label: String(stat.label || '')
+                };
+              }
+              // Fallback for non-compliant data
+              return { number: '0', label: '' };
+            }) 
+          : [],
+        team_members: Array.isArray(data.team_members) 
+          ? data.team_members.map((member: Json) => {
+              // Ensure each team member conforms to TeamMember type
+              if (typeof member === 'object' && member !== null) {
+                return {
+                  name: String(member.name || ''),
+                  title: String(member.title || ''),
+                  image: String(member.image || '')
+                };
+              }
+              // Fallback for non-compliant data
+              return { name: '', title: '', image: '' };
+            })
+          : []
       };
       
       setContent(parsedData);
