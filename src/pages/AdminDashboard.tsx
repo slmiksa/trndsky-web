@@ -167,7 +167,6 @@ const AdminDashboard = () => {
   }, [isLoggedIn, navigate]);
 
   useEffect(() => {
-    // Create a mapping of product IDs to titles after fetching products
     const titlesMap = products.reduce((acc, product) => {
       acc[product.id] = product.title;
       return acc;
@@ -841,3 +840,289 @@ const AdminDashboard = () => {
                       onChange={handleSlideFormChange}
                       required
                       className="input border px-3 py-2 w-full rounded"
+                      placeholder="عنوان السلايد"
+                    />
+                  </div>
+                  <div>
+                    <label className="font-medium block mb-1">العنوان الفرعي</label>
+                    <input
+                      name="subtitle"
+                      value={slideForm.subtitle}
+                      onChange={handleSlideFormChange}
+                      required
+                      className="input border px-3 py-2 w-full rounded"
+                      placeholder="العنوان الفرعي"
+                    />
+                  </div>
+                  <div>
+                    <label className="font-medium block mb-1">الوصف</label>
+                    <textarea
+                      name="description"
+                      value={slideForm.description}
+                      onChange={handleSlideFormChange}
+                      required
+                      className="textarea border px-3 py-2 w-full rounded"
+                      placeholder="وصف السلايد"
+                      rows={3}
+                    ></textarea>
+                  </div>
+                  <div>
+                    <label className="font-medium block mb-1">رابط الصورة</label>
+                    <input
+                      name="image"
+                      value={slideForm.image}
+                      onChange={handleSlideFormChange}
+                      required
+                      className="input border px-3 py-2 w-full rounded"
+                      placeholder="رابط صورة السلايد"
+                    />
+                  </div>
+                  <div className="flex justify-end gap-2 mt-6">
+                    <Button type="button" variant="outline" onClick={() => setSlideDialogOpen(false)}>
+                      إلغاء
+                    </Button>
+                    <Button type="submit" disabled={isSavingSlide}>
+                      {slideToEdit ? "تحديث" : "إضافة"}
+                    </Button>
+                  </div>
+                </form>
+              </DialogContent>
+            </Dialog>
+          </TabsContent>
+
+          <TabsContent value="partners">
+            <section>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-semibold text-trndsky-darkblue">
+                  إدارة شركاء النجاح
+                </h2>
+                <Button onClick={openNewPartnerDialog} className="flex items-center gap-2">
+                  <Plus size={18} /> إضافة شريك
+                </Button>
+              </div>
+
+              {loadingPartners ? (
+                <div className="text-center py-8 text-trndsky-blue">
+                  جارٍ التحميل...
+                </div>
+              ) : partners.length === 0 ? (
+                <div className="text-center py-4 text-gray-500">
+                  لا يوجد شركاء حاليًا.
+                </div>
+              ) : (
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {partners.map((partner) => (
+                    <Card key={partner.id} className="overflow-hidden">
+                      <CardContent className="p-4 flex flex-col items-center">
+                        <div className="h-32 flex items-center justify-center mb-4">
+                          <img
+                            src={partner.logo_url}
+                            alt={partner.name}
+                            className="max-h-full max-w-full object-contain"
+                          />
+                        </div>
+                        <h3 className="font-bold text-center text-trndsky-blue mb-4">
+                          {partner.name}
+                        </h3>
+                        <div className="flex gap-2 mt-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => openEditPartnerDialog(partner)}
+                          >
+                            <Edit size={16} className="mr-1" /> تعديل
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleDeletePartner(partner.id)}
+                            className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                          >
+                            <Trash2 size={16} className="mr-1" /> حذف
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              )}
+
+              <Dialog open={partnerDialogOpen} onOpenChange={setPartnerDialogOpen}>
+                <DialogContent dir="rtl">
+                  <DialogHeader>
+                    <DialogTitle>
+                      {partnerToEdit ? "تعديل شريك النجاح" : "إضافة شريك نجاح جديد"}
+                    </DialogTitle>
+                    <DialogDescription>
+                      {partnerToEdit
+                        ? "يمكنك تعديل بيانات الشريك أدناه"
+                        : "قم بإضافة شريك نجاح جديد"}
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="space-y-4 py-3">
+                    <div>
+                      <label className="font-medium block mb-1">اسم الشريك</label>
+                      <input
+                        name="name"
+                        value={partnerForm.name}
+                        onChange={handlePartnerFormChange}
+                        className="input border px-3 py-2 w-full rounded"
+                        placeholder="اسم الشريك"
+                      />
+                    </div>
+                    <div>
+                      <label className="font-medium block mb-1">الشعار الحالي</label>
+                      {partnerForm.logo_url ? (
+                        <div className="mb-3 border rounded p-2 flex justify-center">
+                          <img
+                            src={partnerForm.logo_url}
+                            alt="الشعار الحالي"
+                            className="h-24 object-contain"
+                          />
+                        </div>
+                      ) : (
+                        <div className="text-gray-400 mb-3">لا يوجد شعار حاليًا</div>
+                      )}
+                    </div>
+                    <div>
+                      <label className="font-medium block mb-1">
+                        {partnerForm.logo_url ? "تغيير الشعار" : "إضافة شعار"}
+                      </label>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleLogoFileChange}
+                        className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-trndsky-blue/10 file:text-trndsky-blue hover:file:bg-trndsky-blue/20"
+                      />
+                    </div>
+                    {partnerForm.logo_url && !logoFile && (
+                      <div>
+                        <label className="font-medium block mb-1">رابط الشعار</label>
+                        <input
+                          name="logo_url"
+                          value={partnerForm.logo_url}
+                          onChange={handlePartnerFormChange}
+                          className="input border px-3 py-2 w-full rounded"
+                          placeholder="رابط الشعار"
+                        />
+                      </div>
+                    )}
+                  </div>
+                  <DialogFooter>
+                    <Button
+                      onClick={handleSavePartner}
+                      disabled={isSavingPartner || logoUploading}
+                    >
+                      {isSavingPartner || logoUploading ? "جارٍ الحفظ..." : "حفظ"}
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setPartnerDialogOpen(false)}
+                    >
+                      إلغاء
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            </section>
+          </TabsContent>
+
+          <TabsContent value="software">
+            <section>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-semibold text-trndsky-darkblue">
+                  إدارة البرمجيات الجاهزة
+                </h2>
+                <Button onClick={openNewProductDialog} className="flex items-center gap-2">
+                  <Plus size={18} /> إضافة برنامج
+                </Button>
+              </div>
+
+              {loadingProducts ? (
+                <div className="text-center py-8 text-trndsky-blue">
+                  جارٍ التحميل...
+                </div>
+              ) : products.length === 0 ? (
+                <div className="text-center py-4 text-gray-500">
+                  لا توجد برمجيات حاليًا.
+                </div>
+              ) : (
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {products.map((product) => (
+                    <Card key={product.id} className="overflow-hidden">
+                      <div className="h-48">
+                        <img
+                          src={product.image_url}
+                          alt={product.title}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      <CardContent className="p-4">
+                        <h3 className="font-bold text-lg text-trndsky-teal mb-2">
+                          {product.title}
+                        </h3>
+                        <p className="text-sm text-gray-600 line-clamp-2 mb-3">
+                          {product.description}
+                        </p>
+                        <div className="flex justify-between items-center">
+                          <div className="font-bold text-trndsky-blue">
+                            {product.price} ريال
+                          </div>
+                          <div className="flex gap-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => openEditProductDialog(product)}
+                            >
+                              <Edit size={16} />
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleDeleteProduct(product.id)}
+                              className="text-red-500"
+                            >
+                              <Trash2 size={16} />
+                            </Button>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              )}
+
+              <SoftwareProductDialog
+                open={productDialogOpen}
+                setOpen={setProductDialogOpen}
+                product={productToEdit}
+                onSuccess={fetchProducts}
+              />
+            </section>
+          </TabsContent>
+
+          <TabsContent value="about">
+            <section>
+              <h2 className="text-xl font-semibold mb-6 text-trndsky-darkblue">
+                إدارة محتوى صفحة "من نحن"
+              </h2>
+              <AboutContentManager />
+            </section>
+          </TabsContent>
+
+          <TabsContent value="contact">
+            <section>
+              <h2 className="text-xl font-semibold mb-6 text-trndsky-darkblue">
+                إدارة بيانات التواصل
+              </h2>
+              <ContactManager />
+            </section>
+          </TabsContent>
+        </Tabs>
+      </main>
+    </div>
+  );
+};
+
+export default AdminDashboard;
