@@ -44,6 +44,7 @@ export function ImageUpload({ onUpload, label = "رفع صورة" }: ImageUpload
         description: "تم رفع الصورة بنجاح",
       });
     } catch (error: any) {
+      console.error("Error uploading:", error);
       toast({
         title: "خطأ",
         description: error.message || "حدث خطأ أثناء رفع الصورة",
