@@ -50,7 +50,7 @@ const About = () => {
       const parsedData: AboutContent = {
         ...data,
         stats: Array.isArray(data.stats) 
-          ? data.stats.map((stat: Json) => {
+          ? data.stats.map((stat: any) => {
               // Ensure each stat item conforms to StatItem type
               if (typeof stat === 'object' && stat !== null) {
                 return {
@@ -63,7 +63,7 @@ const About = () => {
             }) 
           : [],
         team_members: Array.isArray(data.team_members) 
-          ? data.team_members.map((member: Json) => {
+          ? data.team_members.map((member: any) => {
               // Ensure each team member conforms to TeamMember type
               if (typeof member === 'object' && member !== null) {
                 return {
