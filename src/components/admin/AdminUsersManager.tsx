@@ -27,16 +27,6 @@ type AdminFormData = {
   password: string;
 };
 
-// Define the shape of the user object returned from getUser
-type SupabaseUser = {
-  id: string;
-  email?: string | null;
-  user_metadata?: {
-    username?: string;
-  };
-  created_at: string;
-};
-
 export function AdminUsersManager() {
   const [adminUsers, setAdminUsers] = useState<AdminUser[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -46,8 +36,6 @@ export function AdminUsersManager() {
   const [resetPasswordData, setResetPasswordData] = useState<{ id: string; username: string; password: string }>({ id: "", username: "", password: "" });
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  const { supabaseAuth } = useAdminAuth();
 
   // تحميل المشرفين
   useEffect(() => {
@@ -62,34 +50,19 @@ export function AdminUsersManager() {
       // الحصول على قائمة المشرفين
       const { data: adminUsersData, error: adminUsersError } = await supabase
         .from("admin_users")
-        .select("user_id")
+        .select("*")
         .order("created_at", { ascending: false });
 
       if (adminUsersError) throw adminUsersError;
-
-      if (adminUsersData && adminUsersData.length > 0) {
-        // نحتاج إلى الحصول على معلومات المستخدمين بشكل فردي
-        const userPromises = adminUsersData.map(async (admin) => {
-          const { data: userData, error: userError } = await supabase.auth.admin.getUserById(admin.user_id);
-          
-          if (userError) {
-            console.error(`Error fetching user with ID ${admin.user_id}:`, userError);
-            return null;
-          }
-          
-          if (!userData?.user) return null;
-          
-          return {
-            id: userData.user.id,
-            username: userData.user.user_metadata?.username || "مستخدم بدون اسم",
-            created_at: userData.user.created_at
-          };
-        });
+      
+      if (adminUsersData) {
+        const users = adminUsersData.map(user => ({
+          id: user.id,
+          username: user.username || "مستخدم بدون اسم",
+          created_at: user.created_at
+        }));
         
-        const users = await Promise.all(userPromises);
-        const validUsers = users.filter(user => user !== null) as AdminUser[];
-        
-        setAdminUsers(validUsers);
+        setAdminUsers(users);
       } else {
         setAdminUsers([]);
       }
@@ -120,50 +93,48 @@ export function AdminUsersManager() {
       setIsProcessing(true);
       setError(null);
 
-      // إنشاء مستخدم جديد باستخدام التسجيل العادي
-      const email = `${newAdminData.username}@admin.trndsky.com`;
-      
-      // استخدام التسجيل العادي بدلاً من API الإدارة
-      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-        email,
-        password: newAdminData.password,
-        options: {
-          data: {
-            username: newAdminData.username
-          }
-        }
+      // التحقق من عدم وجود مستخدم بنفس اسم المستخدم
+      const { data: existingUser, error: checkError } = await supabase
+        .from("admin_users")
+        .select("username")
+        .eq("username", newAdminData.username)
+        .single();
+
+      if (checkError && checkError.code !== "PGRST116") { // PGRST116 means no rows returned
+        throw checkError;
+      }
+
+      if (existingUser) {
+        toast({
+          title: "خطأ",
+          description: "اسم المستخدم موجود بالفعل",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // إضافة المستخدم كمشرف في جدول admin_users
+      const { data: newAdmin, error: adminError } = await supabase
+        .from("admin_users")
+        .insert({
+          username: newAdminData.username,
+          password: newAdminData.password, // يجب تشفير كلمات المرور في التطبيقات الإنتاجية
+          role: "admin"
+        })
+        .select()
+        .single();
+
+      if (adminError) throw adminError;
+
+      toast({
+        title: "تم بنجاح",
+        description: "تمت إضافة المشرف الجديد بنجاح",
       });
 
-      if (signUpError) throw signUpError;
-
-      if (signUpData.user) {
-        // إضافة المستخدم كمشرف
-        const { error: adminError } = await supabase
-          .from("admin_users")
-          .insert({
-            user_id: signUpData.user.id,
-            role: "admin"
-          });
-
-        if (adminError) throw adminError;
-
-        toast({
-          title: "تم بنجاح",
-          description: "تمت إضافة المشرف الجديد بنجاح",
-        });
-
-        // تسجيل الخروج للمستخدم الجديد المسجل
-        await supabase.auth.signOut();
-        
-        // إعادة تسجيل الدخول للمستخدم الحالي إذا كان موجودًا
-        const { data: { session } } = await supabase.auth.getSession();
-        if (!session) {
-          // تحميل قائمة المشرفين
-          fetchAdminUsers();
-          setCreateDialogOpen(false);
-          setNewAdminData({ username: "", password: "" });
-        }
-      }
+      // تحميل قائمة المشرفين
+      fetchAdminUsers();
+      setCreateDialogOpen(false);
+      setNewAdminData({ username: "", password: "" });
     } catch (error: any) {
       console.error("Error creating admin user:", error);
       setError(error.message || "حدث خطأ أثناء إنشاء المشرف الجديد");
@@ -191,22 +162,20 @@ export function AdminUsersManager() {
       setIsProcessing(true);
       setError(null);
 
-      // استخدام إعادة تعيين كلمة المرور بدلاً من تحديث المستخدم مباشرة
-      const email = `${resetPasswordData.username}@admin.trndsky.com`;
-      
-      // إعادة تعيين كلمة المرور باستخدام البريد الإلكتروني
-      const { error: resetError } = await supabase.auth.resetPasswordForEmail(
-        email,
-        {
-          redirectTo: `${window.location.origin}/admin-reset-password`
-        }
-      );
+      // تحديث كلمة المرور في قاعدة البيانات
+      const { error: updateError } = await supabase
+        .from("admin_users")
+        .update({ 
+          password: resetPasswordData.password,
+          updated_at: new Date().toISOString()
+        })
+        .eq("id", resetPasswordData.id);
 
-      if (resetError) throw resetError;
+      if (updateError) throw updateError;
 
       toast({
         title: "تم بنجاح",
-        description: "تم إرسال رابط إعادة تعيين كلمة المرور بنجاح",
+        description: "تم تحديث كلمة المرور بنجاح",
       });
 
       setResetPasswordDialogOpen(false);
@@ -231,19 +200,17 @@ export function AdminUsersManager() {
 
     try {
       setError(null);
-      // حذف المشرف من جدول admin_users أولاً
-      const { error: deleteAdminError } = await supabase
+      // حذف المشرف من جدول admin_users
+      const { error: deleteError } = await supabase
         .from("admin_users")
         .delete()
-        .eq("user_id", adminId);
+        .eq("id", adminId);
 
-      if (deleteAdminError) throw deleteAdminError;
-
-      // لا نحاول حذف المستخدم نفسه من auth.users لأن ذلك يتطلب صلاحيات إدارية
+      if (deleteError) throw deleteError;
       
       toast({
         title: "تم بنجاح",
-        description: "تم حذف المشرف من قائمة المشرفين بنجاح",
+        description: "تم حذف المشرف بنجاح",
       });
 
       // تحديث القائمة

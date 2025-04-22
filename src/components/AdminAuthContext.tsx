@@ -26,31 +26,9 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const initSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (session) {
-        // التحقق مما إذا كان المستخدم مشرفًا
-        const { data, error } = await supabase.rpc('is_admin', {
-          user_id: session.user.id
-        });
-        
-        if (error) {
-          console.error("Error checking admin status:", error);
-          setIsLoggedIn(false);
-          return;
-        }
-        
-        if (data) {
-          setIsLoggedIn(true);
-          localStorage.setItem("admin-auth", "true");
-        } else {
-          setIsLoggedIn(false);
-          localStorage.removeItem("admin-auth");
-        }
-      } else {
-        const authState = localStorage.getItem("admin-auth");
-        setIsLoggedIn(authState === "true");
-      }
+      // التحقق من حالة تسجيل الدخول من التخزين المحلي
+      const authState = localStorage.getItem("admin-auth");
+      setIsLoggedIn(authState === "true");
     };
 
     initSession();
@@ -60,6 +38,7 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
     return null;
   }
 
+  // تسجيل الدخول البسيط (للدعم المتراجع)
   const login = (username: string, password: string) => {
     if (username === "admin" && password === "admin") {
       setIsLoggedIn(true);
@@ -69,39 +48,29 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
     return false;
   };
 
+  // تسجيل الدخول باستخدام قاعدة البيانات
   const signIn = async (username: string, password: string) => {
     try {
-      // سنستخدم اسم المستخدم كبريد إلكتروني مع نطاق وهمي للتسجيل
-      const email = `${username}@admin.trndsky.com`;
+      // التحقق من وجود المشرف في جدول admin_users
+      const { data: adminData, error: adminError } = await supabase
+        .from("admin_users")
+        .select("*")
+        .eq("username", username)
+        .single();
       
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password
-      });
-      
-      if (error) {
-        console.error("Supabase auth error:", error);
+      if (adminError) {
+        console.error("Error checking admin:", adminError);
         return false;
       }
       
-      if (data.user) {
-        // التحقق مما إذا كان المستخدم مشرفًا
-        const { data: isAdminData, error: isAdminError } = await supabase.rpc('is_admin', {
-          user_id: data.user.id
-        });
-        
-        if (isAdminError) {
-          console.error("Error checking admin status:", isAdminError);
-          return false;
-        }
-        
-        if (isAdminData) {
+      // التحقق من كلمة المرور
+      if (adminData) {
+        // التحقق من كلمة المرور (بشكل بسيط، يمكن استخدام طرق أكثر أمانًا)
+        if (adminData.password === password) {
           setIsLoggedIn(true);
           localStorage.setItem("admin-auth", "true");
+          localStorage.setItem("admin-username", username);
           return true;
-        } else {
-          await supabase.auth.signOut();
-          return false;
         }
       }
       
@@ -113,48 +82,17 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signOut = async () => {
-    await supabase.auth.signOut();
     logout();
   };
 
   const logout = () => {
     setIsLoggedIn(false);
     localStorage.removeItem("admin-auth");
+    localStorage.removeItem("admin-username");
   };
 
   const checkAuth = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    
-    if (session) {
-      // التحقق مما إذا كان المستخدم مشرفًا
-      const { data, error } = await supabase.rpc('is_admin', {
-        user_id: session.user.id
-      });
-      
-      if (error) {
-        console.error("Error checking admin status:", error);
-        if (isLoggedIn) {
-          setIsLoggedIn(false);
-          localStorage.removeItem("admin-auth");
-        }
-        return false;
-      }
-      
-      if (data) {
-        if (!isLoggedIn) {
-          setIsLoggedIn(true);
-          localStorage.setItem("admin-auth", "true");
-        }
-        return true;
-      } else {
-        if (isLoggedIn) {
-          setIsLoggedIn(false);
-          localStorage.removeItem("admin-auth");
-        }
-        return false;
-      }
-    }
-    
+    // التحقق من حالة تسجيل الدخول من التخزين المحلي
     const authState = localStorage.getItem("admin-auth");
     const isAuthenticated = authState === "true";
     
