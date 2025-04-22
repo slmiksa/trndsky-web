@@ -29,7 +29,7 @@ serve(async (req) => {
       )
     }
 
-    // Delete directly from the admin_users table
+    // Using service role client to bypass RLS
     const { error } = await supabaseClient
       .from('admin_users')
       .delete()

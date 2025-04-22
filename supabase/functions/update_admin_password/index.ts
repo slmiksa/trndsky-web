@@ -29,17 +29,16 @@ serve(async (req) => {
       )
     }
 
-    // Update directly in the admin_users table
-    const { data, error } = await supabaseClient
+    // Using service role client to bypass RLS
+    const { error } = await supabaseClient
       .from('admin_users')
-      .update({ password: new_password, updated_at: new Date().toISOString() })
-      .eq('id', admin_id)
-      .select();
+      .update({ password: new_password })
+      .eq('id', admin_id);
 
     if (error) throw error
 
     return new Response(
-      JSON.stringify({ success: true, data }),
+      JSON.stringify({ success: true }),
       { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )
   } catch (error) {

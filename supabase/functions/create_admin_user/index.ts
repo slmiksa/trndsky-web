@@ -29,7 +29,7 @@ serve(async (req) => {
       )
     }
 
-    // Insert directly into the admin_users table without using RPC
+    // Using service role client to bypass RLS
     const { data, error } = await supabaseClient
       .from('admin_users')
       .insert({

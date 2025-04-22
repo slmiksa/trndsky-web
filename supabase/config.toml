@@ -2,10 +2,10 @@
 qsdwcplmgkuyweqynyyh = "qsdwcplmgkuyweqynyyh"
 
 [functions.create_admin_user]
-verify_jwt = true
+verify_jwt = false
 
 [functions.update_admin_password]
-verify_jwt = true
+verify_jwt = false
 
 [functions.delete_admin_user]
-verify_jwt = true
+verify_jwt = false

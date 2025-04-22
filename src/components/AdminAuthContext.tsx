@@ -33,9 +33,10 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
     try {
       console.log("Attempting login with:", username);
       
+      // First check if the user exists and credentials match
       const { data: admin, error: adminError } = await supabase
         .from("admin_users")
-        .select("*")
+        .select("id, username, password")
         .eq("username", username)
         .maybeSingle();
 
@@ -51,11 +52,13 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
         return false;
       }
 
+      // Compare the passwords directly
       if (admin.password === password) {
         console.log("Password match, login successful");
         setIsLoggedIn(true);
         localStorage.setItem("admin-auth", "true");
         localStorage.setItem("admin-username", username);
+        localStorage.setItem("admin-id", admin.id);
         return true;
       }
 
@@ -71,6 +74,7 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
     setIsLoggedIn(false);
     localStorage.removeItem("admin-auth");
     localStorage.removeItem("admin-username");
+    localStorage.removeItem("admin-id");
   };
 
   const checkAuth = async () => {
