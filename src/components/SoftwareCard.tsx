@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Send } from 'lucide-react';
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from 'sonner';
@@ -175,10 +175,7 @@ export const FeaturedSoftware = () => {
   const [softwareItems, setSoftwareItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useState(() => {
-    fetchFeaturedSoftware();
-  });
-
+  // Define the fetchFeaturedSoftware function before using it
   const fetchFeaturedSoftware = async () => {
     try {
       const { data, error } = await supabase
@@ -199,6 +196,11 @@ export const FeaturedSoftware = () => {
       setLoading(false);
     }
   };
+
+  // Use useEffect with the function defined above
+  useEffect(() => {
+    fetchFeaturedSoftware();
+  }, []);
 
   return (
     <section className="section-padding bg-white">
