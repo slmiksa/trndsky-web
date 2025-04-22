@@ -52,6 +52,7 @@ export function SoftwareProductDialog({
 
     try {
       if (product?.id) {
+        // Update existing product
         const { error } = await supabase
           .from("software_products")
           .update({
@@ -66,7 +67,22 @@ export function SoftwareProductDialog({
         if (error) throw error;
         toast({ title: "تم التحديث", description: "تم تحديث البرنامج بنجاح" });
       } else {
-        const { error } = await supabase.from("software_products").insert([form]);
+        // Generate a new ID for the product when inserting
+        const nextId = await getNextProductId();
+        
+        // Add new product with explicit ID
+        const { error } = await supabase.from("software_products").insert([
+          {
+            id: nextId,
+            title: form.title,
+            description: form.description,
+            price: form.price,
+            image_url: form.image_url,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          }
+        ]);
+        
         if (error) throw error;
         toast({ title: "تمت الإضافة", description: "تم إضافة البرنامج بنجاح" });
       }
@@ -83,6 +99,22 @@ export function SoftwareProductDialog({
     } finally {
       setIsSaving(false);
     }
+  };
+
+  // Helper function to get the next available product ID
+  const getNextProductId = async (): Promise<number> => {
+    const { data, error } = await supabase
+      .from("software_products")
+      .select("id")
+      .order("id", { ascending: false })
+      .limit(1);
+    
+    if (error) {
+      console.error("Error getting max product ID:", error);
+      return 1; // Default to 1 if there's an error
+    }
+    
+    return data && data.length > 0 ? (data[0].id + 1) : 1;
   };
 
   return (
