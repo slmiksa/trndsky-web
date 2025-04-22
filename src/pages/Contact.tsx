@@ -1,68 +1,11 @@
-import { useEffect, useState } from 'react';
+
 import Navbar from '../components/Navbar';
 import ContactForm from '../components/ContactForm';
-import { Mail, Phone, MapPin } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { ContactDetails } from '@/components/ContactDetails';
+import { useContactInfo } from '@/hooks/useContactInfo';
 
 const Contact = () => {
-  const [contactInfo, setContactInfo] = useState({
-    email: "",
-    phone: "",
-    location: "",
-    working_days: "الأحد - الخميس",
-    closed_days: "الجمعة - السبت",
-    working_hours_start: "9:00 صباحًا",
-    working_hours_end: "5:00 مساءً"
-  });
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchContactInfo = async () => {
-      setLoading(true);
-      try {
-        const { data, error } = await supabase
-          .from('contact_info')
-          .select('*')
-          .single();
-        
-        if (error) {
-          console.error("Error fetching contact info:", error);
-          return;
-        }
-        
-        if (data) {
-          setContactInfo(data);
-        }
-      } catch (error) {
-        console.error("Error in contact info fetch:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchContactInfo();
-  }, []);
-
-  const contactDetails = [
-    {
-      icon: <Mail className="h-8 w-8 text-trndsky-teal" />,
-      title: "البريد الإلكتروني",
-      details: contactInfo.email || "info@trndsky.com",
-      link: `mailto:${contactInfo.email || "info@trndsky.com"}`
-    },
-    {
-      icon: <Phone className="h-8 w-8 text-trndsky-teal" />,
-      title: "رقم الهاتف",
-      details: contactInfo.phone || "+966 12 345 6789",
-      link: `tel:${(contactInfo.phone || "+966 12 345 6789").replace(/\s+/g, '')}`
-    },
-    {
-      icon: <MapPin className="h-8 w-8 text-trndsky-teal" />,
-      title: "الموقع",
-      details: contactInfo.location || "الرياض، المملكة العربية السعودية",
-      link: "#"
-    },
-  ];
+  const { contactInfo, loading } = useContactInfo();
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -79,22 +22,7 @@ const Contact = () => {
       
       <main className="flex-grow py-16 px-4 bg-gray-50">
         <div className="container mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-16">
-            {contactDetails.map((info, index) => (
-              <div key={index} className="bg-white p-8 rounded-lg shadow-md text-center card-hover">
-                <div className="flex justify-center mb-4">
-                  {info.icon}
-                </div>
-                <h3 className="text-xl font-bold mb-2 font-tajawal">{info.title}</h3>
-                <a 
-                  href={info.link} 
-                  className="text-gray-700 hover:text-trndsky-teal transition-colors font-tajawal"
-                >
-                  {info.details}
-                </a>
-              </div>
-            ))}
-          </div>
+          <ContactDetails variant="card" />
           
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             <div>
@@ -118,8 +46,8 @@ const Contact = () => {
                     <p>جاري التحميل...</p>
                   ) : (
                     <>
-                      <p>{contactInfo.working_days || "الأحد - الخميس"}: {contactInfo.working_hours_start || "9:00 صباحًا"} - {contactInfo.working_hours_end || "5:00 مساءً"}</p>
-                      <p>{contactInfo.closed_days || "الجمعة - السبت"}: مغلق</p>
+                      <p>{contactInfo.working_days}: {contactInfo.working_hours_start} - {contactInfo.working_hours_end}</p>
+                      <p>{contactInfo.closed_days}: مغلق</p>
                     </>
                   )}
                 </div>
