@@ -7,8 +7,8 @@ import { supabase } from "./client";
  * Creates a new admin user bypassing RLS
  */
 export async function createAdminUser(username: string, password: string) {
-  // Generate a random UUID string for user_id that isn't linked to any auth.users table
-  // This is because we're not using actual auth users, only admin users in a separate table
+  // Generate a random UUID string for user_id 
+  // This approach no longer tries to create an auth user
   const userId = crypto.randomUUID();
   
   try {

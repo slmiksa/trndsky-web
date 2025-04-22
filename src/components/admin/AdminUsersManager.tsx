@@ -84,7 +84,7 @@ export function AdminUsersManager() {
       setIsProcessing(true);
       setError(null);
 
-      // Check if username already exists
+      // Check if username already exists locally before making API call
       const { data: existingUser, error: checkError } = await supabase
         .from("admin_users")
         .select("username")
@@ -118,10 +118,16 @@ export function AdminUsersManager() {
       setNewAdminData({ username: "", password: "" });
     } catch (error: any) {
       console.error("Error creating admin user:", error);
-      setError(error.message || "حدث خطأ أثناء إنشاء المشرف الجديد");
+      
+      // Improved error message extraction
+      const errorMessage = error.message || 
+                         (error.error && error.error.message) || 
+                         "حدث خطأ أثناء إنشاء المشرف الجديد";
+      
+      setError(errorMessage);
       toast({
         title: "خطأ",
-        description: error.message || "حدث خطأ أثناء إنشاء المشرف الجديد",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {

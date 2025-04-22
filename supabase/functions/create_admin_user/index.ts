@@ -22,7 +22,7 @@ serve(async (req) => {
 
     const { username, password, user_id, role } = await req.json()
     
-    if (!username || !password || !user_id || !role) {
+    if (!username || !password || !role) {
       return new Response(
         JSON.stringify({ error: 'Missing required fields' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -47,42 +47,19 @@ serve(async (req) => {
       )
     }
 
-    // First insert a dummy user in auth.users to satisfy the foreign key constraint
-    // Note: This is a workaround for the foreign key constraint - we could also
-    // modify the database schema to remove this constraint if desired
-    const { data: authUser, error: authError } = await supabaseClient.auth.admin.createUser({
-      email: `${username}_${Date.now()}@example.com`, // Using timestamp to ensure uniqueness
-      password: password,
-      email_confirm: true
-    });
+    // Generate a random UUID for user_id instead of creating an auth user
+    const newUserId = crypto.randomUUID();
 
-    if (authError) {
-      console.error("Error creating auth user:", authError);
-      return new Response(
-        JSON.stringify({ error: `Could not create user: ${authError.message}` }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    // Now use the real auth user ID for admin_users table
-    const realUserId = authUser.user.id;
-
-    // Create the admin user with the auth user ID
+    // Create the admin user directly without relying on auth.users
     const { data: adminUser, error: adminError } = await supabaseClient.rpc('create_admin_user', {
       p_username: username,
       p_password: password,
-      p_user_id: realUserId,
+      p_user_id: newUserId,
       p_role: role
     });
 
     if (adminError) {
       console.error("Database insert error:", adminError);
-      // Try to clean up the auth user if admin creation failed
-      try {
-        await supabaseClient.auth.admin.deleteUser(realUserId);
-      } catch (cleanupError) {
-        console.error("Error cleaning up auth user:", cleanupError);
-      }
       throw adminError;
     }
 
