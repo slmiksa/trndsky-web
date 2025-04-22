@@ -29,11 +29,12 @@ serve(async (req) => {
       )
     }
 
-    // Call the RPC function
-    const { data, error } = await supabaseClient.rpc('update_admin_password', {
-      p_admin_id: admin_id,
-      p_new_password: new_password
-    })
+    // Update directly in the admin_users table
+    const { data, error } = await supabaseClient
+      .from('admin_users')
+      .update({ password: new_password, updated_at: new Date().toISOString() })
+      .eq('id', admin_id)
+      .select();
 
     if (error) throw error
 
@@ -42,7 +43,7 @@ serve(async (req) => {
       { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )
   } catch (error) {
-    console.error(error)
+    console.error("Error in update_admin_password:", error);
     return new Response(
       JSON.stringify({ error: error.message }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }

@@ -29,22 +29,29 @@ serve(async (req) => {
       )
     }
 
-    // Call the RPC function
-    const { data, error } = await supabaseClient.rpc('create_admin_user', {
-      p_username: username,
-      p_password: password,
-      p_user_id: user_id,
-      p_role: role
-    })
+    // Insert directly into the admin_users table without using RPC
+    const { data, error } = await supabaseClient
+      .from('admin_users')
+      .insert({
+        username,
+        password,
+        user_id,
+        role,
+      })
+      .select()
+      .single();
 
-    if (error) throw error
+    if (error) {
+      console.error("Database insert error:", error);
+      throw error;
+    }
 
     return new Response(
       JSON.stringify({ success: true, data }),
       { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )
   } catch (error) {
-    console.error(error)
+    console.error("Error in create_admin_user:", error);
     return new Response(
       JSON.stringify({ error: error.message }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }

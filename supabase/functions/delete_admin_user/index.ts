@@ -29,19 +29,20 @@ serve(async (req) => {
       )
     }
 
-    // Call the RPC function
-    const { data, error } = await supabaseClient.rpc('delete_admin_user', {
-      p_admin_id: admin_id
-    })
+    // Delete directly from the admin_users table
+    const { error } = await supabaseClient
+      .from('admin_users')
+      .delete()
+      .eq('id', admin_id);
 
     if (error) throw error
 
     return new Response(
-      JSON.stringify({ success: true, data }),
+      JSON.stringify({ success: true }),
       { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )
   } catch (error) {
-    console.error(error)
+    console.error("Error in delete_admin_user:", error);
     return new Response(
       JSON.stringify({ error: error.message }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }

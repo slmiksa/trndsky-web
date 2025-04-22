@@ -9,16 +9,6 @@ interface AdminAuthContextType {
   checkAuth: () => Promise<boolean>;
 }
 
-interface AdminUser {
-  id: string;
-  username: string;
-  password: string;
-  role: 'admin';
-  created_at: string;
-  updated_at: string;
-  user_id: string;
-}
-
 const AdminAuthContext = createContext<AdminAuthContextType | undefined>(undefined);
 
 export function useAdminAuth() {
@@ -41,24 +31,35 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
 
   const login = async (username: string, password: string) => {
     try {
+      console.log("Attempting login with:", username);
+      
       const { data: admin, error: adminError } = await supabase
         .from("admin_users")
         .select("*")
         .eq("username", username)
-        .single();
+        .maybeSingle();
 
-      if (adminError || !admin) {
+      console.log("Login query result:", admin, adminError);
+      
+      if (adminError) {
         console.error("Error checking admin:", adminError);
         return false;
       }
 
+      if (!admin) {
+        console.error("Admin not found");
+        return false;
+      }
+
       if (admin.password === password) {
+        console.log("Password match, login successful");
         setIsLoggedIn(true);
         localStorage.setItem("admin-auth", "true");
         localStorage.setItem("admin-username", username);
         return true;
       }
 
+      console.log("Password mismatch");
       return false;
     } catch (err) {
       console.error("Unexpected error during login:", err);

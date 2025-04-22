@@ -7,6 +7,8 @@ import { supabase } from "./client";
  * Creates a new admin user bypassing RLS
  */
 export async function createAdminUser(username: string, password: string) {
+  // Generate a random UUID string for user_id that isn't linked to any auth.users table
+  // This is because we're not using actual auth users, only admin users in a separate table
   const userId = crypto.randomUUID();
   
   const { data, error } = await supabase.functions.invoke('create_admin_user', {
@@ -18,7 +20,10 @@ export async function createAdminUser(username: string, password: string) {
     }
   });
   
-  if (error) throw error;
+  if (error) {
+    console.error("Error creating admin user:", error);
+    throw error;
+  }
   return data;
 }
 
@@ -33,7 +38,10 @@ export async function updateAdminPassword(adminId: string, newPassword: string) 
     }
   });
   
-  if (error) throw error;
+  if (error) {
+    console.error("Error updating admin password:", error);
+    throw error;
+  }
   return data;
 }
 
@@ -47,6 +55,9 @@ export async function deleteAdminUser(adminId: string) {
     }
   });
   
-  if (error) throw error;
+  if (error) {
+    console.error("Error deleting admin user:", error);
+    throw error;
+  }
   return data;
 }
