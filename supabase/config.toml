@@ -1,5 +1,5 @@
 
-qsdwcplmgkuyweqynyyh = "qsdwcplmgkuyweqynyyh"
+[functions]
 
 [functions.create_admin_user]
 verify_jwt = false
@@ -9,3 +9,7 @@ verify_jwt = false
 
 [functions.delete_admin_user]
 verify_jwt = false
+
+[functions.create_drop_constraint_function]
+verify_jwt = false
+

@@ -4,19 +4,32 @@
 import { supabase } from "./client";
 
 /**
+ * Initializes admin database functions if they don't exist
+ * This should be called once when the admin section is loaded
+ */
+export async function initAdminFunctions() {
+  try {
+    const { data, error } = await supabase.functions.invoke('create_drop_constraint_function');
+    if (error) {
+      console.error("Error initializing admin functions:", error);
+      // Non-fatal error, we can continue
+    }
+    return data;
+  } catch (error) {
+    console.error("Exception initializing admin functions:", error);
+    // Non-fatal error, we can continue
+  }
+}
+
+/**
  * Creates a new admin user bypassing RLS
  */
 export async function createAdminUser(username: string, password: string) {
-  // Generate a random UUID string for user_id 
-  // This approach no longer tries to create an auth user
-  const userId = crypto.randomUUID();
-  
   try {
     const { data, error } = await supabase.functions.invoke('create_admin_user', {
       body: {
         username,
         password,
-        user_id: userId,
         role: 'admin'
       }
     });

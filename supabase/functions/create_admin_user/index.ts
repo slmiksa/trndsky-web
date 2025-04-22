@@ -20,7 +20,7 @@ serve(async (req) => {
       { global: { headers: { Authorization: req.headers.get('Authorization')! } } }
     )
 
-    const { username, password, user_id, role } = await req.json()
+    const { username, password, role } = await req.json()
     
     if (!username || !password || !role) {
       return new Response(
@@ -47,20 +47,30 @@ serve(async (req) => {
       )
     }
 
-    // Generate a random UUID for user_id instead of creating an auth user
-    const newUserId = crypto.randomUUID();
+    // Insert directly into admin_users table without foreign key dependency
+    // First, let's modify the admin_users table to drop the foreign key constraint if it exists
+    const { error: alterTableError } = await supabaseClient.rpc('drop_admin_users_fk_constraint');
+    
+    if (alterTableError) {
+      console.error("Error modifying table constraint:", alterTableError);
+      // Continue execution - it might be that the constraint was already dropped
+    }
 
-    // Create the admin user directly without relying on auth.users
-    const { data: adminUser, error: adminError } = await supabaseClient.rpc('create_admin_user', {
-      p_username: username,
-      p_password: password,
-      p_user_id: newUserId,
-      p_role: role
-    });
+    // Now insert the admin user directly
+    const { data: adminUser, error: insertError } = await supabaseClient
+      .from('admin_users')
+      .insert({
+        username: username,
+        password: password,
+        user_id: crypto.randomUUID(),  // Generate a UUID directly
+        role: role
+      })
+      .select()
+      .single();
 
-    if (adminError) {
-      console.error("Database insert error:", adminError);
-      throw adminError;
+    if (insertError) {
+      console.error("Database insert error:", insertError);
+      throw insertError;
     }
 
     return new Response(

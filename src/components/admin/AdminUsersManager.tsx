@@ -13,7 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { createAdminUser, updateAdminPassword, deleteAdminUser } from "@/integrations/supabase/admin-functions";
+import { createAdminUser, updateAdminPassword, deleteAdminUser, initAdminFunctions } from "@/integrations/supabase/admin-functions";
 
 type AdminUser = {
   id: string;
@@ -37,7 +37,14 @@ export function AdminUsersManager() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchAdminUsers();
+    const initialize = async () => {
+      // Initialize admin functions first
+      await initAdminFunctions();
+      // Then fetch admin users
+      fetchAdminUsers();
+    };
+    
+    initialize();
   }, []);
 
   const fetchAdminUsers = async () => {
