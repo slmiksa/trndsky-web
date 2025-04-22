@@ -12,8 +12,6 @@ export function useUploadPartnerLogo() {
     setError(null);
 
     try {
-      console.log("بدء عملية رفع الصورة...");
-      
       // فحص حجم الملف
       if (file.size > 3 * 1024 * 1024) { // أكبر من 3 ميجابايت
         toast({
@@ -21,6 +19,7 @@ export function useUploadPartnerLogo() {
           description: "حجم الملف كبير، يرجى استخدام صورة أصغر لضمان سرعة التحميل.",
           variant: "default",
         });
+        return null;
       }
       
       // إنشاء اسم فريد للملف
@@ -28,7 +27,7 @@ export function useUploadPartnerLogo() {
       const fileName = `partner-logo-${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
       const filePath = `partner-logos/${fileName}`;
       
-      // ✅ استخدام Supabase مباشرة للتخزين في الـ public bucket
+      // محاولة رفع الملف مع التعامل مع الأخطاء بشكل أفضل
       const { data, error: uploadError } = await supabase.storage
         .from('public')
         .upload(filePath, file, {
@@ -38,34 +37,33 @@ export function useUploadPartnerLogo() {
       
       if (uploadError) {
         console.error("خطأ في رفع الملف:", uploadError);
-        throw new Error(`خطأ في رفع الملف: ${uploadError.message}`);
+        toast({
+          title: "خطأ في الرفع",
+          description: `حدث خطأ أثناء رفع الصورة: ${uploadError.message}`,
+          variant: "destructive",
+        });
+        return null;
       }
       
-      // ✅ الحصول على الرابط العام للملف
+      // الحصول على الرابط العام للملف
       const { data: publicUrlData } = supabase.storage
         .from('public')
         .getPublicUrl(filePath);
       
       console.log("تم رفع الصورة بنجاح:", publicUrlData.publicUrl);
       
-      // ✅ إرجاع الرابط العام
       return publicUrlData.publicUrl;
       
     } catch (err: any) {
       console.error("خطأ غير متوقع أثناء عملية الرفع:", err);
       
-      // محاولة استخدام المسار المحلي كحل بديل
-      const fileName = `partner-logo-${Date.now()}-${Math.random().toString(36).substring(2)}.${file.type.split('/')[1]}`;
-      const localPath = `/lovable-uploads/${fileName}`;
-      
       toast({
-        title: "خطأ في الرفع على Supabase",
-        description: "سيتم استخدام التخزين المحلي كحل بديل.",
+        title: "خطأ غير متوقع",
+        description: "حدث خطأ أثناء محاولة رفع الصورة",
         variant: "destructive",
       });
       
-      setError("حدث خطأ أثناء رفع الصورة على Supabase");
-      return localPath;
+      return null;
     } finally {
       setUploading(false);
     }
