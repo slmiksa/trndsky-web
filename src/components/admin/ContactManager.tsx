@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -56,7 +55,6 @@ export function ContactManager() {
     }
   };
 
-  // Fix: Changed useState to useEffect
   useEffect(() => {
     fetchContactInfo();
   }, []);
