@@ -230,9 +230,26 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      create_admin_user: {
+        Args: {
+          p_username: string
+          p_password: string
+          p_user_id: string
+          p_role: Database["public"]["Enums"]["app_role"]
+        }
+        Returns: undefined
+      }
+      delete_admin_user: {
+        Args: { p_admin_id: string }
+        Returns: undefined
+      }
       is_admin: {
         Args: { user_id: string }
         Returns: boolean
+      }
+      update_admin_password: {
+        Args: { p_admin_id: string; p_new_password: string }
+        Returns: undefined
       }
     }
     Enums: {

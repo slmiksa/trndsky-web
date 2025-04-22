@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/components/ui/use-toast";
@@ -101,11 +102,13 @@ export function AdminUsersManager() {
       }
 
       // Using the special RPC function to bypass RLS for admin creation
-      const { data, error: rpcError } = await supabase.rpc('create_admin_user', {
-        p_username: newAdminData.username,
-        p_password: newAdminData.password,
-        p_user_id: crypto.randomUUID(),
-        p_role: 'admin'
+      const { data, error: rpcError } = await supabase.functions.invoke('create_admin_user', {
+        body: {
+          username: newAdminData.username,
+          password: newAdminData.password,
+          user_id: crypto.randomUUID(),
+          role: 'admin'
+        }
       });
 
       if (rpcError) {
@@ -148,9 +151,11 @@ export function AdminUsersManager() {
       setError(null);
 
       // Using the special RPC function to bypass RLS for password reset
-      const { error: rpcError } = await supabase.rpc('update_admin_password', {
-        p_admin_id: resetPasswordData.id,
-        p_new_password: resetPasswordData.password
+      const { error: rpcError } = await supabase.functions.invoke('update_admin_password', {
+        body: {
+          admin_id: resetPasswordData.id,
+          new_password: resetPasswordData.password
+        }
       });
 
       if (rpcError) throw rpcError;
@@ -184,8 +189,10 @@ export function AdminUsersManager() {
       setError(null);
       
       // Using the special RPC function to bypass RLS for admin deletion
-      const { error: rpcError } = await supabase.rpc('delete_admin_user', {
-        p_admin_id: adminId
+      const { error: rpcError } = await supabase.functions.invoke('delete_admin_user', {
+        body: {
+          admin_id: adminId
+        }
       });
 
       if (rpcError) throw rpcError;

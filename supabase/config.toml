@@ -1,1 +1,10 @@
-project_id = "qsdwcplmgkuyweqynyyh"
+
+qsdwcplmgkuyweqynyyh = "qsdwcplmgkuyweqynyyh"
+[functions.create_admin_user]
+verify_jwt = true
+
+[functions.update_admin_password]
+verify_jwt = true
+
+[functions.delete_admin_user]
+verify_jwt = true
