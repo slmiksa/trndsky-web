@@ -8,9 +8,10 @@ import { Upload } from "lucide-react";
 interface ImageUploadProps {
   onUpload: (url: string) => void;
   label?: string;
+  bucketName?: string;
 }
 
-export function ImageUpload({ onUpload, label = "رفع صورة" }: ImageUploadProps) {
+export function ImageUpload({ onUpload, label = "رفع صورة", bucketName = "about-images" }: ImageUploadProps) {
   const [uploading, setUploading] = useState(false);
 
   const uploadImage = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -27,7 +28,7 @@ export function ImageUpload({ onUpload, label = "رفع صورة" }: ImageUpload
       const filePath = `${fileName}`;
 
       const { error: uploadError, data } = await supabase.storage
-        .from("about-images")
+        .from(bucketName)
         .upload(filePath, file);
 
       if (uploadError) {
@@ -35,7 +36,7 @@ export function ImageUpload({ onUpload, label = "رفع صورة" }: ImageUpload
       }
 
       const { data: { publicUrl } } = supabase.storage
-        .from("about-images")
+        .from(bucketName)
         .getPublicUrl(filePath);
 
       onUpload(publicUrl);
