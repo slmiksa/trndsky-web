@@ -1,4 +1,3 @@
-
 import Navbar from '../components/Navbar';
 import HeroSlider from '../components/HeroSlider';
 import ServicesSection from '../components/ServicesSection';
@@ -14,29 +13,15 @@ const Index = () => {
       <main className="flex-grow">
         <HeroSlider />
         
-        {/* Featured Software Section - Moved up */}
+        {/* Services Section */}
+        <ServicesSection />
+
+        {/* Featured Software Section */}
         <section className="py-24 bg-white">
           <div className="container mx-auto px-6">
-            <div className="text-center mb-16">
-              <span className="inline-block py-1 px-4 bg-trndsky-blue/10 text-trndsky-blue rounded-full text-sm mb-4 font-tajawal border border-trndsky-blue/20">
-                منتجاتنا المميزة
-              </span>
-              <h2 className="text-4xl font-bold text-gray-800 font-tajawal mb-4">
-                <span className="relative">
-                  برمجياتنا الجاهزة
-                  <span className="absolute -bottom-2 left-0 right-0 h-1 bg-gradient-to-r from-trndsky-teal to-trndsky-blue rounded-full"></span>
-                </span>
-              </h2>
-              <p className="text-gray-600 max-w-2xl mx-auto font-tajawal">
-                اكتشف مجموعة برمجياتنا المتطورة المصممة خصيصًا لتلبية احتياجات مختلف القطاعات
-              </p>
-            </div>
             <FeaturedSoftware />
           </div>
         </section>
-
-        {/* Services Section */}
-        <ServicesSection />
         
         {/* Project Request Section */}
         <section className="py-24 bg-gradient-to-br from-trndsky-darkblue to-trndsky-blue text-white">

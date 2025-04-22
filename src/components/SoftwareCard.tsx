@@ -200,12 +200,20 @@ export const FeaturedSoftware = () => {
   return (
     <section className="section-padding bg-white">
       <div className="container mx-auto">
-        <h2 className="text-4xl font-extrabold text-center mb-4 font-tajawal text-trndsky-darkblue drop-shadow-lg">
-          برمجياتنا <span className="text-trndsky-teal">الجاهزة</span>
-        </h2>
-        <p className="text-center text-gray-600 mb-12 max-w-2xl mx-auto font-tajawal text-lg">
-          مجموعة من الحلول البرمجية الجاهزة التي يمكن تخصيصها لتناسب احتياجات عملك
-        </p>
+        <div className="text-center mb-16">
+          <span className="inline-block py-1 px-4 bg-trndsky-blue/10 text-trndsky-blue rounded-full text-sm mb-4 font-tajawal border border-trndsky-blue/20">
+            منتجاتنا المميزة
+          </span>
+          <h2 className="text-4xl font-bold text-gray-800 font-tajawal mb-4">
+            <span className="relative">
+              برمجياتنا الجاهزة
+              <span className="absolute -bottom-2 left-0 right-0 h-1 bg-gradient-to-r from-trndsky-teal to-trndsky-blue rounded-full"></span>
+            </span>
+          </h2>
+          <p className="text-gray-600 max-w-2xl mx-auto font-tajawal text-lg">
+            مجموعة من الحلول البرمجية الجاهزة التي يمكن تخصيصها لتناسب احتياجات عملك
+          </p>
+        </div>
         
         {loading ? (
           <div className="text-center py-8">
