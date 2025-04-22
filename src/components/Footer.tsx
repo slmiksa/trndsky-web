@@ -4,7 +4,7 @@ import { ContactDetails } from '@/components/ContactDetails';
 const Footer = () => {
   return (
     <footer className="bg-trndsky-darkblue text-white py-8 mt-auto">
-      <div className="container mx-auto">
+      <div className="container mx-auto px-4">
         <ContactDetails variant="footer" />
         <div className="text-center mt-8">
           <div className="text-xl font-bold mb-4">
