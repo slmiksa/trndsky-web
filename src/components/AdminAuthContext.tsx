@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -17,6 +16,11 @@ export function useAdminAuth() {
   return ctx;
 }
 
+const DEFAULT_ADMIN = {
+  username: "admin",
+  password: "admin123",
+};
+
 export function AdminAuthProvider({ children }: { children: ReactNode }) {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
 
@@ -33,8 +37,7 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
     try {
       console.log("Attempting login with:", username);
       
-      // Special case for admin/admin credentials
-      if (username === "admin" && password === "admin") {
+      if (username === DEFAULT_ADMIN.username && password === DEFAULT_ADMIN.password) {
         console.log("Default admin credentials detected");
         setIsLoggedIn(true);
         localStorage.setItem("admin-auth", "true");
@@ -43,7 +46,6 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
         return true;
       }
       
-      // Regular authentication flow
       const { data: admin, error: adminError } = await supabase
         .from("admin_users")
         .select("id, username, password")
@@ -62,7 +64,6 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
         return false;
       }
 
-      // Compare the passwords directly
       if (admin.password === password) {
         console.log("Password match, login successful");
         setIsLoggedIn(true);
