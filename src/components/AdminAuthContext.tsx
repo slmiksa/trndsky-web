@@ -71,7 +71,7 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
 
   const signIn = async (username: string, password: string) => {
     try {
-      // سنستخدم اسم المستخدم كبريد إلكتروني مع نطاق وهمي
+      // سنستخدم اسم المستخدم كبريد إلكتروني مع نطاق وهمي للتسجيل
       const email = `${username}@admin.trndsky.com`;
       
       const { data, error } = await supabase.auth.signInWithPassword({

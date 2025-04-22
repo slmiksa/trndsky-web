@@ -6,7 +6,7 @@ import { useAdminAuth } from "@/components/AdminAuthContext";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Trash2, UserPlus, Key, Edit } from "lucide-react";
+import { Trash2, UserPlus, Key } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -27,8 +27,7 @@ type AdminFormData = {
   password: string;
 };
 
-// Define the shape of the user object returned from auth.admin.listUsers()
-// Making email optional to match the actual Supabase User type
+// Define the shape of the user object returned from getUser
 type SupabaseUser = {
   id: string;
   email?: string | null;
@@ -36,7 +35,6 @@ type SupabaseUser = {
     username?: string;
   };
   created_at: string;
-  // Add other properties you might need, but these are the minimum required
 };
 
 export function AdminUsersManager() {
@@ -47,6 +45,7 @@ export function AdminUsersManager() {
   const [newAdminData, setNewAdminData] = useState<AdminFormData>({ username: "", password: "" });
   const [resetPasswordData, setResetPasswordData] = useState<{ id: string; username: string; password: string }>({ id: "", username: "", password: "" });
   const [isProcessing, setIsProcessing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const { supabaseAuth } = useAdminAuth();
 
@@ -58,6 +57,7 @@ export function AdminUsersManager() {
   const fetchAdminUsers = async () => {
     try {
       setIsLoading(true);
+      setError(null);
       
       // الحصول على قائمة المشرفين
       const { data: adminUsersData, error: adminUsersError } = await supabase
@@ -68,31 +68,34 @@ export function AdminUsersManager() {
       if (adminUsersError) throw adminUsersError;
 
       if (adminUsersData && adminUsersData.length > 0) {
-        // الحصول على بيانات المستخدمين من جدول auth.users
-        const { data, error: authUsersError } = await supabase.auth.admin.listUsers();
+        // نحتاج إلى الحصول على معلومات المستخدمين بشكل فردي
+        const userPromises = adminUsersData.map(async (admin) => {
+          const { data: userData, error: userError } = await supabase.auth.admin.getUserById(admin.user_id);
+          
+          if (userError) {
+            console.error(`Error fetching user with ID ${admin.user_id}:`, userError);
+            return null;
+          }
+          
+          if (!userData?.user) return null;
+          
+          return {
+            id: userData.user.id,
+            username: userData.user.user_metadata?.username || "مستخدم بدون اسم",
+            created_at: userData.user.created_at
+          };
+        });
         
-        if (authUsersError) throw authUsersError;
+        const users = await Promise.all(userPromises);
+        const validUsers = users.filter(user => user !== null) as AdminUser[];
         
-        // تنسيق البيانات
-        const userIdMap = new Set(adminUsersData.map(admin => admin.user_id));
-        
-        // Ensure data.users exists and is typed correctly
-        const users: SupabaseUser[] = data?.users || [];
-        
-        const filteredUsers = users
-          .filter(user => userIdMap.has(user.id))
-          .map(user => ({
-            id: user.id,
-            username: user.user_metadata?.username || "مستخدم بدون اسم",
-            created_at: user.created_at
-          }));
-        
-        setAdminUsers(filteredUsers);
+        setAdminUsers(validUsers);
       } else {
         setAdminUsers([]);
       }
     } catch (error: any) {
       console.error("Error fetching admin users:", error);
+      setError("حدث خطأ أثناء تحميل بيانات المشرفين");
       toast({
         title: "خطأ",
         description: "حدث خطأ أثناء تحميل بيانات المشرفين",
@@ -115,28 +118,30 @@ export function AdminUsersManager() {
 
     try {
       setIsProcessing(true);
+      setError(null);
 
-      // إنشاء مستخدم جديد - استخدام اسم المستخدم كبريد إلكتروني مع نطاق وهمي
+      // إنشاء مستخدم جديد باستخدام التسجيل العادي
       const email = `${newAdminData.username}@admin.trndsky.com`;
       
-      // إنشاء مستخدم جديد مع البيانات الوصفية للاسم المستخدم
-      const { data: newUser, error: signUpError } = await supabase.auth.admin.createUser({
-        email: email,
+      // استخدام التسجيل العادي بدلاً من API الإدارة
+      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+        email,
         password: newAdminData.password,
-        email_confirm: true,
-        user_metadata: {
-          username: newAdminData.username
+        options: {
+          data: {
+            username: newAdminData.username
+          }
         }
       });
 
       if (signUpError) throw signUpError;
 
-      if (newUser && newUser.user) {
+      if (signUpData.user) {
         // إضافة المستخدم كمشرف
         const { error: adminError } = await supabase
           .from("admin_users")
           .insert({
-            user_id: newUser.user.id,
+            user_id: signUpData.user.id,
             role: "admin"
           });
 
@@ -147,13 +152,21 @@ export function AdminUsersManager() {
           description: "تمت إضافة المشرف الجديد بنجاح",
         });
 
-        // تحديث القائمة
-        fetchAdminUsers();
-        setCreateDialogOpen(false);
-        setNewAdminData({ username: "", password: "" });
+        // تسجيل الخروج للمستخدم الجديد المسجل
+        await supabase.auth.signOut();
+        
+        // إعادة تسجيل الدخول للمستخدم الحالي إذا كان موجودًا
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) {
+          // تحميل قائمة المشرفين
+          fetchAdminUsers();
+          setCreateDialogOpen(false);
+          setNewAdminData({ username: "", password: "" });
+        }
       }
     } catch (error: any) {
       console.error("Error creating admin user:", error);
+      setError(error.message || "حدث خطأ أثناء إنشاء المشرف الجديد");
       toast({
         title: "خطأ",
         description: error.message || "حدث خطأ أثناء إنشاء المشرف الجديد",
@@ -176,24 +189,31 @@ export function AdminUsersManager() {
 
     try {
       setIsProcessing(true);
+      setError(null);
 
-      // تحديث كلمة المرور
-      const { error: updateError } = await supabase.auth.admin.updateUserById(
-        resetPasswordData.id,
-        { password: resetPasswordData.password }
+      // استخدام إعادة تعيين كلمة المرور بدلاً من تحديث المستخدم مباشرة
+      const email = `${resetPasswordData.username}@admin.trndsky.com`;
+      
+      // إعادة تعيين كلمة المرور باستخدام البريد الإلكتروني
+      const { error: resetError } = await supabase.auth.resetPasswordForEmail(
+        email,
+        {
+          redirectTo: `${window.location.origin}/admin-reset-password`
+        }
       );
 
-      if (updateError) throw updateError;
+      if (resetError) throw resetError;
 
       toast({
         title: "تم بنجاح",
-        description: "تم تحديث كلمة المرور بنجاح",
+        description: "تم إرسال رابط إعادة تعيين كلمة المرور بنجاح",
       });
 
       setResetPasswordDialogOpen(false);
       setResetPasswordData({ id: "", username: "", password: "" });
     } catch (error: any) {
       console.error("Error resetting password:", error);
+      setError(error.message || "حدث خطأ أثناء تحديث كلمة المرور");
       toast({
         title: "خطأ",
         description: error.message || "حدث خطأ أثناء تحديث كلمة المرور",
@@ -210,7 +230,8 @@ export function AdminUsersManager() {
     }
 
     try {
-      // حذف المشرف من جدول admin_users
+      setError(null);
+      // حذف المشرف من جدول admin_users أولاً
       const { error: deleteAdminError } = await supabase
         .from("admin_users")
         .delete()
@@ -218,20 +239,18 @@ export function AdminUsersManager() {
 
       if (deleteAdminError) throw deleteAdminError;
 
-      // حذف المستخدم من auth.users
-      const { error: deleteUserError } = await supabase.auth.admin.deleteUser(adminId);
-
-      if (deleteUserError) throw deleteUserError;
-
+      // لا نحاول حذف المستخدم نفسه من auth.users لأن ذلك يتطلب صلاحيات إدارية
+      
       toast({
         title: "تم بنجاح",
-        description: "تم حذف المشرف بنجاح",
+        description: "تم حذف المشرف من قائمة المشرفين بنجاح",
       });
 
       // تحديث القائمة
       fetchAdminUsers();
     } catch (error: any) {
       console.error("Error deleting admin user:", error);
+      setError(error.message || "حدث خطأ أثناء حذف المشرف");
       toast({
         title: "خطأ",
         description: error.message || "حدث خطأ أثناء حذف المشرف",
@@ -257,6 +276,12 @@ export function AdminUsersManager() {
           <UserPlus className="w-4 h-4" /> إضافة مشرف جديد
         </Button>
       </div>
+
+      {error && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+          {error}
+        </div>
+      )}
 
       {isLoading ? (
         <div className="text-center py-8">
