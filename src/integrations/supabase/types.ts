@@ -52,23 +52,29 @@ export type Database = {
         Row: {
           created_at: string
           id: string
+          password: string | null
           role: Database["public"]["Enums"]["app_role"]
           updated_at: string
           user_id: string
+          username: string
         }
         Insert: {
           created_at?: string
           id?: string
+          password?: string | null
           role?: Database["public"]["Enums"]["app_role"]
           updated_at?: string
           user_id: string
+          username: string
         }
         Update: {
           created_at?: string
           id?: string
+          password?: string | null
           role?: Database["public"]["Enums"]["app_role"]
           updated_at?: string
           user_id?: string
+          username?: string
         }
         Relationships: []
       }

@@ -4,13 +4,19 @@ import { supabase } from "@/integrations/supabase/client";
 
 interface AdminAuthContextType {
   isLoggedIn: boolean;
-  login: (username: string, password: string) => boolean;
+  login: (username: string, password: string) => Promise<boolean>;
   logout: () => void;
   checkAuth: () => Promise<boolean>;
-  supabaseAuth: {
-    signIn: (username: string, password: string) => Promise<boolean>;
-    signOut: () => Promise<void>;
-  };
+}
+
+interface AdminUser {
+  id: string;
+  username: string;
+  password: string;
+  role: 'admin';
+  created_at: string;
+  updated_at: string;
+  user_id: string;
 }
 
 const AdminAuthContext = createContext<AdminAuthContextType | undefined>(undefined);
@@ -22,11 +28,10 @@ export function useAdminAuth() {
 }
 
 export function AdminAuthProvider({ children }: { children: ReactNode }) {
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
 
   useEffect(() => {
     const initSession = async () => {
-      // التحقق من حالة تسجيل الدخول من التخزين المحلي
       const authState = localStorage.getItem("admin-auth");
       setIsLoggedIn(authState === "true");
     };
@@ -34,55 +39,31 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
     initSession();
   }, []);
 
-  if (isLoggedIn === null) {
-    return null;
-  }
-
-  // تسجيل الدخول البسيط (للدعم المتراجع)
-  const login = (username: string, password: string) => {
-    if (username === "admin" && password === "admin") {
-      setIsLoggedIn(true);
-      localStorage.setItem("admin-auth", "true");
-      return true;
-    }
-    return false;
-  };
-
-  // تسجيل الدخول باستخدام قاعدة البيانات
-  const signIn = async (username: string, password: string) => {
+  const login = async (username: string, password: string) => {
     try {
-      // التحقق من وجود المشرف في جدول admin_users
-      const { data: adminData, error: adminError } = await supabase
+      const { data: admin, error: adminError } = await supabase
         .from("admin_users")
         .select("*")
         .eq("username", username)
         .single();
-      
-      if (adminError) {
+
+      if (adminError || !admin) {
         console.error("Error checking admin:", adminError);
         return false;
       }
-      
-      // التحقق من كلمة المرور
-      if (adminData) {
-        // التحقق من كلمة المرور (بشكل بسيط، يمكن استخدام طرق أكثر أمانًا)
-        if (adminData.password === password) {
-          setIsLoggedIn(true);
-          localStorage.setItem("admin-auth", "true");
-          localStorage.setItem("admin-username", username);
-          return true;
-        }
+
+      if (admin.password === password) {
+        setIsLoggedIn(true);
+        localStorage.setItem("admin-auth", "true");
+        localStorage.setItem("admin-username", username);
+        return true;
       }
-      
+
       return false;
     } catch (err) {
-      console.error("Unexpected error during sign in:", err);
+      console.error("Unexpected error during login:", err);
       return false;
     }
-  };
-
-  const signOut = async () => {
-    logout();
   };
 
   const logout = () => {
@@ -92,7 +73,6 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
   };
 
   const checkAuth = async () => {
-    // التحقق من حالة تسجيل الدخول من التخزين المحلي
     const authState = localStorage.getItem("admin-auth");
     const isAuthenticated = authState === "true";
     
@@ -109,10 +89,6 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
       login, 
       logout, 
       checkAuth,
-      supabaseAuth: {
-        signIn,
-        signOut
-      }
     }}>
       {children}
     </AdminAuthContext.Provider>

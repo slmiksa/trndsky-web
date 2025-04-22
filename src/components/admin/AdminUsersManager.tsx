@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/components/ui/use-toast";
@@ -28,7 +27,11 @@ type AdminFormData = {
 };
 
 export function AdminUsersManager() {
-  const [adminUsers, setAdminUsers] = useState<AdminUser[]>([]);
+  const [adminUsers, setAdminUsers] = useState<Array<{
+    id: string;
+    username: string;
+    created_at: string;
+  }>>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [resetPasswordDialogOpen, setResetPasswordDialogOpen] = useState(false);
@@ -47,22 +50,15 @@ export function AdminUsersManager() {
       setIsLoading(true);
       setError(null);
       
-      // الحصول على قائمة المشرفين
       const { data: adminUsersData, error: adminUsersError } = await supabase
         .from("admin_users")
-        .select("*")
+        .select("id, username, created_at")
         .order("created_at", { ascending: false });
 
       if (adminUsersError) throw adminUsersError;
       
       if (adminUsersData) {
-        const users = adminUsersData.map(user => ({
-          id: user.id,
-          username: user.username || "مستخدم بدون اسم",
-          created_at: user.created_at
-        }));
-        
-        setAdminUsers(users);
+        setAdminUsers(adminUsersData);
       } else {
         setAdminUsers([]);
       }
@@ -79,7 +75,7 @@ export function AdminUsersManager() {
     }
   };
 
-  const handleCreateAdmin = async () => {
+  const handleSaveAdmin = async () => {
     if (!newAdminData.username || !newAdminData.password) {
       toast({
         title: "خطأ",
@@ -93,16 +89,12 @@ export function AdminUsersManager() {
       setIsProcessing(true);
       setError(null);
 
-      // التحقق من عدم وجود مستخدم بنفس اسم المستخدم
+      // Check if username already exists
       const { data: existingUser, error: checkError } = await supabase
         .from("admin_users")
         .select("username")
         .eq("username", newAdminData.username)
         .single();
-
-      if (checkError && checkError.code !== "PGRST116") { // PGRST116 means no rows returned
-        throw checkError;
-      }
 
       if (existingUser) {
         toast({
@@ -113,25 +105,23 @@ export function AdminUsersManager() {
         return;
       }
 
-      // إضافة المستخدم كمشرف في جدول admin_users
-      const { data: newAdmin, error: adminError } = await supabase
+      // Create new admin user
+      const { error: createError } = await supabase
         .from("admin_users")
         .insert({
           username: newAdminData.username,
-          password: newAdminData.password, // يجب تشفير كلمات المرور في التطبيقات الإنتاجية
-          role: "admin"
-        })
-        .select()
-        .single();
+          password: newAdminData.password,
+          role: "admin",
+          user_id: crypto.randomUUID()
+        });
 
-      if (adminError) throw adminError;
+      if (createError) throw createError;
 
       toast({
         title: "تم بنجاح",
-        description: "تمت إضافة المشرف الجديد بنجاح",
+        description: "تمت إضافة المشرف الجديد بنجاح"
       });
 
-      // تحميل قائمة المشرفين
       fetchAdminUsers();
       setCreateDialogOpen(false);
       setNewAdminData({ username: "", password: "" });
@@ -333,7 +323,7 @@ export function AdminUsersManager() {
           </div>
           <DialogFooter>
             <Button 
-              onClick={handleCreateAdmin} 
+              onClick={handleSaveAdmin} 
               disabled={isProcessing}
               className="ml-2"
             >
