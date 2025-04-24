@@ -575,7 +575,7 @@ const AdminDashboard = () => {
                               <button disabled={r.status === "open"} className="px-2 py-1 rounded bg-green-100 text-green-800 hover:bg-green-200 transition-all disabled:opacity-50" onClick={() => updateStatus(r.id, "open")} title="تحويل لمفتوح">
                                 <FolderOpen size={16} />
                               </button>
-                              <button disabled={r.status === "closed"} className="px-2 py-1 rounded bg-red-100 text-red-800 hover:bg-red-200 transition-all disabled:opacity-50" onClick={() => updateStatus(r.id, "closed")} title="إغلاق">
+                              <button disabled={r.status === "closed"} onClick={() => updateStatus(r.id, "closed")} title="إغلاق" className="px-2 py-1 rounded transition-all disabled:opacity-50 text-[#f40909] bg-[#eebfbf]">
                                 <X size={16} />
                               </button>
                             </td>
