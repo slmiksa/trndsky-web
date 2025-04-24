@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -84,7 +85,7 @@ const ProjectRequestForm = () => {
       <div className="absolute -top-24 -left-20 w-60 h-60 rounded-full bg-trndsky-teal/10 z-0"></div>
       <div className="absolute -bottom-14 -right-24 w-72 h-72 rounded-full bg-trndsky-blue/10 z-0"></div>
       <div className="container mx-auto px-4 relative z-10">
-        <div className="max-w-3xl mx-auto bg-gradient-to-br from-[#f5f7fa] via-white to-[#e0f7fa] rounded-3xl shadow-2xl p-6 md:p-10 border border-trndsky-blue/10">
+        <div className="max-w-3xl mx-auto bg-white rounded-3xl shadow-2xl p-6 md:p-10 border border-trndsky-blue/10">
           <h2 className="text-3xl md:text-4xl font-extrabold text-center mb-8 font-tajawal text-trndsky-blue drop-shadow-md">
             اطلب برمجة <span className="text-trndsky-teal">بأفكارك</span>
           </h2>
@@ -104,7 +105,7 @@ const ProjectRequestForm = () => {
                   value={formData.name}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-trndsky-teal bg-white shadow-sm text-base md:text-lg font-tajawal"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-trndsky-teal bg-white shadow-sm text-base md:text-lg font-tajawal text-black"
                   dir="rtl"
                 />
               </div>
@@ -123,7 +124,7 @@ const ProjectRequestForm = () => {
                     value={formData.email}
                     onChange={handleChange}
                     placeholder="البريد الإلكتروني"
-                    className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-trndsky-teal bg-white shadow-sm text-base md:text-lg font-tajawal"
+                    className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-trndsky-teal bg-white shadow-sm text-base md:text-lg font-tajawal text-black"
                     dir="rtl"
                   />
                   <input
@@ -133,7 +134,7 @@ const ProjectRequestForm = () => {
                     value={formData.phone}
                     onChange={handleChange}
                     placeholder="رقم الهاتف"
-                    className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-trndsky-teal bg-white shadow-sm text-base md:text-lg font-tajawal"
+                    className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-trndsky-teal bg-white shadow-sm text-base md:text-lg font-tajawal text-black"
                     dir="rtl"
                   />
                 </div>
@@ -153,7 +154,7 @@ const ProjectRequestForm = () => {
                 value={formData.title}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-trndsky-teal bg-white shadow-sm text-lg font-tajawal"
+                className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-trndsky-teal bg-white shadow-sm text-lg font-tajawal text-black"
                 dir="rtl"
               />
             </div>
@@ -171,7 +172,7 @@ const ProjectRequestForm = () => {
                 onChange={handleChange}
                 required
                 rows={5}
-                className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-trndsky-teal bg-white shadow-sm text-lg font-tajawal resize-none"
+                className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-trndsky-teal bg-white shadow-sm text-lg font-tajawal resize-none text-black"
                 dir="rtl"
               ></textarea>
             </div>
