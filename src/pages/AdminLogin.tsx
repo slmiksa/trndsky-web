@@ -1,27 +1,25 @@
-
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAdminAuth } from "@/components/AdminAuthContext";
 import { ArrowRight, LockKeyhole, User } from 'lucide-react';
-
 const AdminLogin = () => {
-  const { isLoggedIn, login } = useAdminAuth();
+  const {
+    isLoggedIn,
+    login
+  } = useAdminAuth();
   const navigate = useNavigate();
   const [username, setUsername] = useState("admin");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-
   if (isLoggedIn) {
     navigate("/admin");
     return null;
   }
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError("");
-    
     try {
       const success = await login(username, password);
       if (success) {
@@ -36,9 +34,7 @@ const AdminLogin = () => {
       setIsLoading(false);
     }
   };
-
-  return (
-    <div className="flex min-h-screen items-center justify-center relative overflow-hidden">
+  return <div className="flex min-h-screen items-center justify-center relative overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0 bg-gradient-to-br from-trndsky-blue to-trndsky-darkblue"></div>
       
@@ -50,7 +46,7 @@ const AdminLogin = () => {
       </div>
       
       {/* Pattern overlay */}
-      <div className="absolute inset-0 bg-[radial-gradient(#ffffff10_1px,transparent_1px)] bg-[length:20px_20px] opacity-20"></div>
+      <div className="absolute inset-0 bg-[radial-gradient(#ffffff10_1px,transparent_1px)] bg-[length:20px_20px] opacity-20 bg-[#24523b]"></div>
       
       <div className="relative bg-white/10 backdrop-blur-xl rounded-3xl p-8 shadow-2xl max-w-md w-full mx-4 border border-white/20">
         <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-white/20 to-transparent rounded-3xl opacity-50"></div>
@@ -69,43 +65,21 @@ const AdminLogin = () => {
               <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                 <User className="h-5 w-5 text-white/70" />
               </div>
-              <input
-                type="text"
-                placeholder="اسم المستخدم"
-                value={username}
-                onChange={e => setUsername(e.target.value)}
-                className="w-full border-0 p-4 pl-5 pr-12 rounded-xl font-tajawal focus:outline-none focus:ring-2 focus:ring-trndsky-teal text-right bg-white/10 backdrop-blur-md text-white placeholder:text-white/70"
-                required
-                disabled={isLoading}
-              />
+              <input type="text" placeholder="اسم المستخدم" value={username} onChange={e => setUsername(e.target.value)} className="w-full border-0 p-4 pl-5 pr-12 rounded-xl font-tajawal focus:outline-none focus:ring-2 focus:ring-trndsky-teal text-right bg-white/10 backdrop-blur-md text-white placeholder:text-white/70" required disabled={isLoading} />
             </div>
             
             <div className="relative">
               <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                 <LockKeyhole className="h-5 w-5 text-white/70" />
               </div>
-              <input
-                type="password"
-                placeholder="كلمة المرور"
-                value={password}
-                onChange={e => setPassword(e.target.value)}
-                className="w-full border-0 p-4 pl-5 pr-12 rounded-xl font-tajawal focus:outline-none focus:ring-2 focus:ring-trndsky-teal text-right bg-white/10 backdrop-blur-md text-white placeholder:text-white/70"
-                required
-                disabled={isLoading}
-              />
+              <input type="password" placeholder="كلمة المرور" value={password} onChange={e => setPassword(e.target.value)} className="w-full border-0 p-4 pl-5 pr-12 rounded-xl font-tajawal focus:outline-none focus:ring-2 focus:ring-trndsky-teal text-right bg-white/10 backdrop-blur-md text-white placeholder:text-white/70" required disabled={isLoading} />
             </div>
             
-            {error && (
-              <div className="text-red-300 font-tajawal text-sm text-right bg-red-500/10 p-3 rounded-lg backdrop-blur-sm">
+            {error && <div className="text-red-300 font-tajawal text-sm text-right bg-red-500/10 p-3 rounded-lg backdrop-blur-sm">
                 {error}
-              </div>
-            )}
+              </div>}
             
-            <button
-              type="submit"
-              className="w-full bg-white hover:bg-white/90 text-trndsky-blue py-4 rounded-xl font-tajawal text-lg transition-all flex items-center justify-center gap-2 font-medium"
-              disabled={isLoading}
-            >
+            <button type="submit" className="w-full bg-white hover:bg-white/90 text-trndsky-blue py-4 rounded-xl font-tajawal text-lg transition-all flex items-center justify-center gap-2 font-medium" disabled={isLoading}>
               {isLoading ? "جاري الدخول..." : "دخول"}
               {!isLoading && <ArrowRight className="h-5 w-5" />}
             </button>
@@ -118,8 +92,6 @@ const AdminLogin = () => {
           </div>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default AdminLogin;
