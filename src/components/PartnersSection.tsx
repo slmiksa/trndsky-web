@@ -99,6 +99,21 @@ const PartnersSection = () => {
 
   return (
     <div className="container mx-auto px-6 py-8">
+      <div className="text-center mb-16">
+        <span className="inline-block py-1 px-4 bg-trndsky-blue/10 text-trndsky-blue rounded-full text-sm mb-4 font-tajawal border border-trndsky-blue/20">
+          شركاؤنا
+        </span>
+        <h2 className="text-4xl font-bold text-gray-800 font-tajawal mb-4">
+          <span className="relative">
+            شركاء النجاح
+            <span className="absolute -bottom-2 left-0 right-0 h-1 bg-gradient-to-r from-trndsky-teal to-trndsky-blue rounded-full"></span>
+          </span>
+        </h2>
+        <p className="text-gray-600 max-w-2xl mx-auto font-tajawal text-lg">
+          نفخر بشراكاتنا التي تدعم نمو وتطور الأعمال
+        </p>
+      </div>
+
       <div className="relative mx-auto max-w-5xl">
         {partners.length === 0 ? (
           <div className="text-center py-12">
