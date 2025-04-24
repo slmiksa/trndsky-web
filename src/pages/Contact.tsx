@@ -1,14 +1,13 @@
-
 import Navbar from '../components/Navbar';
 import ContactForm from '../components/ContactForm';
 import { ContactDetails } from '@/components/ContactDetails';
 import { useContactInfo } from '@/hooks/useContactInfo';
-
 const Contact = () => {
-  const { contactInfo, loading } = useContactInfo();
-
-  return (
-    <div className="min-h-screen flex flex-col">
+  const {
+    contactInfo,
+    loading
+  } = useContactInfo();
+  return <div className="min-h-screen flex flex-col">
       <Navbar />
       
       <div className="pt-32 pb-16 bg-trndsky-darkblue text-white">
@@ -36,20 +35,14 @@ const Contact = () => {
             </div>
             
             <div>
-              <h2 className="text-3xl font-bold mb-6 text-trndsky-darkblue font-tajawal">
-                موقعنا
-              </h2>
+              
               <div className="bg-white p-6 rounded-lg shadow-md font-tajawal text-right">
                 <h3 className="text-xl font-bold mb-3">ساعات العمل</h3>
                 <div className="space-y-2 text-gray-700">
-                  {loading ? (
-                    <p>جاري التحميل...</p>
-                  ) : (
-                    <>
+                  {loading ? <p>جاري التحميل...</p> : <>
                       <p>{contactInfo.working_days}: {contactInfo.working_hours_start} - {contactInfo.working_hours_end}</p>
                       <p>{contactInfo.closed_days}: مغلق</p>
-                    </>
-                  )}
+                    </>}
                 </div>
               </div>
             </div>
@@ -65,8 +58,6 @@ const Contact = () => {
           <p className="font-tajawal">© {new Date().getFullYear()} TRNDSKY. جميع الحقوق محفوظة</p>
         </div>
       </footer>
-    </div>
-  );
+    </div>;
 };
-
 export default Contact;

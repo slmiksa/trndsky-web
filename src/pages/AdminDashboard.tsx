@@ -3,23 +3,9 @@ import { useAdminAuth } from "@/components/AdminAuthContext";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { FolderOpen, X, Eye, Edit, Trash2, Plus, Users } from "lucide-react";
-import {
-  Dialog,
-  DialogTrigger,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-  DialogClose,
-} from "@/components/ui/dialog";
+import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import {
-  Tabs,
-  TabsList,
-  TabsTrigger,
-  TabsContent,
-} from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { toast } from "@/components/ui/use-toast";
 import { useUploadPartnerLogo } from "@/hooks/useUploadPartnerLogo";
 import { Card, CardContent } from "@/components/ui/card";
@@ -28,38 +14,31 @@ import { AboutContentManager } from "@/components/admin/AboutContentManager";
 import { ContactManager } from "@/components/admin/ContactManager";
 import { AdminUsersManager } from "@/components/admin/AdminUsersManager";
 import { DefaultAdminManager } from "@/components/admin/DefaultAdminManager";
-
-const initialSlides = [
-  {
-    id: 1,
-    title: "برمجيات احترافية",
-    subtitle: "حلول تقنية متكاملة لمشاريعك",
-    description: "نقدم خدمات برمجية متكاملة بأحدث التقنيات وأفضل الممارسات العالمية",
-    image: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2072&q=80",
-  },
-  {
-    id: 2,
-    title: "تطوير المواقع والتطبيقات",
-    subtitle: "برمجة الويب بأحدث التقنيات",
-    description: "تصميم وتطوير مواقع وتطبيقات ويب متجاوبة وعالية الأداء",
-    image: "https://images.unsplash.com/photo-1581472723648-909f4851d4ae?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
-  },
-  {
-    id: 3,
-    title: "حلول ذكاء اصطناعي",
-    subtitle: "الابتكار التقني للمستقبل",
-    description: "تطبيقات ذكاء اصطناعي متطورة لتحسين أداء وكفاءة أعمالك",
-    image: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
-  },
-];
-
+const initialSlides = [{
+  id: 1,
+  title: "برمجيات احترافية",
+  subtitle: "حلول تقنية متكاملة لمشاريعك",
+  description: "نقدم خدمات برمجية متكاملة بأحدث التقنيات وأفضل الممارسات العالمية",
+  image: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2072&q=80"
+}, {
+  id: 2,
+  title: "تطوير المواقع والتطبيقات",
+  subtitle: "برمجة الويب بأحدث التقنيات",
+  description: "تصميم وتطوير مواقع وتطبيقات ويب متجاوبة وعالية الأداء",
+  image: "https://images.unsplash.com/photo-1581472723648-909f4851d4ae?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
+}, {
+  id: 3,
+  title: "حلول ذكاء اصطناعي",
+  subtitle: "الابتكار التقني للمستقبل",
+  description: "تطبيقات ذكاء اصطناعي متطورة لتحسين أداء وكفاءة أعمالك",
+  image: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
+}];
 const WISAL_PARTNER = {
   id: -1,
   name: "شركة الوصل الوطنية لتحصيل ديون جهات التمويل",
   logo_url: "/lovable-uploads/aa977791-13b8-471b-92c8-d9ef4ef03f27.png",
-  created_at: new Date().toISOString(),
+  created_at: new Date().toISOString()
 };
-
 type ProjectRequest = {
   id: string;
   name: string;
@@ -70,7 +49,6 @@ type ProjectRequest = {
   status: string;
   created_at: string;
 };
-
 type SoftwareOrder = {
   id: string;
   software_id: number;
@@ -79,7 +57,6 @@ type SoftwareOrder = {
   status: string;
   created_at: string;
 };
-
 type Slide = {
   id: number;
   title: string;
@@ -87,14 +64,12 @@ type Slide = {
   description: string;
   image: string;
 };
-
 type Partner = {
   id: number;
   name: string;
   logo_url: string;
   created_at: string;
 };
-
 type SoftwareProduct = {
   id: number;
   title: string;
@@ -103,39 +78,36 @@ type SoftwareProduct = {
   image_url: string;
   created_at: string;
 };
-
 const statusLabels: Record<string, string> = {
   new: "جديد",
   open: "مفتوح",
-  closed: "مغلق",
+  closed: "مغلق"
 };
-
 const statusColors: Record<string, string> = {
   new: "bg-yellow-100 text-yellow-800",
   open: "bg-green-100 text-green-800",
-  closed: "bg-red-100 text-red-800",
+  closed: "bg-red-100 text-red-800"
 };
-
 const AdminDashboard = () => {
-  const { isLoggedIn, logout } = useAdminAuth();
+  const {
+    isLoggedIn,
+    logout
+  } = useAdminAuth();
   const navigate = useNavigate();
   const [requests, setRequests] = useState<ProjectRequest[]>([]);
   const [orders, setOrders] = useState<SoftwareOrder[]>([]);
   const [loading, setLoading] = useState(true);
-
   const [partners, setPartners] = useState<Partner[]>([]);
   const [loadingPartners, setLoadingPartners] = useState(true);
   const [partnerDialogOpen, setPartnerDialogOpen] = useState(false);
   const [partnerToEdit, setPartnerToEdit] = useState<Partner | null>(null);
   const [partnerForm, setPartnerForm] = useState<Omit<Partner, "id" | "created_at">>({
     name: "",
-    logo_url: "",
+    logo_url: ""
   });
   const [isSavingPartner, setIsSavingPartner] = useState(false);
-
   const [viewedRequest, setViewedRequest] = useState<ProjectRequest | null>(null);
   const [viewedOrder, setViewedOrder] = useState<SoftwareOrder | null>(null);
-
   const [slides, setSlides] = useState<Slide[]>(initialSlides);
   const [slideDialogOpen, setSlideDialogOpen] = useState(false);
   const [slideToEdit, setSlideToEdit] = useState<Slide | null>(null);
@@ -143,21 +115,22 @@ const AdminDashboard = () => {
     title: "",
     subtitle: "",
     description: "",
-    image: "",
+    image: ""
   });
-
   const [isSavingSlide, setIsSavingSlide] = useState(false);
-
   const [logoFile, setLogoFile] = useState<File | null>(null);
-
   const [products, setProducts] = useState<SoftwareProduct[]>([]);
   const [loadingProducts, setLoadingProducts] = useState(true);
   const [productDialogOpen, setProductDialogOpen] = useState(false);
   const [productToEdit, setProductToEdit] = useState<SoftwareProduct | null>(null);
-  const [productTitlesMap, setProductTitlesMap] = useState<{[key: number]: string}>({});
-
-  const { uploadLogo, uploading: logoUploading, error: logoUploadError } = useUploadPartnerLogo();
-
+  const [productTitlesMap, setProductTitlesMap] = useState<{
+    [key: number]: string;
+  }>({});
+  const {
+    uploadLogo,
+    uploading: logoUploading,
+    error: logoUploadError
+  } = useUploadPartnerLogo();
   useEffect(() => {
     if (!isLoggedIn) {
       navigate("/adminlogin");
@@ -167,52 +140,50 @@ const AdminDashboard = () => {
     fetchPartners();
     fetchProducts();
   }, [isLoggedIn, navigate]);
-
   useEffect(() => {
     const titlesMap = products.reduce((acc, product) => {
       acc[product.id] = product.title;
       return acc;
-    }, {} as {[key: number]: string});
+    }, {} as {
+      [key: number]: string;
+    });
     setProductTitlesMap(titlesMap);
   }, [products]);
-
   async function fetchData() {
     setLoading(true);
-    const { data: reqData } = await supabase
-      .from("project_requests")
-      .select("*")
-      .in("status", ["new", "open"])
-      .order("created_at", { ascending: false });
-
-    const { data: ordData } = await supabase
-      .from("software_orders")
-      .select("*")
-      .in("status", ["new", "open"])
-      .order("created_at", { ascending: false });
-
+    const {
+      data: reqData
+    } = await supabase.from("project_requests").select("*").in("status", ["new", "open"]).order("created_at", {
+      ascending: false
+    });
+    const {
+      data: ordData
+    } = await supabase.from("software_orders").select("*").in("status", ["new", "open"]).order("created_at", {
+      ascending: false
+    });
     setRequests(reqData || []);
     setOrders(ordData || []);
     setLoading(false);
   }
-
   async function fetchPartners() {
     setLoadingPartners(true);
-    const { data, error } = await supabase
-      .from("partners")
-      .select("*")
-      .order("id", { ascending: true });
-
+    const {
+      data,
+      error
+    } = await supabase.from("partners").select("*").order("id", {
+      ascending: true
+    });
     if (error) {
       console.error("Error fetching partners:", error);
-      toast({ title: "خطأ", description: "حدث خطأ أثناء جلب بيانات الشركاء", variant: "destructive" });
+      toast({
+        title: "خطأ",
+        description: "حدث خطأ أثناء جلب بيانات الشركاء",
+        variant: "destructive"
+      });
       setPartners([WISAL_PARTNER]);
     } else {
       const partnerList = data || [];
-      const wisalExists = partnerList.some(p => 
-        p.name === WISAL_PARTNER.name || 
-        p.logo_url === WISAL_PARTNER.logo_url
-      );
-      
+      const wisalExists = partnerList.some(p => p.name === WISAL_PARTNER.name || p.logo_url === WISAL_PARTNER.logo_url);
       if (!wisalExists) {
         setPartners([WISAL_PARTNER, ...partnerList]);
       } else {
@@ -221,70 +192,65 @@ const AdminDashboard = () => {
     }
     setLoadingPartners(false);
   }
-
   async function fetchProducts() {
     setLoadingProducts(true);
-    const { data, error } = await supabase
-      .from("software_products")
-      .select("*")
-      .order("id", { ascending: true });
-
+    const {
+      data,
+      error
+    } = await supabase.from("software_products").select("*").order("id", {
+      ascending: true
+    });
     if (error) {
       console.error("Error fetching products:", error);
       toast({
         title: "خطأ",
         description: "حدث خطأ أثناء جلب البرمجيات",
-        variant: "destructive",
+        variant: "destructive"
       });
     } else {
       setProducts(data || []);
     }
     setLoadingProducts(false);
   }
-
   const handleLogout = () => {
     logout();
     navigate("/adminlogin");
   };
-
   const openNewPartnerDialog = () => {
     setPartnerToEdit(null);
     setPartnerForm({
       name: "",
-      logo_url: "",
+      logo_url: ""
     });
     setPartnerDialogOpen(true);
   };
-
   const openEditPartnerDialog = (partner: Partner) => {
     setPartnerToEdit(partner);
     setPartnerForm({
       name: partner.name,
-      logo_url: partner.logo_url,
+      logo_url: partner.logo_url
     });
     setPartnerDialogOpen(true);
   };
-
   const handlePartnerFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setPartnerForm((prev) => ({
+    const {
+      name,
+      value
+    } = e.target;
+    setPartnerForm(prev => ({
       ...prev,
-      [name]: value,
+      [name]: value
     }));
   };
-
   const handleLogoFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       setLogoFile(e.target.files[0]);
     }
   };
-
   const handleSavePartner = async () => {
     setIsSavingPartner(true);
-
     try {
       let logo_url = partnerForm.logo_url;
-
       if (logoFile) {
         const uploadedUrl = await uploadLogo(logoFile);
         if (!uploadedUrl) {
@@ -292,145 +258,149 @@ const AdminDashboard = () => {
         }
         logo_url = uploadedUrl;
       }
-
       if (partnerToEdit && partnerToEdit.id === -1) {
         const updatedWisal = {
           ...WISAL_PARTNER,
           name: partnerForm.name,
           logo_url: logo_url
         };
-        
         setPartners(prev => {
           const withoutWisal = prev.filter(p => p.id !== -1);
           return [updatedWisal, ...withoutWisal];
         });
-        
-        toast({ title: "تم التحديث", description: "تم تحديث بيانات الشريك الإفتراضي بنجاح" });
+        toast({
+          title: "تم التحديث",
+          description: "تم تحديث بيانات الشريك الإفتراضي بنجاح"
+        });
       } else if (partnerToEdit) {
-        const { error } = await supabase
-          .from("partners")
-          .update({
-            name: partnerForm.name,
-            logo_url,
-          })
-          .eq("id", partnerToEdit.id);
-
+        const {
+          error
+        } = await supabase.from("partners").update({
+          name: partnerForm.name,
+          logo_url
+        }).eq("id", partnerToEdit.id);
         if (error) throw error;
-        toast({ title: "تم التحديث", description: "تم تحديث بيانات الشريك بنجاح" });
+        toast({
+          title: "تم التحديث",
+          description: "تم تحديث بيانات الشريك بنجاح"
+        });
       } else {
-        const { error } = await supabase
-          .from("partners")
-          .insert({
-            name: partnerForm.name,
-            logo_url,
-          });
-
+        const {
+          error
+        } = await supabase.from("partners").insert({
+          name: partnerForm.name,
+          logo_url
+        });
         if (error) throw error;
-        toast({ title: "تمت الإضافة", description: "تم إضافة الشريك بنجاح" });
+        toast({
+          title: "تمت الإضافة",
+          description: "تم إضافة الشريك بنجاح"
+        });
       }
-
       fetchPartners();
       setPartnerDialogOpen(false);
       setLogoFile(null);
-      setPartnerForm({ name: "", logo_url: "" });
+      setPartnerForm({
+        name: "",
+        logo_url: ""
+      });
     } catch (error: any) {
       console.error("Error saving partner:", error);
       toast({
         title: "خطأ",
         description: `حدث خطأ أثناء حفظ بيانات الشريك: ${error.message || error}`,
-        variant: "destructive",
+        variant: "destructive"
       });
     } finally {
       setIsSavingPartner(false);
     }
   };
-
   const handleDeletePartner = async (partnerId: number) => {
     if (!confirm("هل أنت متأكد من حذف هذا الشريك؟")) {
       return;
     }
-    
     try {
       if (partnerId === -1) {
         setPartners(prev => prev.filter(p => p.id !== -1));
-        toast({ title: "تم الحذف", description: "تم إزالة الشريك الإفتراضي من العرض" });
+        toast({
+          title: "تم الحذف",
+          description: "تم إزالة الشريك الإفتراضي من العرض"
+        });
         return;
       }
-      
-      const { error } = await supabase
-        .from("partners")
-        .delete()
-        .eq("id", partnerId);
-
+      const {
+        error
+      } = await supabase.from("partners").delete().eq("id", partnerId);
       if (error) throw error;
-      
-      toast({ title: "تم الحذف", description: "تم حذ�� الشريك بنجاح" });
+      toast({
+        title: "تم الحذف",
+        description: "تم حذ�� الشريك بنجاح"
+      });
       fetchPartners();
     } catch (error: any) {
       console.error("Error deleting partner:", error);
-      toast({ 
-        title: "خطأ", 
-        description: `حدث خطأ أثناء حذف الشريك: ${error.message}`, 
-        variant: "destructive" 
+      toast({
+        title: "خطأ",
+        description: `حدث خطأ أثناء حذف الشريك: ${error.message}`,
+        variant: "destructive"
       });
     }
   };
-
   const updateStatus = async (id: string, newStatus: string) => {
-    await supabase
-      .from("project_requests")
-      .update({ status: newStatus })
-      .eq("id", id);
+    await supabase.from("project_requests").update({
+      status: newStatus
+    }).eq("id", id);
     fetchData();
   };
-
   const updateOrderStatus = async (id: string, newStatus: string) => {
-    await supabase
-      .from("software_orders")
-      .update({ status: newStatus })
-      .eq("id", id);
+    await supabase.from("software_orders").update({
+      status: newStatus
+    }).eq("id", id);
     fetchData();
   };
-
   const openNewSlideDialog = () => {
     setSlideToEdit(null);
     setSlideForm({
       title: "",
       subtitle: "",
       description: "",
-      image: "",
+      image: ""
     });
     setSlideDialogOpen(true);
   };
-
   const openEditSlideDialog = (slide: Slide) => {
     setSlideToEdit(slide);
     setSlideForm({
       title: slide.title,
       subtitle: slide.subtitle,
       description: slide.description,
-      image: slide.image,
+      image: slide.image
     });
     setSlideDialogOpen(true);
   };
-
   const handleSlideFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setSlideForm((prev) => ({
+    const {
+      name,
+      value
+    } = e.target;
+    setSlideForm(prev => ({
       ...prev,
-      [name]: value,
+      [name]: value
     }));
   };
-
   const handleSaveSlide = () => {
     setIsSavingSlide(true);
     if (slideToEdit) {
-      setSlides((prev) =>
-        prev.map((s) => (s.id === slideToEdit.id ? { ...slideToEdit, ...slideForm } : s))
-      );
+      setSlides(prev => prev.map(s => s.id === slideToEdit.id ? {
+        ...slideToEdit,
+        ...slideForm
+      } : s));
     } else {
       const nextId = Math.max(...slides.map(s => s.id), 0) + 1;
-      setSlides([...slides, { id: nextId, ...slideForm }]);
+      setSlides([...slides, {
+        id: nextId,
+        ...slideForm
+      }]);
     }
     setIsSavingSlide(false);
     setSlideDialogOpen(false);
@@ -439,62 +409,49 @@ const AdminDashboard = () => {
       title: "",
       subtitle: "",
       description: "",
-      image: "",
+      image: ""
     });
   };
-
   const handleDeleteSlide = (slideId: number) => {
-    setSlides((prev) => prev.filter((s) => s.id !== slideId));
+    setSlides(prev => prev.filter(s => s.id !== slideId));
   };
-
   const openNewProductDialog = () => {
     setProductToEdit(null);
     setProductDialogOpen(true);
   };
-
   const openEditProductDialog = (product: SoftwareProduct) => {
     setProductToEdit(product);
     setProductDialogOpen(true);
   };
-
   const handleDeleteProduct = async (productId: number) => {
     if (!confirm("هل أنت متأكد من حذف هذا البرنامج؟")) {
       return;
     }
-
     try {
-      const { error } = await supabase
-        .from("software_products")
-        .delete()
-        .eq("id", productId);
-
+      const {
+        error
+      } = await supabase.from("software_products").delete().eq("id", productId);
       if (error) throw error;
-
-      toast({ title: "تم الحذف", description: "تم حذف البرنامج بنجاح" });
+      toast({
+        title: "تم الحذف",
+        description: "تم حذف البرنامج بنجاح"
+      });
       fetchProducts();
     } catch (error: any) {
       console.error("Error deleting product:", error);
       toast({
         title: "خطأ",
         description: error.message || "حدث خطأ أثناء حذف البرنامج",
-        variant: "destructive",
+        variant: "destructive"
       });
     }
   };
-
   if (!isLoggedIn) return null;
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+  return <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <header className="relative z-10 px-8 py-6 bg-gradient-to-r from-blue-900 to-blue-800">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <h1 className="text-3xl font-bold text-white font-tajawal tracking-wide">
-            لوحة تحكم المسؤول
-          </h1>
-          <button
-            onClick={handleLogout}
-            className="bg-white/10 text-white px-6 py-2.5 rounded-lg font-tajawal hover:bg-white/20 transition-all flex items-center gap-2 backdrop-blur-sm border border-white/10"
-          >
+          <h1 className="text-3xl font-bold text-white font-tajawal tracking-wide">لوحة تحكم TRNDSKY</h1>
+          <button onClick={handleLogout} className="bg-white/10 text-white px-6 py-2.5 rounded-lg font-tajawal hover:bg-white/20 transition-all flex items-center gap-2 backdrop-blur-sm border border-white/10">
             تسجيل خروج
           </button>
         </div>
@@ -503,40 +460,22 @@ const AdminDashboard = () => {
       <main className="max-w-7xl mx-auto py-8 px-4 relative z-0">
         <Tabs defaultValue="requests" className="w-full">
           <TabsList className="flex justify-center mb-8 bg-white shadow-lg rounded-2xl border border-gray-100 p-2 backdrop-blur-sm sticky top-4 z-50">
-            <TabsTrigger 
-              value="requests" 
-              className="text-lg px-6 py-3 font-medium data-[state=active]:bg-gradient-to-br data-[state=active]:from-blue-900 data-[state=active]:to-blue-800 data-[state=active]:text-white rounded-xl transition-all duration-300"
-            >
+            <TabsTrigger value="requests" className="text-lg px-6 py-3 font-medium data-[state=active]:bg-gradient-to-br data-[state=active]:from-blue-900 data-[state=active]:to-blue-800 data-[state=active]:text-white rounded-xl transition-all duration-300">
               تذاكر الطلبات
             </TabsTrigger>
-            <TabsTrigger 
-              value="slides" 
-              className="text-lg px-6 py-3 font-medium data-[state=active]:bg-gradient-to-br data-[state=active]:from-blue-900 data-[state=active]:to-blue-800 data-[state=active]:text-white rounded-xl transition-all duration-300"
-            >
+            <TabsTrigger value="slides" className="text-lg px-6 py-3 font-medium data-[state=active]:bg-gradient-to-br data-[state=active]:from-blue-900 data-[state=active]:to-blue-800 data-[state=active]:text-white rounded-xl transition-all duration-300">
               السلايدات
             </TabsTrigger>
-            <TabsTrigger 
-              value="partners" 
-              className="text-lg px-6 py-3 font-medium data-[state=active]:bg-gradient-to-br data-[state=active]:from-blue-900 data-[state=active]:to-blue-800 data-[state=active]:text-white rounded-xl transition-all duration-300"
-            >
+            <TabsTrigger value="partners" className="text-lg px-6 py-3 font-medium data-[state=active]:bg-gradient-to-br data-[state=active]:from-blue-900 data-[state=active]:to-blue-800 data-[state=active]:text-white rounded-xl transition-all duration-300">
               شركاء النجاح
             </TabsTrigger>
-            <TabsTrigger 
-              value="software" 
-              className="text-lg px-6 py-3 font-medium data-[state=active]:bg-gradient-to-br data-[state=active]:from-blue-900 data-[state=active]:to-blue-800 data-[state=active]:text-white rounded-xl transition-all duration-300"
-            >
+            <TabsTrigger value="software" className="text-lg px-6 py-3 font-medium data-[state=active]:bg-gradient-to-br data-[state=active]:from-blue-900 data-[state=active]:to-blue-800 data-[state=active]:text-white rounded-xl transition-all duration-300">
               البرمجيات الجاهزة
             </TabsTrigger>
-            <TabsTrigger 
-              value="about" 
-              className="text-lg px-6 py-3 font-medium data-[state=active]:bg-gradient-to-br data-[state=active]:from-blue-900 data-[state=active]:to-blue-800 data-[state=active]:text-white rounded-xl transition-all duration-300"
-            >
+            <TabsTrigger value="about" className="text-lg px-6 py-3 font-medium data-[state=active]:bg-gradient-to-br data-[state=active]:from-blue-900 data-[state=active]:to-blue-800 data-[state=active]:text-white rounded-xl transition-all duration-300">
               من نحن
             </TabsTrigger>
-            <TabsTrigger 
-              value="contact" 
-              className="text-lg px-6 py-3 font-medium data-[state=active]:bg-gradient-to-br data-[state=active]:from-blue-900 data-[state=active]:to-blue-800 data-[state=active]:text-white rounded-xl transition-all duration-300"
-            >
+            <TabsTrigger value="contact" className="text-lg px-6 py-3 font-medium data-[state=active]:bg-gradient-to-br data-[state=active]:from-blue-900 data-[state=active]:to-blue-800 data-[state=active]:text-white rounded-xl transition-all duration-300">
               التواصل معنا
             </TabsTrigger>
           </TabsList>
@@ -547,16 +486,11 @@ const AdminDashboard = () => {
                 <h2 className="text-2xl font-semibold mb-6 text-blue-900 border-b pb-4">
                   طلبات برمجة بأفكارك (جديدة/مفتوحة)
                 </h2>
-                {loading ? (
-                  <div className="text-center py-8 text-trndsky-blue">
+                {loading ? <div className="text-center py-8 text-trndsky-blue">
                     جارٍ التحميل...
-                  </div>
-                ) : requests.length === 0 ? (
-                  <div className="text-center py-4 text-gray-500">
+                  </div> : requests.length === 0 ? <div className="text-center py-4 text-gray-500">
                     لا توجد طلبات جديدة أو مفتوحة.
-                  </div>
-                ) : (
-                  <div className="overflow-x-auto">
+                  </div> : <div className="overflow-x-auto">
                     <table className="w-full text-base text-right border bg-white rounded-xl overflow-hidden">
                       <thead>
                         <tr className="bg-trndsky-teal/10">
@@ -571,18 +505,14 @@ const AdminDashboard = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        {requests.map((r) => (
-                          <tr key={r.id} className="border-t hover:bg-gray-50">
+                        {requests.map(r => <tr key={r.id} className="border-t hover:bg-gray-50">
                             <td className="px-4 py-2">{r.name}</td>
                             <td className="px-4 py-2">{r.email || "-"}</td>
                             <td className="px-4 py-2">{r.phone || "-"}</td>
                             <td className="px-4 py-2">{r.title}</td>
                             <td className="px-4 py-2 max-w-[300px]">{r.description}</td>
                             <td className="px-4 py-2">
-                              <span
-                                className={`inline-block rounded px-2 py-1 text-xs font-semibold ${statusColors[r.status] || ""
-                                  }`}
-                              >
+                              <span className={`inline-block rounded px-2 py-1 text-xs font-semibold ${statusColors[r.status] || ""}`}>
                                 {statusLabels[r.status] || r.status}
                               </span>
                             </td>
@@ -592,12 +522,7 @@ const AdminDashboard = () => {
                             <td className="px-4 py-2 flex items-center gap-1">
                               <Dialog>
                                 <DialogTrigger asChild>
-                                  <Button
-                                    variant="outline"
-                                    size="icon"
-                                    title="استعراض كامل التذكرة"
-                                    onClick={() => setViewedRequest(r)}
-                                  >
+                                  <Button variant="outline" size="icon" title="استعراض كامل التذكرة" onClick={() => setViewedRequest(r)}>
                                     <Eye />
                                   </Button>
                                 </DialogTrigger>
@@ -608,8 +533,7 @@ const AdminDashboard = () => {
                                       معلومات الطلب بشكل كامل
                                     </DialogDescription>
                                   </DialogHeader>
-                                  {viewedRequest && viewedRequest.id === r.id && (
-                                    <div className="text-base space-y-4 py-4">
+                                  {viewedRequest && viewedRequest.id === r.id && <div className="text-base space-y-4 py-4">
                                       <div>
                                         <span className="font-medium">الاسم: </span>
                                         {viewedRequest.name}
@@ -632,8 +556,7 @@ const AdminDashboard = () => {
                                       </div>
                                       <div>
                                         <span className="font-medium">الحالة: </span>
-                                        <span className={`rounded px-2 py-1 text-xs font-semibold ${statusColors[viewedRequest.status] || ""
-                                          }`}>
+                                        <span className={`rounded px-2 py-1 text-xs font-semibold ${statusColors[viewedRequest.status] || ""}`}>
                                           {statusLabels[viewedRequest.status] || viewedRequest.status}
                                         </span>
                                       </div>
@@ -641,8 +564,7 @@ const AdminDashboard = () => {
                                         <span className="font-medium">تاريخ الطلب: </span>
                                         {new Date(viewedRequest.created_at).toLocaleString("ar-EG")}
                                       </div>
-                                    </div>
-                                  )}
+                                    </div>}
                                   <DialogFooter>
                                     <DialogClose asChild>
                                       <Button variant="secondary">إغلاق</Button>
@@ -650,44 +572,27 @@ const AdminDashboard = () => {
                                   </DialogFooter>
                                 </DialogContent>
                               </Dialog>
-                              <button
-                                disabled={r.status === "open"}
-                                className="px-2 py-1 rounded bg-green-100 text-green-800 hover:bg-green-200 transition-all disabled:opacity-50"
-                                onClick={() => updateStatus(r.id, "open")}
-                                title="تحويل لمفتوح"
-                              >
+                              <button disabled={r.status === "open"} className="px-2 py-1 rounded bg-green-100 text-green-800 hover:bg-green-200 transition-all disabled:opacity-50" onClick={() => updateStatus(r.id, "open")} title="تحويل لمفتوح">
                                 <FolderOpen size={16} />
                               </button>
-                              <button
-                                disabled={r.status === "closed"}
-                                className="px-2 py-1 rounded bg-red-100 text-red-800 hover:bg-red-200 transition-all disabled:opacity-50"
-                                onClick={() => updateStatus(r.id, "closed")}
-                                title="إغلاق"
-                              >
+                              <button disabled={r.status === "closed"} className="px-2 py-1 rounded bg-red-100 text-red-800 hover:bg-red-200 transition-all disabled:opacity-50" onClick={() => updateStatus(r.id, "closed")} title="إغلاق">
                                 <X size={16} />
                               </button>
                             </td>
-                          </tr>
-                        ))}
+                          </tr>)}
                       </tbody>
                     </table>
-                  </div>
-                )}
+                  </div>}
               </section>
               <section className="bg-white rounded-2xl shadow-lg p-8 backdrop-blur-sm border border-gray-100">
                 <h2 className="text-2xl font-semibold mb-6 text-blue-900 border-b pb-4">
                   طلبات برمجيات جاهزة (جديدة/مفتوحة)
                 </h2>
-                {loading ? (
-                  <div className="text-center py-8 text-trndsky-blue">
+                {loading ? <div className="text-center py-8 text-trndsky-blue">
                     جارٍ التحميل...
-                  </div>
-                ) : orders.length === 0 ? (
-                  <div className="text-center py-4 text-gray-500">
+                  </div> : orders.length === 0 ? <div className="text-center py-4 text-gray-500">
                     لا توجد طلبات جديدة أو مفتوحة.
-                  </div>
-                ) : (
-                  <div className="overflow-x-auto">
+                  </div> : <div className="overflow-x-auto">
                     <table className="w-full text-base text-right border bg-white rounded-xl overflow-hidden">
                       <thead>
                         <tr className="bg-trndsky-teal/10">
@@ -700,8 +605,7 @@ const AdminDashboard = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        {orders.map((o) => (
-                          <tr key={o.id} className="border-t hover:bg-gray-50">
+                        {orders.map(o => <tr key={o.id} className="border-t hover:bg-gray-50">
                             <td className="px-4 py-2">{productTitlesMap[o.software_id] || o.software_id}</td>
                             <td className="px-4 py-2">{o.company_name}</td>
                             <td className="px-4 py-2">{o.whatsapp}</td>
@@ -716,12 +620,7 @@ const AdminDashboard = () => {
                             <td className="px-4 py-2 flex items-center gap-1">
                               <Dialog>
                                 <DialogTrigger asChild>
-                                  <Button
-                                    variant="outline"
-                                    size="icon"
-                                    title="استعراض كامل الطلب"
-                                    onClick={() => setViewedOrder(o)}
-                                  >
+                                  <Button variant="outline" size="icon" title="استعراض كامل الطلب" onClick={() => setViewedOrder(o)}>
                                     <Eye />
                                   </Button>
                                 </DialogTrigger>
@@ -732,8 +631,7 @@ const AdminDashboard = () => {
                                       جميع معلومات الطلب
                                     </DialogDescription>
                                   </DialogHeader>
-                                  {viewedOrder && viewedOrder.id === o.id && (
-                                    <div className="text-base space-y-4 py-4">
+                                  {viewedOrder && viewedOrder.id === o.id && <div className="text-base space-y-4 py-4">
                                       <div>
                                         <span className="font-medium">اسم المنتج: </span>
                                         {productTitlesMap[viewedOrder.software_id] || viewedOrder.software_id}
@@ -756,8 +654,7 @@ const AdminDashboard = () => {
                                         <span className="font-medium">تاريخ الطلب: </span>
                                         {new Date(viewedOrder.created_at).toLocaleString("ar-EG")}
                                       </div>
-                                    </div>
-                                  )}
+                                    </div>}
                                   <DialogFooter>
                                     <DialogClose asChild>
                                       <Button variant="secondary">إغلاق</Button>
@@ -765,29 +662,17 @@ const AdminDashboard = () => {
                                   </DialogFooter>
                                 </DialogContent>
                               </Dialog>
-                              <button
-                                disabled={o.status === "open"}
-                                className="px-2 py-1 rounded bg-green-100 text-green-800 hover:bg-green-200 transition-all disabled:opacity-50"
-                                onClick={() => updateOrderStatus(o.id, "open")}
-                                title="تحويل لمفتوح"
-                              >
+                              <button disabled={o.status === "open"} className="px-2 py-1 rounded bg-green-100 text-green-800 hover:bg-green-200 transition-all disabled:opacity-50" onClick={() => updateOrderStatus(o.id, "open")} title="تحويل لمفتوح">
                                 <FolderOpen size={16} />
                               </button>
-                              <button
-                                disabled={o.status === "closed"}
-                                className="px-2 py-1 rounded bg-red-100 text-red-800 hover:bg-red-200 transition-all disabled:opacity-50"
-                                onClick={() => updateOrderStatus(o.id, "closed")}
-                                title="إغلاق"
-                              >
+                              <button disabled={o.status === "closed"} className="px-2 py-1 rounded bg-red-100 text-red-800 hover:bg-red-200 transition-all disabled:opacity-50" onClick={() => updateOrderStatus(o.id, "closed")} title="إغلاق">
                                 <X size={16} />
                               </button>
                             </td>
-                          </tr>
-                        ))}
+                          </tr>)}
                       </tbody>
                     </table>
-                  </div>
-                )}
+                  </div>}
               </section>
             </div>
           </TabsContent>
@@ -803,41 +688,23 @@ const AdminDashboard = () => {
                 </Button>
               </div>
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {slides.map((slide) => (
-                  <div key={slide.id} className="bg-white rounded-xl shadow p-4 flex flex-col">
-                    <img
-                      src={slide.image}
-                      alt={slide.title}
-                      className="rounded-lg h-40 object-cover mb-3 w-full"
-                    />
+                {slides.map(slide => <div key={slide.id} className="bg-white rounded-xl shadow p-4 flex flex-col">
+                    <img src={slide.image} alt={slide.title} className="rounded-lg h-40 object-cover mb-3 w-full" />
                     <h3 className="font-bold text-trndsky-teal text-lg mb-1">{slide.title}</h3>
                     <div className="text-trndsky-darkblue font-medium">{slide.subtitle}</div>
                     <div className="text-gray-700 text-sm mt-1">{slide.description}</div>
                     <div className="flex gap-2 mt-4">
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        onClick={() => openEditSlideDialog(slide)}
-                        title="تعديل"
-                      >
+                      <Button variant="outline" size="icon" onClick={() => openEditSlideDialog(slide)} title="تعديل">
                         <Edit size={18} />
                       </Button>
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        onClick={() => handleDeleteSlide(slide.id)}
-                        title="حذف"
-                      >
+                      <Button variant="outline" size="icon" onClick={() => handleDeleteSlide(slide.id)} title="حذف">
                         <Trash2 size={18} className="text-red-500" />
                       </Button>
                     </div>
-                  </div>
-                ))}
-                {slides.length === 0 && (
-                  <div className="text-gray-400 col-span-3 text-center py-12">
+                  </div>)}
+                {slides.length === 0 && <div className="text-gray-400 col-span-3 text-center py-12">
                     لا توجد سلايدات حاليًا.
-                  </div>
-                )}
+                  </div>}
               </div>
             </section>
             <Dialog open={slideDialogOpen} onOpenChange={setSlideDialogOpen}>
@@ -845,62 +712,28 @@ const AdminDashboard = () => {
                 <DialogHeader>
                   <DialogTitle>{slideToEdit ? "تعديل السلايد" : "إضافة سلايد جديد"}</DialogTitle>
                   <DialogDescription>
-                    {slideToEdit
-                      ? "يمكنك تعديل بيانات السلايد أدناه"
-                      : "قم بإضافة سلايد جديد للواجهة الرئيسية"}
+                    {slideToEdit ? "يمكنك تعديل بيانات السلايد أدناه" : "قم بإضافة سلايد جديد للواجهة الرئيسية"}
                   </DialogDescription>
                 </DialogHeader>
-                <form
-                  className="space-y-4"
-                  onSubmit={e => {
-                    e.preventDefault();
-                    handleSaveSlide();
-                  }}
-                >
+                <form className="space-y-4" onSubmit={e => {
+                e.preventDefault();
+                handleSaveSlide();
+              }}>
                   <div>
                     <label className="font-medium block mb-1">عنوان السلايد</label>
-                    <input
-                      name="title"
-                      value={slideForm.title}
-                      onChange={handleSlideFormChange}
-                      required
-                      className="input border px-3 py-2 w-full rounded"
-                      placeholder="عنوان السلايد"
-                    />
+                    <input name="title" value={slideForm.title} onChange={handleSlideFormChange} required className="input border px-3 py-2 w-full rounded" placeholder="عنوان السلايد" />
                   </div>
                   <div>
                     <label className="font-medium block mb-1">العنوان الفرعي</label>
-                    <input
-                      name="subtitle"
-                      value={slideForm.subtitle}
-                      onChange={handleSlideFormChange}
-                      required
-                      className="input border px-3 py-2 w-full rounded"
-                      placeholder="العنوان الفرعي"
-                    />
+                    <input name="subtitle" value={slideForm.subtitle} onChange={handleSlideFormChange} required className="input border px-3 py-2 w-full rounded" placeholder="العنوان الفرعي" />
                   </div>
                   <div>
                     <label className="font-medium block mb-1">الوصف</label>
-                    <textarea
-                      name="description"
-                      value={slideForm.description}
-                      onChange={handleSlideFormChange}
-                      required
-                      className="textarea border px-3 py-2 w-full rounded"
-                      placeholder="وصف السلايد"
-                      rows={3}
-                    ></textarea>
+                    <textarea name="description" value={slideForm.description} onChange={handleSlideFormChange} required className="textarea border px-3 py-2 w-full rounded" placeholder="وصف السلايد" rows={3}></textarea>
                   </div>
                   <div>
                     <label className="font-medium block mb-1">رابط الصورة</label>
-                    <input
-                      name="image"
-                      value={slideForm.image}
-                      onChange={handleSlideFormChange}
-                      required
-                      className="input border px-3 py-2 w-full rounded"
-                      placeholder="رابط صورة السلايد"
-                    />
+                    <input name="image" value={slideForm.image} onChange={handleSlideFormChange} required className="input border px-3 py-2 w-full rounded" placeholder="رابط صورة السلايد" />
                   </div>
                   <div className="flex justify-end gap-2 mt-6">
                     <Button type="button" variant="outline" onClick={() => setSlideDialogOpen(false)}>
@@ -926,51 +759,30 @@ const AdminDashboard = () => {
                 </Button>
               </div>
 
-              {loadingPartners ? (
-                <div className="text-center py-8 text-trndsky-blue">
+              {loadingPartners ? <div className="text-center py-8 text-trndsky-blue">
                   جارٍ التحميل...
-                </div>
-              ) : partners.length === 0 ? (
-                <div className="text-center py-4 text-gray-500">
+                </div> : partners.length === 0 ? <div className="text-center py-4 text-gray-500">
                   لا يوجد شركاء حاليًا.
-                </div>
-              ) : (
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {partners.map((partner) => (
-                    <Card key={partner.id} className="overflow-hidden">
+                </div> : <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {partners.map(partner => <Card key={partner.id} className="overflow-hidden">
                       <CardContent className="p-4 flex flex-col items-center">
                         <div className="h-32 flex items-center justify-center mb-4">
-                          <img
-                            src={partner.logo_url}
-                            alt={partner.name}
-                            className="max-h-full max-w-full object-contain"
-                          />
+                          <img src={partner.logo_url} alt={partner.name} className="max-h-full max-w-full object-contain" />
                         </div>
                         <h3 className="font-bold text-center text-trndsky-blue mb-4">
                           {partner.name}
                         </h3>
                         <div className="flex gap-2 mt-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => openEditPartnerDialog(partner)}
-                          >
+                          <Button variant="outline" size="sm" onClick={() => openEditPartnerDialog(partner)}>
                             <Edit size={16} className="mr-1" /> تعديل
                           </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleDeletePartner(partner.id)}
-                            className="text-red-500 hover:text-red-700 hover:bg-red-50"
-                          >
+                          <Button variant="outline" size="sm" onClick={() => handleDeletePartner(partner.id)} className="text-red-500 hover:text-red-700 hover:bg-red-50">
                             <Trash2 size={16} className="mr-1" /> حذف
                           </Button>
                         </div>
                       </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              )}
+                    </Card>)}
+                </div>}
 
               <Dialog open={partnerDialogOpen} onOpenChange={setPartnerDialogOpen}>
                 <DialogContent dir="rtl">
@@ -979,72 +791,36 @@ const AdminDashboard = () => {
                       {partnerToEdit ? "تعديل شريك النجاح" : "إضافة شريك نجاح جديد"}
                     </DialogTitle>
                     <DialogDescription>
-                      {partnerToEdit
-                        ? "يمكنك تعديل بيانات الشريك أدناه"
-                        : "قم بإضافة شريك نجاح جديد"}
+                      {partnerToEdit ? "يمكنك تعديل بيانات الشريك أدناه" : "قم بإضافة شريك نجاح جديد"}
                     </DialogDescription>
                   </DialogHeader>
                   <div className="space-y-4 py-3">
                     <div>
                       <label className="font-medium block mb-1">اسم الشريك</label>
-                      <input
-                        name="name"
-                        value={partnerForm.name}
-                        onChange={handlePartnerFormChange}
-                        className="input border px-3 py-2 w-full rounded"
-                        placeholder="اسم الشريك"
-                      />
+                      <input name="name" value={partnerForm.name} onChange={handlePartnerFormChange} className="input border px-3 py-2 w-full rounded" placeholder="اسم الشريك" />
                     </div>
                     <div>
                       <label className="font-medium block mb-1">الشعار الحالي</label>
-                      {partnerForm.logo_url ? (
-                        <div className="mb-3 border rounded p-2 flex justify-center">
-                          <img
-                            src={partnerForm.logo_url}
-                            alt="الشعار الحالي"
-                            className="h-24 object-contain"
-                          />
-                        </div>
-                      ) : (
-                        <div className="text-gray-400 mb-3">لا يوجد شعار حاليًا</div>
-                      )}
+                      {partnerForm.logo_url ? <div className="mb-3 border rounded p-2 flex justify-center">
+                          <img src={partnerForm.logo_url} alt="الشعار الحالي" className="h-24 object-contain" />
+                        </div> : <div className="text-gray-400 mb-3">لا يوجد شعار حاليًا</div>}
                     </div>
                     <div>
                       <label className="font-medium block mb-1">
                         {partnerForm.logo_url ? "تغيير الشعار" : "إضافة شعار"}
                       </label>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleLogoFileChange}
-                        className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-trndsky-blue/10 file:text-trndsky-blue hover:file:bg-trndsky-blue/20"
-                      />
+                      <input type="file" accept="image/*" onChange={handleLogoFileChange} className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-trndsky-blue/10 file:text-trndsky-blue hover:file:bg-trndsky-blue/20" />
                     </div>
-                    {partnerForm.logo_url && !logoFile && (
-                      <div>
+                    {partnerForm.logo_url && !logoFile && <div>
                         <label className="font-medium block mb-1">رابط الشعار</label>
-                        <input
-                          name="logo_url"
-                          value={partnerForm.logo_url}
-                          onChange={handlePartnerFormChange}
-                          className="input border px-3 py-2 w-full rounded"
-                          placeholder="رابط الشعار"
-                        />
-                      </div>
-                    )}
+                        <input name="logo_url" value={partnerForm.logo_url} onChange={handlePartnerFormChange} className="input border px-3 py-2 w-full rounded" placeholder="رابط الشعار" />
+                      </div>}
                   </div>
                   <DialogFooter>
-                    <Button
-                      onClick={handleSavePartner}
-                      disabled={isSavingPartner || logoUploading}
-                    >
+                    <Button onClick={handleSavePartner} disabled={isSavingPartner || logoUploading}>
                       {isSavingPartner || logoUploading ? "جارٍ الحفظ..." : "حفظ"}
                     </Button>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => setPartnerDialogOpen(false)}
-                    >
+                    <Button type="button" variant="outline" onClick={() => setPartnerDialogOpen(false)}>
                       إلغاء
                     </Button>
                   </DialogFooter>
@@ -1064,24 +840,14 @@ const AdminDashboard = () => {
                 </Button>
               </div>
 
-              {loadingProducts ? (
-                <div className="text-center py-8 text-trndsky-blue">
+              {loadingProducts ? <div className="text-center py-8 text-trndsky-blue">
                   جارٍ التحميل...
-                </div>
-              ) : products.length === 0 ? (
-                <div className="text-center py-4 text-gray-500">
+                </div> : products.length === 0 ? <div className="text-center py-4 text-gray-500">
                   لا توجد برمجيات حاليًا.
-                </div>
-              ) : (
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {products.map((product) => (
-                    <Card key={product.id} className="overflow-hidden">
+                </div> : <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {products.map(product => <Card key={product.id} className="overflow-hidden">
                       <div className="h-48">
-                        <img
-                          src={product.image_url}
-                          alt={product.title}
-                          className="w-full h-full object-cover"
-                        />
+                        <img src={product.image_url} alt={product.title} className="w-full h-full object-cover" />
                       </div>
                       <CardContent className="p-4">
                         <h3 className="font-bold text-lg text-trndsky-teal mb-2">
@@ -1095,35 +861,19 @@ const AdminDashboard = () => {
                             {product.price} ريال
                           </div>
                           <div className="flex gap-2">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => openEditProductDialog(product)}
-                            >
+                            <Button variant="outline" size="sm" onClick={() => openEditProductDialog(product)}>
                               <Edit size={16} />
                             </Button>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleDeleteProduct(product.id)}
-                              className="text-red-500"
-                            >
+                            <Button variant="outline" size="sm" onClick={() => handleDeleteProduct(product.id)} className="text-red-500">
                               <Trash2 size={16} />
                             </Button>
                           </div>
                         </div>
                       </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              )}
+                    </Card>)}
+                </div>}
 
-              <SoftwareProductDialog
-                open={productDialogOpen}
-                onOpenChange={setProductDialogOpen}
-                product={productToEdit}
-                onSuccess={fetchProducts}
-              />
+              <SoftwareProductDialog open={productDialogOpen} onOpenChange={setProductDialogOpen} product={productToEdit} onSuccess={fetchProducts} />
             </section>
           </TabsContent>
 
@@ -1161,8 +911,6 @@ const AdminDashboard = () => {
           </TabsContent>
         </Tabs>
       </main>
-    </div>
-  );
+    </div>;
 };
-
 export default AdminDashboard;
