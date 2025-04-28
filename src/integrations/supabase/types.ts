@@ -171,6 +171,36 @@ export type Database = {
         }
         Relationships: []
       }
+      slides: {
+        Row: {
+          created_at: string | null
+          description: string
+          id: number
+          image: string
+          subtitle: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description: string
+          id: number
+          image: string
+          subtitle?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string
+          id?: number
+          image?: string
+          subtitle?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       software_orders: {
         Row: {
           company_name: string

@@ -2,12 +2,12 @@ import React, { useState, useEffect } from "react";
 import { useAdminAuth } from "@/components/AdminAuthContext";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { FolderOpen, X, Eye, Users } from "lucide-react";
+import { FolderOpen, X, Eye, Users, Edit, Trash2, Plus } from "lucide-react";
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { toast } from "@/components/ui/use-toast";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { SoftwareProductDialog } from "@/components/admin/SoftwareProductDialog";
 import { AboutContentManager } from "@/components/admin/AboutContentManager";
 import { ContactManager } from "@/components/admin/ContactManager";
@@ -89,6 +89,7 @@ const statusColors: Record<string, string> = {
   open: "bg-green-100 text-green-800",
   closed: "bg-red-100 text-red-800"
 };
+
 const AdminDashboard = () => {
   const {
     isLoggedIn,
@@ -122,6 +123,7 @@ const AdminDashboard = () => {
     uploading: logoUploading,
     error: logoUploadError
   } = useUploadPartnerLogo();
+
   useEffect(() => {
     if (!isLoggedIn) {
       navigate("/adminlogin");
@@ -131,6 +133,7 @@ const AdminDashboard = () => {
     fetchPartners();
     fetchProducts();
   }, [isLoggedIn, navigate]);
+
   useEffect(() => {
     const titlesMap = products.reduce((acc, product) => {
       acc[product.id] = product.title;
@@ -140,6 +143,7 @@ const AdminDashboard = () => {
     });
     setProductTitlesMap(titlesMap);
   }, [products]);
+
   async function fetchData() {
     setLoading(true);
     const {
@@ -156,6 +160,7 @@ const AdminDashboard = () => {
     setOrders(ordData || []);
     setLoading(false);
   }
+
   async function fetchPartners() {
     setLoadingPartners(true);
     const {
@@ -183,6 +188,7 @@ const AdminDashboard = () => {
     }
     setLoadingPartners(false);
   }
+
   async function fetchProducts() {
     setLoadingProducts(true);
     const {
@@ -203,10 +209,12 @@ const AdminDashboard = () => {
     }
     setLoadingProducts(false);
   }
+
   const handleLogout = () => {
     logout();
     navigate("/adminlogin");
   };
+
   const openNewPartnerDialog = () => {
     setPartnerToEdit(null);
     setPartnerForm({
@@ -215,6 +223,7 @@ const AdminDashboard = () => {
     });
     setPartnerDialogOpen(true);
   };
+
   const openEditPartnerDialog = (partner: Partner) => {
     setPartnerToEdit(partner);
     setPartnerForm({
@@ -223,6 +232,7 @@ const AdminDashboard = () => {
     });
     setPartnerDialogOpen(true);
   };
+
   const handlePartnerFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const {
       name,
@@ -233,11 +243,13 @@ const AdminDashboard = () => {
       [name]: value
     }));
   };
+
   const handleLogoFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       setLogoFile(e.target.files[0]);
     }
   };
+
   const handleSavePartner = async () => {
     setIsSavingPartner(true);
     try {
@@ -306,6 +318,7 @@ const AdminDashboard = () => {
       setIsSavingPartner(false);
     }
   };
+
   const handleDeletePartner = async (partnerId: number) => {
     if (!confirm("هل أنت متأكد من حذف هذا الشريك؟")) {
       return;
@@ -337,18 +350,21 @@ const AdminDashboard = () => {
       });
     }
   };
+
   const updateStatus = async (id: string, newStatus: string) => {
     await supabase.from("project_requests").update({
       status: newStatus
     }).eq("id", id);
     fetchData();
   };
+
   const updateOrderStatus = async (id: string, newStatus: string) => {
     await supabase.from("software_orders").update({
       status: newStatus
     }).eq("id", id);
     fetchData();
   };
+
   const openNewSlideDialog = () => {
     setSlideToEdit(null);
     setSlideForm({
@@ -359,6 +375,7 @@ const AdminDashboard = () => {
     });
     setSlideDialogOpen(true);
   };
+
   const openEditSlideDialog = (slide: Slide) => {
     setSlideToEdit(slide);
     setSlideForm({
@@ -369,6 +386,7 @@ const AdminDashboard = () => {
     });
     setSlideDialogOpen(true);
   };
+
   const handleSlideFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const {
       name,
@@ -379,6 +397,7 @@ const AdminDashboard = () => {
       [name]: value
     }));
   };
+
   const handleSaveSlide = () => {
     setIsSavingSlide(true);
     if (slideToEdit) {
@@ -403,17 +422,21 @@ const AdminDashboard = () => {
       image: ""
     });
   };
+
   const handleDeleteSlide = (slideId: number) => {
     setSlides(prev => prev.filter(s => s.id !== slideId));
   };
+
   const openNewProductDialog = () => {
     setProductToEdit(null);
     setProductDialogOpen(true);
   };
+
   const openEditProductDialog = (product: SoftwareProduct) => {
     setProductToEdit(product);
     setProductDialogOpen(true);
   };
+
   const handleDeleteProduct = async (productId: number) => {
     if (!confirm("هل أنت متأكد من حذف هذا البرنامج؟")) {
       return;
@@ -437,8 +460,11 @@ const AdminDashboard = () => {
       });
     }
   };
+
   if (!isLoggedIn) return null;
-  return <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <header className="relative z-10 px-8 py-6 bg-gradient-to-r from-blue-900 to-blue-800">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <h1 className="text-3xl font-bold text-white font-tajawal tracking-wide">لوحة تحكم TRNDSKY</h1>
@@ -672,6 +698,14 @@ const AdminDashboard = () => {
             <SlideManager />
           </TabsContent>
 
+          <TabsContent value="about">
+            <AboutContentManager />
+          </TabsContent>
+
+          <TabsContent value="contact">
+            <ContactManager />
+          </TabsContent>
+
           <TabsContent value="partners">
             <section className="bg-white rounded-2xl shadow-lg p-8 backdrop-blur-sm border border-gray-100">
               <div className="flex items-center justify-between mb-4">
@@ -711,4 +745,78 @@ const AdminDashboard = () => {
               <Dialog open={partnerDialogOpen} onOpenChange={setPartnerDialogOpen}>
                 <DialogContent dir="rtl">
                   <DialogHeader>
-                    <
+                    <DialogTitle>تعديل شريك</DialogTitle>
+                    <DialogDescription>
+                      تأكد من ملء جميع الحقول
+                    </DialogDescription>
+                  </DialogHeader>
+                  <DialogFooter>
+                    <DialogClose asChild>
+                      <Button variant="secondary">إغلاق</Button>
+                    </DialogClose>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            </section>
+          </TabsContent>
+
+          <TabsContent value="software">
+            <section className="bg-white rounded-2xl shadow-lg p-8 backdrop-blur-sm border border-gray-100">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-semibold text-trndsky-darkblue">
+                  إدارة البرمجيات الجاهزة
+                </h2>
+                <Button onClick={openNewProductDialog} className="flex items-center gap-2">
+                  <Plus size={18} /> إضافة برنامج
+                </Button>
+              </div>
+
+              {loadingProducts ? <div className="text-center py-8 text-trndsky-blue">
+                  جارٍ التحميل...
+                </div> : products.length === 0 ? <div className="text-center py-4 text-gray-500">
+                  لا يوجد برامج حاليًا.
+                </div> : <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {products.map(product => <Card key={product.id} className="overflow-hidden">
+                      <CardContent className="p-4 flex flex-col items-center">
+                        <div className="h-32 flex items-center justify-center mb-4">
+                          <img src={product.image_url} alt={product.title} className="max-h-full max-w-full object-contain" />
+                        </div>
+                        <h3 className="font-bold text-center text-trndsky-blue mb-4">
+                          {product.title}
+                        </h3>
+                        <div className="flex gap-2 mt-2">
+                          <Button variant="outline" size="sm" onClick={() => openEditProductDialog(product)}>
+                            <Edit size={16} className="mr-1" /> تعديل
+                          </Button>
+                          <Button variant="outline" size="sm" onClick={() => handleDeleteProduct(product.id)} className="text-red-500 hover:text-red-700 hover:bg-red-50">
+                            <Trash2 size={16} className="mr-1" /> حذف
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>)}
+                </div>}
+
+              <Dialog open={productDialogOpen} onOpenChange={setProductDialogOpen}>
+                <DialogContent dir="rtl">
+                  <DialogHeader>
+                    <DialogTitle>تعديل برنامج</DialogTitle>
+                    <DialogDescription>
+                      تأكد من ملء جميع الحقول
+                    </DialogDescription>
+                  </DialogHeader>
+                  <DialogFooter>
+                    <DialogClose asChild>
+                      <Button variant="secondary">إغلاق</Button>
+                    </DialogClose>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            </section>
+          </TabsContent>
+        </Tabs>
+      </main>
+    </div>
+  );
+};
+
+export default AdminDashboard;
