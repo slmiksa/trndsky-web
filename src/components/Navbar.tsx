@@ -1,12 +1,15 @@
 
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, LogIn, LogOut } from 'lucide-react';
+import { useUserAuth } from '@/components/UserAuthContext';
+import { Button } from '@/components/ui/button';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
+  const { user, signOut } = useUserAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -16,6 +19,14 @@ const Navbar = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
+  };
 
   return (
     <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 
@@ -53,6 +64,30 @@ const Navbar = () => {
             ))}
           </div>
 
+          {/* Auth Buttons */}
+          <div className="hidden md:flex items-center gap-4 font-tajawal">
+            {user ? (
+              <Button
+                variant="ghost"
+                className="text-gray-600 hover:text-trndsky-blue"
+                onClick={handleSignOut}
+              >
+                <LogOut className="w-4 h-4 ml-2" />
+                تسجيل الخروج
+              </Button>
+            ) : (
+              <Link to="/auth">
+                <Button
+                  variant="ghost"
+                  className="text-gray-600 hover:text-trndsky-blue"
+                >
+                  <LogIn className="w-4 h-4 ml-2" />
+                  تسجيل الدخول
+                </Button>
+              </Link>
+            )}
+          </div>
+
           {/* Mobile Menu Button */}
           <button 
             onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -82,6 +117,27 @@ const Navbar = () => {
                     {link.label}
                   </Link>
                 ))}
+                {/* Mobile Auth Buttons */}
+                {user ? (
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-start text-gray-600 hover:text-trndsky-blue"
+                    onClick={handleSignOut}
+                  >
+                    <LogOut className="w-4 h-4 ml-2" />
+                    تسجيل الخروج
+                  </Button>
+                ) : (
+                  <Link to="/auth" className="w-full" onClick={() => setIsMenuOpen(false)}>
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start text-gray-600 hover:text-trndsky-blue"
+                    >
+                      <LogIn className="w-4 h-4 ml-2" />
+                      تسجيل الدخول
+                    </Button>
+                  </Link>
+                )}
               </div>
             </div>
           </div>
