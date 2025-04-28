@@ -1,13 +1,9 @@
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { useUserAuth } from "@/components/UserAuthContext";
-import { useNavigate } from "react-router-dom";
 
 const ProjectRequestForm = () => {
   const { toast } = useToast();
-  const { user } = useUserAuth();
-  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -29,18 +25,6 @@ const ProjectRequestForm = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!user) {
-      toast({
-        title: "يجب تسجيل الدخول",
-        description: "يجب عليك تسجيل الدخول أولاً لإرسال طلب مشروع",
-        variant: "destructive",
-        duration: 5000,
-      });
-      navigate("/auth");
-      return;
-    }
-    
     setLoading(true);
     
     try {
@@ -51,8 +35,7 @@ const ProjectRequestForm = () => {
           phone: formData.phone || null,
           title: formData.title,
           description: formData.description,
-          status: "new",
-          user_id: user.id,
+          status: "new"
         },
       ]);
 
@@ -80,8 +63,6 @@ const ProjectRequestForm = () => {
         title: "",
         description: "",
       });
-      
-      navigate("/dashboard");
     } catch (err) {
       console.error("Unexpected error:", err);
       toast({
@@ -104,20 +85,6 @@ const ProjectRequestForm = () => {
           <h2 className="text-3xl md:text-4xl font-extrabold text-center mb-8 font-tajawal text-trndsky-blue drop-shadow-md">
             اطلب برمجة <span className="text-trndsky-teal">بأفكارك</span>
           </h2>
-          
-          {!user && (
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
-              <p className="text-yellow-700 text-right font-tajawal">
-                يجب عليك تسجيل الدخول أولاً لإرسال طلب مشروع.{" "}
-                <button
-                  onClick={() => navigate("/auth")}
-                  className="text-trndsky-blue underline hover:text-trndsky-blue/80"
-                >
-                  تسجيل الدخول
-                </button>
-              </p>
-            </div>
-          )}
           
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 gap-6">
