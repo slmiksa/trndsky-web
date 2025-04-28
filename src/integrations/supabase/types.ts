@@ -145,6 +145,7 @@ export type Database = {
           phone: string | null
           status: string
           title: string
+          user_id: string | null
         }
         Insert: {
           created_at?: string
@@ -155,6 +156,7 @@ export type Database = {
           phone?: string | null
           status?: string
           title: string
+          user_id?: string | null
         }
         Update: {
           created_at?: string
@@ -165,6 +167,7 @@ export type Database = {
           phone?: string | null
           status?: string
           title?: string
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -175,6 +178,7 @@ export type Database = {
           id: string
           software_id: number
           status: string
+          user_id: string | null
           whatsapp: string
         }
         Insert: {
@@ -183,6 +187,7 @@ export type Database = {
           id?: string
           software_id: number
           status?: string
+          user_id?: string | null
           whatsapp: string
         }
         Update: {
@@ -191,6 +196,7 @@ export type Database = {
           id?: string
           software_id?: number
           status?: string
+          user_id?: string | null
           whatsapp?: string
         }
         Relationships: []
@@ -222,6 +228,95 @@ export type Database = {
           price?: number
           title?: string
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      support_tickets: {
+        Row: {
+          created_at: string
+          id: string
+          message: string
+          status: string
+          subject: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message: string
+          status?: string
+          subject: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message?: string
+          status?: string
+          subject?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      ticket_responses: {
+        Row: {
+          created_at: string
+          id: string
+          is_admin: boolean
+          message: string
+          ticket_id: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_admin?: boolean
+          message: string
+          ticket_id: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_admin?: boolean
+          message?: string
+          ticket_id?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ticket_responses_ticket_id_fkey"
+            columns: ["ticket_id"]
+            isOneToOne: false
+            referencedRelation: "support_tickets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      users_profiles: {
+        Row: {
+          created_at: string
+          full_name: string | null
+          id: string
+          phone: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          full_name?: string | null
+          id: string
+          phone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          updated_at?: string
         }
         Relationships: []
       }

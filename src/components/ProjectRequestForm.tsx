@@ -1,10 +1,13 @@
-
 import { useState } from "react";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { useUserAuth } from "@/components/UserAuthContext";
+import { useNavigate } from "react-router-dom";
 
 const ProjectRequestForm = () => {
   const { toast } = useToast();
+  const { user } = useUserAuth();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -26,10 +29,21 @@ const ProjectRequestForm = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!user) {
+      toast({
+        title: "يجب تسجيل الدخول",
+        description: "يجب عليك تسجيل الدخول أولاً لإرسال طلب مشروع",
+        variant: "destructive",
+        duration: 5000,
+      });
+      navigate("/auth");
+      return;
+    }
+    
     setLoading(true);
     
     try {
-      // Make sure we're explicitly inserting into the project_requests table
       const { error } = await supabase.from("project_requests").insert([
         {
           name: formData.name,
@@ -38,6 +52,7 @@ const ProjectRequestForm = () => {
           title: formData.title,
           description: formData.description,
           status: "new",
+          user_id: user.id,
         },
       ]);
 
@@ -58,7 +73,6 @@ const ProjectRequestForm = () => {
         duration: 5000,
       });
 
-      // Reset form data after successful submission
       setFormData({
         name: "",
         email: "",
@@ -66,6 +80,8 @@ const ProjectRequestForm = () => {
         title: "",
         description: "",
       });
+      
+      navigate("/dashboard");
     } catch (err) {
       console.error("Unexpected error:", err);
       toast({
@@ -81,7 +97,6 @@ const ProjectRequestForm = () => {
 
   return (
     <section className="section-padding bg-white relative">
-      {/* Background circles */}
       <div className="absolute -top-24 -left-20 w-60 h-60 rounded-full bg-trndsky-teal/10 z-0"></div>
       <div className="absolute -bottom-14 -right-24 w-72 h-72 rounded-full bg-trndsky-blue/10 z-0"></div>
       <div className="container mx-auto px-4 relative z-10">
@@ -89,6 +104,21 @@ const ProjectRequestForm = () => {
           <h2 className="text-3xl md:text-4xl font-extrabold text-center mb-8 font-tajawal text-trndsky-blue drop-shadow-md">
             اطلب برمجة <span className="text-trndsky-teal">بأفكارك</span>
           </h2>
+          
+          {!user && (
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+              <p className="text-yellow-700 text-right font-tajawal">
+                يجب عليك تسجيل الدخول أولاً لإرسال طلب مشروع.{" "}
+                <button
+                  onClick={() => navigate("/auth")}
+                  className="text-trndsky-blue underline hover:text-trndsky-blue/80"
+                >
+                  تسجيل الدخول
+                </button>
+              </p>
+            </div>
+          )}
+          
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 gap-6">
               <div className="space-y-2">
@@ -182,7 +212,7 @@ const ProjectRequestForm = () => {
                 disabled={loading}
                 className="w-full md:w-auto bg-gradient-to-l from-trndsky-teal to-trndsky-blue hover:from-trndsky-blue hover:to-trndsky-teal text-white py-3 px-12 rounded-full shadow-lg text-xl font-tajawal tracking-widest transition-all hover:scale-105 disabled:opacity-60"
               >
-                {loading ? "يتم الإرسال..." : "إرسال الطلب"}
+                {loading ? "يتم الإرسال..." : "إر��ال الطلب"}
               </button>
             </div>
           </form>
