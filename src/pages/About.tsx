@@ -46,7 +46,14 @@ const About = () => {
           throw error;
         }
 
-        setContent(data);
+        // Parse JSON fields to ensure they match our types
+        const parsedContent: AboutContent = {
+          ...data,
+          stats: Array.isArray(data.stats) ? data.stats : [],
+          team_members: Array.isArray(data.team_members) ? data.team_members : []
+        };
+
+        setContent(parsedContent);
       } catch (error) {
         console.error('Error fetching about content:', error);
       } finally {

@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useAdminAuth } from "@/components/AdminAuthContext";
 import { useNavigate } from "react-router-dom";
@@ -14,26 +15,8 @@ import { ContactManager } from "@/components/admin/ContactManager";
 import { AdminUsersManager } from "@/components/admin/AdminUsersManager";
 import { DefaultAdminManager } from "@/components/admin/DefaultAdminManager";
 import SlideManager from "@/components/admin/SlideManager";
+import { useUploadPartnerLogo } from "@/hooks/useUploadPartnerLogo";
 
-const initialSlides = [{
-  id: 1,
-  title: "برمجيات احترافية",
-  subtitle: "حلول تقنية متكاملة لمشاريعك",
-  description: "نقدم خدمات برمجية متكاملة بأحدث التقنيات وأفضل الممارسات العالمية",
-  image: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2072&q=80"
-}, {
-  id: 2,
-  title: "تطوير المواقع والتطبيقات",
-  subtitle: "برمجة الويب بأحدث التقنيات",
-  description: "تصميم وتطوير مواقع وتطبيقات ويب متجاوبة وعالية الأداء",
-  image: "https://images.unsplash.com/photo-1581472723648-909f4851d4ae?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
-}, {
-  id: 3,
-  title: "حلول ذكاء اصطناعي",
-  subtitle: "الابتكار التقني للمستقبل",
-  description: "تطبيقات ذكاء اصطناعي متطورة لتحسين أداء وكفاءة أعمالك",
-  image: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
-}];
 const WISAL_PARTNER = {
   id: -1,
   name: "شركة الوصل الوطنية لتحصيل ديون جهات التمويل",
@@ -57,13 +40,6 @@ type SoftwareOrder = {
   whatsapp: string;
   status: string;
   created_at: string;
-};
-type Slide = {
-  id: number;
-  title: string;
-  subtitle: string;
-  description: string;
-  image: string;
 };
 type Partner = {
   id: number;
@@ -363,68 +339,6 @@ const AdminDashboard = () => {
       status: newStatus
     }).eq("id", id);
     fetchData();
-  };
-
-  const openNewSlideDialog = () => {
-    setSlideToEdit(null);
-    setSlideForm({
-      title: "",
-      subtitle: "",
-      description: "",
-      image: ""
-    });
-    setSlideDialogOpen(true);
-  };
-
-  const openEditSlideDialog = (slide: Slide) => {
-    setSlideToEdit(slide);
-    setSlideForm({
-      title: slide.title,
-      subtitle: slide.subtitle,
-      description: slide.description,
-      image: slide.image
-    });
-    setSlideDialogOpen(true);
-  };
-
-  const handleSlideFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const {
-      name,
-      value
-    } = e.target;
-    setSlideForm(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
-
-  const handleSaveSlide = () => {
-    setIsSavingSlide(true);
-    if (slideToEdit) {
-      setSlides(prev => prev.map(s => s.id === slideToEdit.id ? {
-        ...slideToEdit,
-        ...slideForm
-      } : s));
-    } else {
-      const nextId = Math.max(...slides.map(s => s.id), 0) + 1;
-      setSlides([...slides, {
-        id: nextId,
-        ...slideForm
-      }]);
-    }
-    setIsSavingSlide(false);
-    setSlideDialogOpen(false);
-    setSlideToEdit(null);
-    setSlideForm({
-      title: "",
-      subtitle: "",
-      description: "",
-      image: ""
-    });
-  };
-
-  const handleDeleteSlide = (slideId: number) => {
-    setSlides(prev => prev.filter(s => s.id !== slideId));
   };
 
   const openNewProductDialog = () => {
