@@ -49,8 +49,19 @@ const About = () => {
         // Parse JSON fields to ensure they match our types
         const parsedContent: AboutContent = {
           ...data,
-          stats: Array.isArray(data.stats) ? data.stats : [],
-          team_members: Array.isArray(data.team_members) ? data.team_members : []
+          stats: Array.isArray(data.stats) 
+            ? data.stats.map((item: any): StatItem => ({
+                number: String(item.number || '0'),
+                label: String(item.label || '')
+              })) 
+            : [],
+          team_members: Array.isArray(data.team_members) 
+            ? data.team_members.map((item: any): TeamMember => ({
+                name: String(item.name || ''),
+                title: String(item.title || ''),
+                image: String(item.image || '/placeholder.svg')
+              })) 
+            : []
         };
 
         setContent(parsedContent);
