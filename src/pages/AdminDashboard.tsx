@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useAdminAuth } from "@/components/AdminAuthContext";
 import { useNavigate } from "react-router-dom";
@@ -761,3 +762,223 @@ const AdminDashboard = () => {
                                         </span>
                                       </div>
                                       <div>
+                                        <span className="font-medium">تاريخ الطلب: </span>
+                                        {new Date(viewedTrialRequest.created_at).toLocaleString("ar-EG")}
+                                      </div>
+                                    </div>
+                                  )}
+                                  <DialogFooter>
+                                    <DialogClose asChild>
+                                      <Button variant="secondary">إغلاق</Button>
+                                    </DialogClose>
+                                  </DialogFooter>
+                                </DialogContent>
+                              </Dialog>
+                              <button 
+                                disabled={tr.status === "open"} 
+                                className="px-2 py-1 rounded bg-green-100 text-green-800 hover:bg-green-200 transition-all disabled:opacity-50" 
+                                onClick={() => updateTrialStatus(tr.id, "open")} 
+                                title="تحويل لمفتوح"
+                              >
+                                <FolderOpen size={16} />
+                              </button>
+                              <button 
+                                disabled={tr.status === "closed"} 
+                                className="px-2 py-1 rounded bg-red-100 text-red-800 hover:bg-red-200 transition-all disabled:opacity-50" 
+                                onClick={() => updateTrialStatus(tr.id, "closed")} 
+                                title="إغلاق"
+                              >
+                                <X size={16} />
+                              </button>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                )}
+              </section>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="slides">
+            <SlideManager />
+          </TabsContent>
+
+          <TabsContent value="partners">
+            <div className="space-y-8">
+              <section className="bg-white rounded-2xl shadow-lg p-8 backdrop-blur-sm border border-gray-100">
+                <div className="flex justify-between items-center mb-6">
+                  <h2 className="text-2xl font-semibold text-blue-900">شركاء النجاح</h2>
+                  <Button onClick={openNewPartnerDialog} className="flex items-center gap-2">
+                    <Plus size={16} /> إضافة شريك جديد
+                  </Button>
+                </div>
+                {loadingPartners ? (
+                  <div className="text-center py-8 text-trndsky-blue">جارٍ التحميل...</div>
+                ) : partners.length === 0 ? (
+                  <div className="text-center py-8 text-gray-500">لا يوجد شركاء حالياً. أضف شريك جديد.</div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {partners.map((partner) => (
+                      <Card key={partner.id} className="overflow-hidden border border-gray-100">
+                        <div className="h-36 bg-gray-50 flex items-center justify-center p-4">
+                          {partner.logo_url ? (
+                            <img
+                              src={partner.logo_url}
+                              alt={partner.name}
+                              className="max-h-full max-w-full object-contain"
+                            />
+                          ) : (
+                            <div className="text-gray-400 text-sm">بدون شعار</div>
+                          )}
+                        </div>
+                        <CardContent className="p-4">
+                          <div className="font-medium mb-4">{partner.name}</div>
+                          <div className="flex justify-end gap-2">
+                            <Button variant="outline" size="sm" onClick={() => openEditPartnerDialog(partner)}>
+                              <Edit size={16} className="mr-1" /> تعديل
+                            </Button>
+                            <Button variant="destructive" size="sm" onClick={() => handleDeletePartner(partner.id)}>
+                              <Trash2 size={16} className="mr-1" /> حذف
+                            </Button>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                )}
+              </section>
+
+              <Dialog open={partnerDialogOpen} onOpenChange={setPartnerDialogOpen}>
+                <DialogContent dir="rtl">
+                  <DialogHeader>
+                    <DialogTitle>{partnerToEdit ? "تعديل شريك" : "إضافة شريك جديد"}</DialogTitle>
+                    <DialogDescription>
+                      {partnerToEdit
+                        ? "قم بتحديث بيانات الشريك أدناه."
+                        : "قم بإدخال بيانات الشريك الجديد."}
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="grid gap-4 py-4">
+                    <div>
+                      <label className="block text-right mb-2">اسم الشريك</label>
+                      <input
+                        name="name"
+                        value={partnerForm.name}
+                        onChange={handlePartnerFormChange}
+                        className="w-full p-2 border rounded"
+                        dir="rtl"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-right mb-2">شعار الشريك</label>
+                      <div className="flex flex-col gap-2">
+                        <input
+                          type="file"
+                          onChange={handleLogoFileChange}
+                          className="w-full p-2 border rounded"
+                        />
+                        <p className="text-sm text-gray-500">أو أدخل رابط الشعار أدناه</p>
+                        <input
+                          name="logo_url"
+                          value={partnerForm.logo_url}
+                          onChange={handlePartnerFormChange}
+                          className="w-full p-2 border rounded"
+                          dir="ltr"
+                          placeholder="https://example.com/logo.png"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <DialogFooter>
+                    <Button
+                      onClick={handleSavePartner}
+                      disabled={isSavingPartner || logoUploading}
+                    >
+                      {isSavingPartner ? "جارٍ الحفظ..." : "حفظ"}
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="software">
+            <div className="space-y-8">
+              <section className="bg-white rounded-2xl shadow-lg p-8 backdrop-blur-sm border border-gray-100">
+                <div className="flex justify-between items-center mb-6">
+                  <h2 className="text-2xl font-semibold text-blue-900">البرمجيات الجاهزة</h2>
+                  <Button onClick={openNewProductDialog} className="flex items-center gap-2">
+                    <Plus size={16} /> إضافة برنامج جديد
+                  </Button>
+                </div>
+                {loadingProducts ? (
+                  <div className="text-center py-8 text-trndsky-blue">جارٍ التحميل...</div>
+                ) : products.length === 0 ? (
+                  <div className="text-center py-8 text-gray-500">لا توجد برمجيات جاهزة حالياً. أضف برنامج جديد.</div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {products.map((product) => (
+                      <Card key={product.id} className="overflow-hidden border border-gray-100">
+                        <div className="h-48 bg-gray-50">
+                          {product.image_url ? (
+                            <img
+                              src={product.image_url}
+                              alt={product.title}
+                              className="h-full w-full object-cover"
+                            />
+                          ) : (
+                            <div className="h-full w-full flex items-center justify-center text-gray-400">
+                              بدون صورة
+                            </div>
+                          )}
+                        </div>
+                        <CardContent className="p-4">
+                          <h3 className="font-semibold text-lg mb-1">{product.title}</h3>
+                          <p className="text-gray-600 text-sm mb-2 line-clamp-2">{product.description}</p>
+                          <div className="text-blue-600 font-medium mb-4">{product.price} ريال</div>
+                          <div className="flex justify-end gap-2">
+                            <Button variant="outline" size="sm" onClick={() => openEditProductDialog(product)}>
+                              <Edit size={16} className="mr-1" /> تعديل
+                            </Button>
+                            <Button
+                              variant="destructive"
+                              size="sm"
+                              onClick={() => handleDeleteProduct(product.id)}
+                            >
+                              <Trash2 size={16} className="mr-1" /> حذف
+                            </Button>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                )}
+              </section>
+
+              {productDialogOpen && (
+                <SoftwareProductDialog
+                  open={productDialogOpen}
+                  onOpenChange={setProductDialogOpen}
+                  product={productToEdit}
+                  onSuccess={fetchProducts}
+                />
+              )}
+            </div>
+          </TabsContent>
+
+          <TabsContent value="about">
+            <AboutContentManager />
+          </TabsContent>
+
+          <TabsContent value="contact">
+            <ContactManager />
+          </TabsContent>
+        </Tabs>
+      </main>
+    </div>
+  );
+};
+
+export default AdminDashboard;
