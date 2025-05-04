@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
-import { Link, Upload } from "lucide-react";
+import { Link } from "lucide-react";
 
 interface SimpleImageUploadProps {
   onUpload: (url: string) => void;
@@ -13,12 +13,34 @@ interface SimpleImageUploadProps {
 
 export function SimpleImageUpload({ onUpload, label = "إضافة صورة", currentUrl = "" }: SimpleImageUploadProps) {
   const [imageUrl, setImageUrl] = useState(currentUrl);
+  const [isValidating, setIsValidating] = useState(false);
 
   const handleImageUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setImageUrl(e.target.value);
   };
 
-  const handleSubmit = () => {
+  const validateImageUrl = (url: string): Promise<boolean> => {
+    return new Promise((resolve) => {
+      if (!url) {
+        resolve(false);
+        return;
+      }
+      
+      const img = new Image();
+      
+      img.onload = () => {
+        resolve(true);
+      };
+      
+      img.onerror = () => {
+        resolve(false);
+      };
+      
+      img.src = url;
+    });
+  };
+
+  const handleSubmit = async () => {
     if (!imageUrl.trim()) {
       toast({
         title: "خطأ",
@@ -28,11 +50,35 @@ export function SimpleImageUpload({ onUpload, label = "إضافة صورة", cur
       return;
     }
 
-    onUpload(imageUrl);
-    toast({
-      title: "تم",
-      description: "تم إضافة رابط الصورة بنجاح",
-    });
+    setIsValidating(true);
+    
+    try {
+      const isValid = await validateImageUrl(imageUrl);
+      
+      if (!isValid) {
+        toast({
+          title: "تنبيه",
+          description: "الرابط لا يشير إلى صورة صالحة",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      onUpload(imageUrl);
+      
+      toast({
+        title: "تم",
+        description: "تم إضافة رابط الصورة بنجاح",
+      });
+    } catch (error) {
+      toast({
+        title: "خطأ",
+        description: "حدث خطأ أثناء التحقق من رابط الصورة",
+        variant: "destructive",
+      });
+    } finally {
+      setIsValidating(false);
+    }
   };
 
   return (
@@ -45,9 +91,14 @@ export function SimpleImageUpload({ onUpload, label = "إضافة صورة", cur
           dir="ltr"
           className="flex-1"
         />
-        <Button type="button" onClick={handleSubmit} size="sm">
+        <Button 
+          type="button" 
+          onClick={handleSubmit} 
+          size="sm"
+          disabled={isValidating}
+        >
           <Link className="h-4 w-4 mr-2" />
-          إضافة
+          {isValidating ? "جاري التحقق..." : "إضافة"}
         </Button>
       </div>
       
@@ -60,11 +111,6 @@ export function SimpleImageUpload({ onUpload, label = "إضافة صورة", cur
             className="max-h-20 rounded border border-gray-200 object-contain"
             onError={(e) => {
               (e.target as HTMLImageElement).src = "https://placehold.co/200x150?text=خطأ+في+الصورة";
-              toast({
-                title: "تنبيه",
-                description: "الرابط لا يشير إلى صورة صالحة",
-                variant: "destructive",
-              });
             }}
           />
         </div>

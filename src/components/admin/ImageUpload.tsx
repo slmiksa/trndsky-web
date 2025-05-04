@@ -12,7 +12,7 @@ interface ImageUploadProps {
 }
 
 export function ImageUpload({ onUpload, label = "رفع صورة", bucketName = "public" }: ImageUploadProps) {
-  const { upload, isUploading: uploading, error: storageError } = useStorage(bucketName);
+  const { upload, isUploading, error: storageError } = useStorage(bucketName);
   const [lastError, setLastError] = useState<string | null>(null);
 
   // Reset error when bucketName changes
@@ -60,7 +60,7 @@ export function ImageUpload({ onUpload, label = "رفع صورة", bucketName = 
     <div className="space-y-2">
       <Button
         variant="outline"
-        disabled={uploading}
+        disabled={isUploading}
         className="relative overflow-hidden"
         type="button"
       >
@@ -69,10 +69,10 @@ export function ImageUpload({ onUpload, label = "رفع صورة", bucketName = 
           className="absolute inset-0 cursor-pointer opacity-0"
           onChange={uploadImage}
           accept="image/*"
-          disabled={uploading}
+          disabled={isUploading}
         />
-        <Upload className="mr-2" />
-        {uploading ? "جاري الرفع..." : label}
+        <Upload className="mr-2 h-4 w-4" />
+        {isUploading ? "جاري الرفع..." : label}
       </Button>
       
       {lastError && (
