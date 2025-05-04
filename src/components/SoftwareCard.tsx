@@ -4,6 +4,7 @@ import { Send } from 'lucide-react';
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from 'sonner';
 import TrialRequestForm from './TrialRequestForm';
+import { ImageGallery } from './admin/ImageGallery';
 
 interface SoftwareCardProps {
   title: string;
@@ -21,6 +22,8 @@ const SoftwareCard = ({ title, description, image, id, price, onTrialRequest }: 
   const [orderSent, setOrderSent] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showTrialForm, setShowTrialForm] = useState(false);
+  const [additionalImages, setAdditionalImages] = useState<string[]>([]);
+  const [loadingImages, setLoadingImages] = useState(false);
 
   const toggleDetails = () => {
     setShowDetails(!showDetails);
@@ -81,6 +84,34 @@ const SoftwareCard = ({ title, description, image, id, price, onTrialRequest }: 
     }
   };
 
+  // جلب الصور الإضافية للمنتج
+  useEffect(() => {
+    if (showDetails && id) {
+      fetchProductImages(id);
+    }
+  }, [showDetails, id]);
+
+  const fetchProductImages = async (productId: number) => {
+    setLoadingImages(true);
+    try {
+      const { data, error } = await supabase
+        .from('software_product_images')
+        .select('image_url')
+        .eq('product_id', productId)
+        .order('created_at', { ascending: true });
+      
+      if (error) throw error;
+      
+      // تجميع جميع الصور (الصورة الرئيسية والصور الإضافية)
+      const imageUrls = data.map(item => item.image_url);
+      setAdditionalImages(imageUrls);
+    } catch (error) {
+      console.error('Error fetching product images:', error);
+    } finally {
+      setLoadingImages(false);
+    }
+  };
+
   return (
     <div className="bg-gradient-to-tr from-white via-trndsky-gray to-[#f3fafe] rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 border border-trndsky-blue/10 hover:scale-105">
       <div 
@@ -105,6 +136,17 @@ const SoftwareCard = ({ title, description, image, id, price, onTrialRequest }: 
         {showDetails && (
           <div className="mt-2 text-gray-600 text-right animate-fade-in font-tajawal bg-gray-50 rounded-lg p-4 border border-trndsky-blue/10">
             <p className="mb-4">{description}</p>
+
+            {/* عرض معرض الصور إذا كانت هناك صور إضافية */}
+            {loadingImages ? (
+              <div className="text-center py-4">جاري تحميل الصور...</div>
+            ) : additionalImages.length > 0 && (
+              <div className="my-4">
+                <h4 className="font-semibold mb-2 text-trndsky-darkblue">معرض الصور:</h4>
+                <ImageGallery images={[image, ...additionalImages]} readOnly={true} />
+              </div>
+            )}
+
             <div className="mt-4 flex flex-col gap-3 md:flex-row md:justify-end">
               {!showOrderForm && (
                 <>
