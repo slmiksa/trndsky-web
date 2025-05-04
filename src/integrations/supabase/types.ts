@@ -326,6 +326,30 @@ export type Database = {
           },
         ]
       }
+      trial_requests: {
+        Row: {
+          company_name: string
+          created_at: string
+          id: string
+          status: string
+          whatsapp: string
+        }
+        Insert: {
+          company_name: string
+          created_at?: string
+          id?: string
+          status?: string
+          whatsapp: string
+        }
+        Update: {
+          company_name?: string
+          created_at?: string
+          id?: string
+          status?: string
+          whatsapp?: string
+        }
+        Relationships: []
+      }
       users_profiles: {
         Row: {
           created_at: string

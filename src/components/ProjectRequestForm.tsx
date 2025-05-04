@@ -1,6 +1,9 @@
+
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import TrialRequestForm from "./TrialRequestForm";
+import { Button } from "@/components/ui/button";
 
 const ProjectRequestForm = () => {
   const { toast } = useToast();
@@ -12,6 +15,7 @@ const ProjectRequestForm = () => {
     description: "",
   });
   const [loading, setLoading] = useState(false);
+  const [trialFormOpen, setTrialFormOpen] = useState(false);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -76,6 +80,10 @@ const ProjectRequestForm = () => {
     }
   };
 
+  const openTrialForm = () => {
+    setTrialFormOpen(true);
+  };
+
   return (
     <section className="section-padding bg-white relative">
       <div className="absolute -top-24 -left-20 w-60 h-60 rounded-full bg-trndsky-teal/10 z-0"></div>
@@ -85,6 +93,15 @@ const ProjectRequestForm = () => {
           <h2 className="text-3xl md:text-4xl font-extrabold text-center mb-8 font-tajawal text-trndsky-blue drop-shadow-md">
             اطلب برمجة <span className="text-trndsky-teal">بأفكارك</span>
           </h2>
+          
+          <div className="flex justify-center mb-8">
+            <Button 
+              onClick={openTrialForm}
+              className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white py-2 px-6 rounded-full text-lg font-tajawal font-bold shadow-md hover:shadow-lg transition-all"
+            >
+              طلب تجربة
+            </Button>
+          </div>
           
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 gap-6">
@@ -185,6 +202,8 @@ const ProjectRequestForm = () => {
           </form>
         </div>
       </div>
+      
+      <TrialRequestForm isOpen={trialFormOpen} onClose={() => setTrialFormOpen(false)} />
     </section>
   );
 };
