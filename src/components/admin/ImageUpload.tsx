@@ -1,9 +1,9 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/components/ui/use-toast";
 import { Upload } from "lucide-react";
+import { useStorage } from "@/hooks/useStorage";
 
 interface ImageUploadProps {
   onUpload: (url: string) => void;
@@ -12,46 +12,26 @@ interface ImageUploadProps {
 }
 
 export function ImageUpload({ onUpload, label = "رفع صورة", bucketName = "public" }: ImageUploadProps) {
-  const [uploading, setUploading] = useState(false);
+  const { upload, isUploading: uploading } = useStorage(bucketName);
 
   const uploadImage = async (event: React.ChangeEvent<HTMLInputElement>) => {
     try {
-      setUploading(true);
-
       if (!event.target.files || event.target.files.length === 0) {
         throw new Error("يرجى اختيار صورة للرفع.");
       }
 
       const file = event.target.files[0];
-      const fileExt = file.name.split(".").pop();
-      const fileName = `${Date.now()}.${fileExt}`;
-      const filePath = fileName;
+      console.log(`بدء رفع الصورة: ${file.name}`);
       
-      console.log(`محاولة رفع الصورة ${fileName} إلى حاوية ${bucketName}`);
+      const publicUrl = await upload(file);
       
-      // تخطي التحقق من وجود الحاوية والذهاب مباشرة إلى الرفع
-      const { data, error } = await supabase.storage
-        .from(bucketName)
-        .upload(filePath, file, {
-          cacheControl: '3600',
-          upsert: true
-        });
-      
-      if (error) {
-        console.error("خطأ أثناء رفع الصورة:", error);
-        throw error;
+      if (!publicUrl) {
+        throw new Error("فشل رفع الصورة، يرجى المحاولة مرة أخرى.");
       }
       
-      console.log("تم رفع الصورة بنجاح، استلام البيانات:", data);
-      
-      // الحصول على الرابط العام
-      const { data: { publicUrl } } = supabase.storage
-        .from(bucketName)
-        .getPublicUrl(filePath);
-      
-      console.log("الرابط العام للصورة:", publicUrl);
-      
+      console.log("تم رفع الصورة بنجاح، الرابط:", publicUrl);
       onUpload(publicUrl);
+      
       toast({
         title: "تم الرفع",
         description: "تم رفع الصورة بنجاح",
@@ -59,14 +39,11 @@ export function ImageUpload({ onUpload, label = "رفع صورة", bucketName = 
     } catch (error: any) {
       console.error("خطأ في رفع الصورة:", error);
       
-      // عرض رسالة خطأ أكثر تفصيلا للمستخدم
       toast({
         title: "خطأ في رفع الصورة",
         description: error.message || "حدث خطأ أثناء رفع الصورة. يرجى المحاولة مرة أخرى.",
         variant: "destructive",
       });
-    } finally {
-      setUploading(false);
     }
   };
 
