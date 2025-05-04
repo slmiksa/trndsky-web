@@ -11,7 +11,7 @@ interface ImageUploadProps {
   bucketName?: string;
 }
 
-export function ImageUpload({ onUpload, label = "رفع صورة", bucketName = "about-images" }: ImageUploadProps) {
+export function ImageUpload({ onUpload, label = "رفع صورة", bucketName = "public" }: ImageUploadProps) {
   const [uploading, setUploading] = useState(false);
 
   const uploadImage = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -24,14 +24,21 @@ export function ImageUpload({ onUpload, label = "رفع صورة", bucketName = 
 
       const file = event.target.files[0];
       const fileExt = file.name.split(".").pop();
-      const fileName = `${Math.random()}.${fileExt}`;
-      const filePath = `${fileName}`;
+      // تحسين اسم الملف لتجنب التعارض
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+      
+      // تحديد المجلد حسب نوع الاستخدام
+      const folderName = bucketName === "public" ? "software-images" : bucketName;
+      const filePath = `${folderName}/${fileName}`;
+
+      console.log(`Attempting to upload to bucket: ${bucketName}, path: ${filePath}`);
 
       const { error: uploadError, data } = await supabase.storage
         .from(bucketName)
         .upload(filePath, file);
 
       if (uploadError) {
+        console.error("Error uploading:", uploadError);
         throw uploadError;
       }
 
@@ -39,6 +46,7 @@ export function ImageUpload({ onUpload, label = "رفع صورة", bucketName = 
         .from(bucketName)
         .getPublicUrl(filePath);
 
+      console.log("Upload successful, public URL:", publicUrl);
       onUpload(publicUrl);
       toast({
         title: "تم الرفع",

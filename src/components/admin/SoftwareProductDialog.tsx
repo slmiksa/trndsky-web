@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import {
   Dialog,
@@ -310,7 +309,7 @@ export function SoftwareProductDialog({
               <ImageUpload 
                 onUpload={handleAdditionalImageUpload} 
                 label="إضافة صور للمعرض" 
-                bucketName="software-images"
+                bucketName="public"
               />
 
               {isLoadingImages ? (
