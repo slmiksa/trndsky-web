@@ -11,9 +11,10 @@ interface SoftwareCardProps {
   image: string;
   id: number;
   price: string;
+  onTrialRequest?: () => void;
 }
 
-const SoftwareCard = ({ title, description, image, id, price }: SoftwareCardProps) => {
+const SoftwareCard = ({ title, description, image, id, price, onTrialRequest }: SoftwareCardProps) => {
   const [showDetails, setShowDetails] = useState(false);
   const [showOrderForm, setShowOrderForm] = useState(false);
   const [orderData, setOrderData] = useState({ company: '', whatsapp: '' });
@@ -33,7 +34,12 @@ const SoftwareCard = ({ title, description, image, id, price }: SoftwareCardProp
   };
 
   const handleTrialClick = () => {
-    setShowTrialForm(true);
+    // If an external handler is provided, use it, otherwise show the local form
+    if (onTrialRequest) {
+      onTrialRequest();
+    } else {
+      setShowTrialForm(true);
+    }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -174,15 +180,21 @@ const SoftwareCard = ({ title, description, image, id, price }: SoftwareCardProp
       </div>
       
       {/* نموذج طلب التجربة */}
-      <TrialRequestForm 
-        isOpen={showTrialForm} 
-        onClose={() => setShowTrialForm(false)} 
-      />
+      {!onTrialRequest && (
+        <TrialRequestForm 
+          isOpen={showTrialForm} 
+          onClose={() => setShowTrialForm(false)} 
+        />
+      )}
     </div>
   );
 };
 
-export const FeaturedSoftware = () => {
+interface FeaturedSoftwareProps {
+  onTrialRequest?: () => void;
+}
+
+export const FeaturedSoftware = ({ onTrialRequest }: FeaturedSoftwareProps) => {
   const [softwareItems, setSoftwareItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -247,6 +259,7 @@ export const FeaturedSoftware = () => {
                 description={item.description}
                 image={item.image_url}
                 price={`${item.price.toLocaleString()} ر.س`}
+                onTrialRequest={onTrialRequest}
               />
             ))}
           </div>
