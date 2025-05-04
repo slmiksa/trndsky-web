@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
 import { Upload } from "lucide-react";
@@ -16,7 +16,7 @@ export function ImageUpload({ onUpload, label = "رفع صورة", bucketName = 
   const [lastError, setLastError] = useState<string | null>(null);
 
   // Reset error when bucketName changes
-  useState(() => {
+  useEffect(() => {
     setLastError(null);
   }, [bucketName]);
 
