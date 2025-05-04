@@ -8,6 +8,7 @@ import PartnersSection from '../components/PartnersSection';
 import Footer from '../components/Footer';
 import { useState } from 'react';
 import TrialRequestForm from '../components/TrialRequestForm';
+import { Toaster } from '../components/ui/toaster';
 
 const Index = () => {
   const [showTrialForm, setShowTrialForm] = useState(false);
@@ -24,7 +25,7 @@ const Index = () => {
         {/* Featured Software Section */}
         <section className="py-24 bg-white">
           <div className="container mx-auto px-6">
-            <FeaturedSoftware />
+            <FeaturedSoftware onTrialRequest={() => setShowTrialForm(true)} />
           </div>
         </section>
         
@@ -63,6 +64,7 @@ const Index = () => {
         />
       </main>
       <Footer />
+      <Toaster />
     </div>
   );
 };

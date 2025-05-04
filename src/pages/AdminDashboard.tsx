@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useAdminAuth } from "@/components/AdminAuthContext";
 import { useNavigate } from "react-router-dom";
@@ -23,6 +24,7 @@ const WISAL_PARTNER = {
   logo_url: "/lovable-uploads/aa977791-13b8-471b-92c8-d9ef4ef03f27.png",
   created_at: new Date().toISOString()
 };
+
 type ProjectRequest = {
   id: string;
   name: string;
@@ -33,6 +35,7 @@ type ProjectRequest = {
   status: string;
   created_at: string;
 };
+
 type SoftwareOrder = {
   id: string;
   software_id: number;
@@ -41,6 +44,7 @@ type SoftwareOrder = {
   status: string;
   created_at: string;
 };
+
 type TrialRequest = {
   id: string;
   company_name: string;
@@ -48,12 +52,14 @@ type TrialRequest = {
   status: string;
   created_at: string;
 };
+
 type Partner = {
   id: number;
   name: string;
   logo_url: string;
   created_at: string;
 };
+
 type SoftwareProduct = {
   id: number;
   title: string;
@@ -62,11 +68,13 @@ type SoftwareProduct = {
   image_url: string;
   created_at: string;
 };
+
 const statusLabels: Record<string, string> = {
   new: "جديد",
   open: "مفتوح",
   closed: "مغلق"
 };
+
 const statusColors: Record<string, string> = {
   new: "bg-yellow-100 text-yellow-800",
   open: "bg-green-100 text-green-800",
@@ -150,25 +158,34 @@ const AdminDashboard = () => {
 
   async function fetchTrialRequests() {
     setLoadingTrials(true);
-    const {
-      data,
-      error
-    } = await supabase
-      .from("trial_requests")
-      .select("*")
-      .order("created_at", { ascending: false });
-    
-    if (error) {
-      console.error("Error fetching trial requests:", error);
+    try {
+      // Important: Fetch all trial requests without filtering by status
+      const { data, error } = await supabase
+        .from("trial_requests")
+        .select("*")
+        .order("created_at", { ascending: false });
+      
+      if (error) {
+        console.error("Error fetching trial requests:", error);
+        toast({
+          title: "خطأ",
+          description: "حدث خطأ أثناء جلب طلبات التجربة",
+          variant: "destructive"
+        });
+      } else {
+        console.log("Trial requests fetched successfully:", data);
+        setTrialRequests(data || []);
+      }
+    } catch (err) {
+      console.error("Unexpected error fetching trial requests:", err);
       toast({
         title: "خطأ",
-        description: "حدث خطأ أثناء جلب طلبات التجربة",
+        description: "حدث خطأ غير متوقع أثناء جلب طلبات التجربة",
         variant: "destructive"
       });
-    } else {
-      setTrialRequests(data || []);
+    } finally {
+      setLoadingTrials(false);
     }
-    setLoadingTrials(false);
   }
 
   async function fetchPartners() {
@@ -377,6 +394,7 @@ const AdminDashboard = () => {
 
   const updateTrialStatus = async (id: string, newStatus: string) => {
     try {
+      console.log("Updating trial request status:", id, newStatus);
       const { error } = await supabase
         .from("trial_requests")
         .update({ status: newStatus })
@@ -677,7 +695,7 @@ const AdminDashboard = () => {
             <div className="space-y-8">
               <section className="bg-white rounded-2xl shadow-lg p-8 backdrop-blur-sm border border-gray-100">
                 <h2 className="text-2xl font-semibold mb-6 text-blue-900 border-b pb-4">
-                  طلبات التجربة (جديدة/مفتوحة)
+                  طلبات التجربة
                 </h2>
                 {loadingTrials ? (
                   <div className="text-center py-8 text-trndsky-blue">
@@ -685,7 +703,7 @@ const AdminDashboard = () => {
                   </div>
                 ) : trialRequests.length === 0 ? (
                   <div className="text-center py-4 text-gray-500">
-                    لا توجد طلبات تجربة جديدة أو مفتوحة.
+                    لا توجد طلبات تجربة.
                   </div>
                 ) : (
                   <div className="overflow-x-auto">
