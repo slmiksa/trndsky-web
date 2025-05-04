@@ -27,18 +27,17 @@ export function ImageUpload({ onUpload, label = "رفع صورة", bucketName = 
       // تحسين اسم الملف لتجنب التعارض
       const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
       
-      // تحديد المجلد حسب نوع الاستخدام
-      const folderName = bucketName === "public" ? "software-images" : bucketName;
-      const filePath = `${folderName}/${fileName}`;
+      // حذف المسار الفرعي لتخزين الملفات مباشرة في جذر الحاوية
+      const filePath = fileName;
 
-      console.log(`Attempting to upload to bucket: ${bucketName}, path: ${filePath}`);
+      console.log(`محاولة الرفع إلى حاوية: ${bucketName}, المسار: ${filePath}`);
 
       const { error: uploadError, data } = await supabase.storage
         .from(bucketName)
         .upload(filePath, file);
 
       if (uploadError) {
-        console.error("Error uploading:", uploadError);
+        console.error("خطأ في الرفع:", uploadError);
         throw uploadError;
       }
 
@@ -46,7 +45,7 @@ export function ImageUpload({ onUpload, label = "رفع صورة", bucketName = 
         .from(bucketName)
         .getPublicUrl(filePath);
 
-      console.log("Upload successful, public URL:", publicUrl);
+      console.log("تم الرفع بنجاح، الرابط العام:", publicUrl);
       onUpload(publicUrl);
       toast({
         title: "تم الرفع",
