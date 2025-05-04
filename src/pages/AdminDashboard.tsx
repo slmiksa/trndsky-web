@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useAdminAuth } from "@/components/AdminAuthContext";
 import { useNavigate } from "react-router-dom";
@@ -761,3 +762,307 @@ const AdminDashboard = () => {
                                         </span>
                                       </div>
                                       <div>
+                                        <span className="font-medium">تاريخ الطلب: </span>
+                                        {new Date(viewedTrialRequest.created_at).toLocaleString("ar-EG")}
+                                      </div>
+                                      
+                                      <div className="flex gap-2 mt-4">
+                                        <Button 
+                                          variant="outline" 
+                                          className="bg-green-100 text-green-800 hover:bg-green-200 border-green-300"
+                                          disabled={viewedTrialRequest.status === "open"}
+                                          onClick={() => updateTrialStatus(viewedTrialRequest.id, "open")}
+                                        >
+                                          <FolderOpen className="w-4 h-4 mr-2" />
+                                          تحويل لمفتوح
+                                        </Button>
+                                        <Button 
+                                          variant="outline" 
+                                          className="bg-red-100 text-red-800 hover:bg-red-200 border-red-300"
+                                          disabled={viewedTrialRequest.status === "closed"}
+                                          onClick={() => updateTrialStatus(viewedTrialRequest.id, "closed")}
+                                        >
+                                          <X className="w-4 h-4 mr-2" />
+                                          إغلاق
+                                        </Button>
+                                      </div>
+                                    </div>
+                                  )}
+                                  <DialogFooter>
+                                    <DialogClose asChild>
+                                      <Button variant="secondary">إغلاق</Button>
+                                    </DialogClose>
+                                  </DialogFooter>
+                                </DialogContent>
+                              </Dialog>
+                              <button 
+                                disabled={tr.status === "open"} 
+                                className="px-2 py-1 rounded bg-green-100 text-green-800 hover:bg-green-200 transition-all disabled:opacity-50" 
+                                onClick={() => updateTrialStatus(tr.id, "open")} 
+                                title="تحويل لمفتوح"
+                              >
+                                <FolderOpen size={16} />
+                              </button>
+                              <button 
+                                disabled={tr.status === "closed"} 
+                                className="px-2 py-1 rounded bg-red-100 text-red-800 hover:bg-red-200 transition-all disabled:opacity-50" 
+                                onClick={() => updateTrialStatus(tr.id, "closed")} 
+                                title="إغلاق"
+                              >
+                                <X size={16} />
+                              </button>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                )}
+              </section>
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="slides">
+            <SlideManager />
+          </TabsContent>
+          
+          <TabsContent value="partners">
+            <div className="space-y-8">
+              <section className="bg-white rounded-2xl shadow-lg p-8 backdrop-blur-sm border border-gray-100">
+                <div className="flex justify-between mb-6">
+                  <h2 className="text-2xl font-semibold text-blue-900">شركاء النجاح</h2>
+                  <Button onClick={openNewPartnerDialog} className="bg-blue-900 hover:bg-blue-800">
+                    <Plus className="w-4 h-4 mr-2" />
+                    شريك جديد
+                  </Button>
+                </div>
+                
+                {loadingPartners ? (
+                  <div className="text-center py-8 text-trndsky-blue">
+                    جارٍ التحميل...
+                  </div>
+                ) : partners.length === 0 ? (
+                  <div className="text-center py-4 text-gray-500">
+                    لا يوجد شركاء حالياً.
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {partners.map((partner) => (
+                      <Card key={partner.id} className="overflow-hidden bg-white border border-gray-100 shadow-md hover:shadow-lg transition-all">
+                        <div className="h-32 p-4 flex items-center justify-center bg-gray-50">
+                          {partner.logo_url ? (
+                            <img 
+                              src={partner.logo_url} 
+                              alt={partner.name} 
+                              className="max-h-24 max-w-full object-contain" 
+                            />
+                          ) : (
+                            <div className="w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center text-gray-400">
+                              لا يوجد شعار
+                            </div>
+                          )}
+                        </div>
+                        <CardContent className="pt-4">
+                          <h3 className="text-lg font-medium mb-2 text-center">{partner.name}</h3>
+                          <div className="flex justify-center gap-2 mt-4">
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              className="flex items-center" 
+                              onClick={() => openEditPartnerDialog(partner)}
+                            >
+                              <Edit className="w-4 h-4 mr-1" />
+                              تعديل
+                            </Button>
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              className="flex items-center text-red-600 hover:text-red-700 border-red-200 hover:border-red-300" 
+                              onClick={() => handleDeletePartner(partner.id)}
+                            >
+                              <Trash2 className="w-4 h-4 mr-1" />
+                              حذف
+                            </Button>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                )}
+              </section>
+              
+              <Dialog open={partnerDialogOpen} onOpenChange={setPartnerDialogOpen}>
+                <DialogContent className="sm:max-w-[500px]" dir="rtl">
+                  <DialogHeader>
+                    <DialogTitle>{partnerToEdit ? "تعديل شريك" : "إضافة شريك جديد"}</DialogTitle>
+                    <DialogDescription>
+                      {partnerToEdit ? "تعديل بيانات الشريك" : "إضافة شريك جديد للعرض في صفحة الشركاء"}
+                    </DialogDescription>
+                  </DialogHeader>
+                  
+                  <div className="space-y-4 py-4">
+                    <div className="grid grid-cols-1 gap-4">
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium">اسم الشريك</label>
+                        <input 
+                          type="text" 
+                          name="name" 
+                          value={partnerForm.name} 
+                          onChange={handlePartnerFormChange}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md text-right"
+                          placeholder="اسم الشريك"
+                        />
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium">رابط الشعار الحالي</label>
+                        <input 
+                          type="text" 
+                          name="logo_url" 
+                          value={partnerForm.logo_url} 
+                          onChange={handlePartnerFormChange}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md text-right"
+                          placeholder="رابط الشعار (اختياري إذا كنت ستقوم برفع ملف)"
+                        />
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium">أو قم برفع شعار جديد</label>
+                        <input 
+                          type="file" 
+                          accept="image/*"
+                          onChange={handleLogoFileChange}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md text-right"
+                        />
+                      </div>
+                      
+                      {partnerToEdit && partnerToEdit.logo_url && (
+                        <div className="mt-2 p-3 border rounded-md bg-gray-50">
+                          <p className="text-sm mb-2">الشعار الحالي:</p>
+                          <div className="h-20 flex items-center justify-center">
+                            <img 
+                              src={partnerToEdit.logo_url} 
+                              alt={partnerToEdit.name} 
+                              className="max-h-16 max-w-full object-contain" 
+                            />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <DialogFooter className="sm:justify-start">
+                    <Button 
+                      type="submit"
+                      disabled={isSavingPartner || logoUploading || !partnerForm.name || (!partnerForm.logo_url && !logoFile)}
+                      className="bg-blue-900 hover:bg-blue-800"
+                      onClick={handleSavePartner}
+                    >
+                      {isSavingPartner || logoUploading ? "جارٍ الحفظ..." : partnerToEdit ? "تحديث" : "إضافة"}
+                    </Button>
+                    <DialogClose asChild>
+                      <Button variant="outline">إلغاء</Button>
+                    </DialogClose>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="software">
+            <div className="space-y-8">
+              <section className="bg-white rounded-2xl shadow-lg p-8 backdrop-blur-sm border border-gray-100">
+                <div className="flex justify-between mb-6">
+                  <h2 className="text-2xl font-semibold text-blue-900">البرمجيات الجاهزة</h2>
+                  <Button onClick={openNewProductDialog} className="bg-blue-900 hover:bg-blue-800">
+                    <Plus className="w-4 h-4 mr-2" />
+                    إضافة برنامج
+                  </Button>
+                </div>
+                
+                {loadingProducts ? (
+                  <div className="text-center py-8 text-trndsky-blue">
+                    جارٍ التحميل...
+                  </div>
+                ) : products.length === 0 ? (
+                  <div className="text-center py-4 text-gray-500">
+                    لا توجد برمجيات حالياً.
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {products.map((product) => (
+                      <Card key={product.id} className="overflow-hidden bg-white border border-gray-100 shadow-md hover:shadow-lg transition-all">
+                        <div className="h-40 bg-gray-100">
+                          {product.image_url ? (
+                            <img 
+                              src={product.image_url} 
+                              alt={product.title} 
+                              className="w-full h-full object-cover" 
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-gray-400">
+                              لا توجد صورة
+                            </div>
+                          )}
+                        </div>
+                        <CardContent className="pt-4">
+                          <h3 className="text-xl font-medium mb-2">{product.title}</h3>
+                          <p className="text-gray-600 text-sm mb-2 line-clamp-2">
+                            {product.description}
+                          </p>
+                          <div className="text-lg font-semibold text-blue-900 mt-2 mb-4">
+                            {product.price} ريال
+                          </div>
+                          <div className="flex justify-between items-center gap-2">
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              className="flex items-center flex-1" 
+                              onClick={() => openEditProductDialog(product)}
+                            >
+                              <Edit className="w-4 h-4 mr-1" />
+                              تعديل
+                            </Button>
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              className="flex items-center text-red-600 hover:text-red-700 border-red-200 hover:border-red-300 flex-1" 
+                              onClick={() => handleDeleteProduct(product.id)}
+                            >
+                              <Trash2 className="w-4 h-4 mr-1" />
+                              حذف
+                            </Button>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                )}
+              </section>
+              
+              <SoftwareProductDialog 
+                open={productDialogOpen} 
+                onOpenChange={setProductDialogOpen} 
+                productToEdit={productToEdit}
+                onSuccess={() => {
+                  setProductDialogOpen(false);
+                  fetchProducts();
+                }}
+              />
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="about">
+            <AboutContentManager />
+          </TabsContent>
+          
+          <TabsContent value="contact">
+            <ContactManager />
+          </TabsContent>
+        </Tabs>
+      </main>
+    </div>
+  );
+};
+
+export default AdminDashboard;
