@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useAdminAuth } from "@/components/AdminAuthContext";
 import { useNavigate } from "react-router-dom";
@@ -159,7 +158,8 @@ const AdminDashboard = () => {
   async function fetchTrialRequests() {
     setLoadingTrials(true);
     try {
-      // Important: Fetch all trial requests without filtering by status
+      console.log("Fetching trial requests...");
+      
       const { data, error } = await supabase
         .from("trial_requests")
         .select("*")
@@ -575,7 +575,7 @@ const AdminDashboard = () => {
                                         </span>
                                       </div>
                                       <div>
-                                        <span className="font-medium">تاري�� الطلب: </span>
+                                        <span className="font-medium">تاريخ الطلب: </span>
                                         {new Date(viewedRequest.created_at).toLocaleString("ar-EG")}
                                       </div>
                                     </div>}
@@ -761,168 +761,3 @@ const AdminDashboard = () => {
                                         </span>
                                       </div>
                                       <div>
-                                        <span className="font-medium">تاريخ الطلب: </span>
-                                        {new Date(viewedTrialRequest.created_at).toLocaleString("ar-EG")}
-                                      </div>
-                                    </div>
-                                  )}
-                                  <DialogFooter>
-                                    <DialogClose asChild>
-                                      <Button variant="secondary">إغلاق</Button>
-                                    </DialogClose>
-                                  </DialogFooter>
-                                </DialogContent>
-                              </Dialog>
-                              <button 
-                                disabled={tr.status === "open"} 
-                                className="px-2 py-1 rounded bg-green-100 text-green-800 hover:bg-green-200 transition-all disabled:opacity-50" 
-                                onClick={() => updateTrialStatus(tr.id, "open")} 
-                                title="تحويل لمفتوح"
-                              >
-                                <FolderOpen size={16} />
-                              </button>
-                              <button 
-                                disabled={tr.status === "closed"} 
-                                className="px-2 py-1 rounded bg-red-100 text-red-800 hover:bg-red-200 transition-all disabled:opacity-50" 
-                                onClick={() => updateTrialStatus(tr.id, "closed")} 
-                                title="إغلاق"
-                              >
-                                <X size={16} />
-                              </button>
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </div>
-                )}
-              </section>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="slides">
-            <SlideManager />
-          </TabsContent>
-
-          <TabsContent value="about">
-            <AboutContentManager />
-          </TabsContent>
-
-          <TabsContent value="contact">
-            <ContactManager />
-          </TabsContent>
-
-          <TabsContent value="partners">
-            <section className="bg-white rounded-2xl shadow-lg p-8 backdrop-blur-sm border border-gray-100">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-semibold text-trndsky-darkblue">
-                  إدارة شركاء النجاح
-                </h2>
-                <Button onClick={openNewPartnerDialog} className="flex items-center gap-2">
-                  <Plus size={18} /> إضافة شريك
-                </Button>
-              </div>
-
-              {loadingPartners ? <div className="text-center py-8 text-trndsky-blue">
-                  جارٍ التحميل...
-                </div> : partners.length === 0 ? <div className="text-center py-4 text-gray-500">
-                  لا يوجد شركاء حاليًا.
-                </div> : <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {partners.map(partner => <Card key={partner.id} className="overflow-hidden">
-                      <CardContent className="p-4 flex flex-col items-center">
-                        <div className="h-32 flex items-center justify-center mb-4">
-                          <img src={partner.logo_url} alt={partner.name} className="max-h-full max-w-full object-contain" />
-                        </div>
-                        <h3 className="font-bold text-center text-trndsky-blue mb-4">
-                          {partner.name}
-                        </h3>
-                        <div className="flex gap-2 mt-2">
-                          <Button variant="outline" size="sm" onClick={() => openEditPartnerDialog(partner)}>
-                            <Edit size={16} className="mr-1" /> تعديل
-                          </Button>
-                          <Button variant="outline" size="sm" onClick={() => handleDeletePartner(partner.id)} className="text-red-500 hover:text-red-700 hover:bg-red-50">
-                            <Trash2 size={16} className="mr-1" /> حذف
-                          </Button>
-                        </div>
-                      </CardContent>
-                    </Card>)}
-                </div>}
-
-              <Dialog open={partnerDialogOpen} onOpenChange={setPartnerDialogOpen}>
-                <DialogContent dir="rtl">
-                  <DialogHeader>
-                    <DialogTitle>تعديل شريك</DialogTitle>
-                    <DialogDescription>
-                      تأكد من ملء جميع الحقول
-                    </DialogDescription>
-                  </DialogHeader>
-                  <DialogFooter>
-                    <DialogClose asChild>
-                      <Button variant="secondary">إغلاق</Button>
-                    </DialogClose>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
-            </section>
-          </TabsContent>
-
-          <TabsContent value="software">
-            <section className="bg-white rounded-2xl shadow-lg p-8 backdrop-blur-sm border border-gray-100">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-semibold text-trndsky-darkblue">
-                  إدارة البرمجيات الجاهزة
-                </h2>
-                <Button onClick={openNewProductDialog} className="flex items-center gap-2">
-                  <Plus size={18} /> إضافة برنامج
-                </Button>
-              </div>
-
-              {loadingProducts ? <div className="text-center py-8 text-trndsky-blue">
-                  جارٍ التحميل...
-                </div> : products.length === 0 ? <div className="text-center py-4 text-gray-500">
-                  لا يوجد برامج حاليًا.
-                </div> : <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {products.map(product => <Card key={product.id} className="overflow-hidden">
-                      <CardContent className="p-4 flex flex-col items-center">
-                        <div className="h-32 flex items-center justify-center mb-4">
-                          <img src={product.image_url} alt={product.title} className="max-h-full max-w-full object-contain" />
-                        </div>
-                        <h3 className="font-bold text-center text-trndsky-blue mb-4">
-                          {product.title}
-                        </h3>
-                        <div className="flex gap-2 mt-2">
-                          <Button variant="outline" size="sm" onClick={() => openEditProductDialog(product)}>
-                            <Edit size={16} className="mr-1" /> تعديل
-                          </Button>
-                          <Button variant="outline" size="sm" onClick={() => handleDeleteProduct(product.id)} className="text-red-500 hover:text-red-700 hover:bg-red-50">
-                            <Trash2 size={16} className="mr-1" /> حذف
-                          </Button>
-                        </div>
-                      </CardContent>
-                    </Card>)}
-                </div>}
-
-              <Dialog open={productDialogOpen} onOpenChange={setProductDialogOpen}>
-                <DialogContent dir="rtl">
-                  <DialogHeader>
-                    <DialogTitle>تعديل برنامج</DialogTitle>
-                    <DialogDescription>
-                      تأكد من ملء جميع الحقول
-                    </DialogDescription>
-                  </DialogHeader>
-                  <DialogFooter>
-                    <DialogClose asChild>
-                      <Button variant="secondary">إغلاق</Button>
-                    </DialogClose>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
-            </section>
-          </TabsContent>
-        </Tabs>
-      </main>
-    </div>
-  );
-};
-
-export default AdminDashboard;
