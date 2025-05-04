@@ -24,48 +24,45 @@ export function ImageUpload({ onUpload, label = "رفع صورة", bucketName = 
 
       const file = event.target.files[0];
       const fileExt = file.name.split(".").pop();
-      // تحسين اسم الملف لتجنب التعارض
-      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
-      
-      // تأكد من استخدام الحاوية الصحيحة والمسار الصحيح
-      console.log(`بدء عملية الرفع إلى حاوية: ${bucketName}`);
-      
-      // تأكد من عمل اتصال مع Supabase قبل الرفع
-      const { data: bucketExists } = await supabase.storage.getBucket(bucketName);
-      console.log("معلومات الحاوية:", bucketExists);
-      
+      const fileName = `${Date.now()}.${fileExt}`;
       const filePath = fileName;
-      console.log(`محاولة الرفع إلى المسار: ${filePath}`);
-
-      const { error: uploadError, data } = await supabase.storage
+      
+      console.log(`محاولة رفع الصورة ${fileName} إلى حاوية ${bucketName}`);
+      
+      // تخطي التحقق من وجود الحاوية والذهاب مباشرة إلى الرفع
+      const { data, error } = await supabase.storage
         .from(bucketName)
         .upload(filePath, file, {
           cacheControl: '3600',
           upsert: true
         });
-
-      if (uploadError) {
-        console.error("خطأ في الرفع:", uploadError);
-        throw uploadError;
+      
+      if (error) {
+        console.error("خطأ أثناء رفع الصورة:", error);
+        throw error;
       }
-
-      console.log("تم الرفع بنجاح، البيانات:", data);
-
+      
+      console.log("تم رفع الصورة بنجاح، استلام البيانات:", data);
+      
+      // الحصول على الرابط العام
       const { data: { publicUrl } } = supabase.storage
         .from(bucketName)
         .getPublicUrl(filePath);
-
-      console.log("تم الرفع بنجاح، الرابط العام:", publicUrl);
+      
+      console.log("الرابط العام للصورة:", publicUrl);
+      
       onUpload(publicUrl);
       toast({
         title: "تم الرفع",
         description: "تم رفع الصورة بنجاح",
       });
     } catch (error: any) {
-      console.error("Error uploading:", error);
+      console.error("خطأ في رفع الصورة:", error);
+      
+      // عرض رسالة خطأ أكثر تفصيلا للمستخدم
       toast({
-        title: "خطأ",
-        description: error.message || "حدث خطأ أثناء رفع الصورة",
+        title: "خطأ في رفع الصورة",
+        description: error.message || "حدث خطأ أثناء رفع الصورة. يرجى المحاولة مرة أخرى.",
         variant: "destructive",
       });
     } finally {
