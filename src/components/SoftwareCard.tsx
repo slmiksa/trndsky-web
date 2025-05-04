@@ -140,10 +140,13 @@ const SoftwareCard = ({ title, description, image, id, price, onTrialRequest }: 
             {/* عرض معرض الصور إذا كانت هناك صور إضافية */}
             {loadingImages ? (
               <div className="text-center py-4">جاري تحميل الصور...</div>
-            ) : additionalImages.length > 0 && (
+            ) : (additionalImages.length > 0 || image) && (
               <div className="my-4">
                 <h4 className="font-semibold mb-2 text-trndsky-darkblue">معرض الصور:</h4>
-                <ImageGallery images={[image, ...additionalImages]} readOnly={true} />
+                <ImageGallery 
+                  images={additionalImages.length > 0 ? additionalImages : [image]} 
+                  readOnly={true} 
+                />
               </div>
             )}
 

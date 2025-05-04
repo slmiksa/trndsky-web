@@ -4,6 +4,13 @@ import { X, Maximize, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
+import { 
+  Carousel, 
+  CarouselContent, 
+  CarouselItem, 
+  CarouselNext, 
+  CarouselPrevious 
+} from "@/components/ui/carousel";
 
 type ImageGalleryProps = {
   images: string[];
@@ -76,11 +83,23 @@ export function ImageGallery({ images, onRemoveImage, readOnly = false }: ImageG
       <Dialog open={!!selectedImage} onOpenChange={(open) => !open && closeFullScreen()}>
         <DialogContent className="max-w-4xl w-[90vw] p-1">
           <div className="relative w-full h-[80vh]">
-            <img
-              src={selectedImage || ''}
-              alt="صورة موسعة"
-              className="w-full h-full object-contain"
-            />
+            {selectedImage && (
+              <Carousel className="w-full h-full">
+                <CarouselContent className="h-full">
+                  {images.map((img, i) => (
+                    <CarouselItem key={i} className="h-full flex items-center justify-center">
+                      <img
+                        src={img}
+                        alt={`صورة ${i + 1}`}
+                        className="w-full h-full object-contain"
+                      />
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                <CarouselPrevious className="left-1 lg:left-4 rounded-full" />
+                <CarouselNext className="right-1 lg:right-4 rounded-full" />
+              </Carousel>
+            )}
             <Button
               size="icon"
               variant="ghost"
