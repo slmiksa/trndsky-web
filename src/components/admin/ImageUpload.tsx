@@ -12,7 +12,13 @@ interface ImageUploadProps {
 }
 
 export function ImageUpload({ onUpload, label = "رفع صورة", bucketName = "public" }: ImageUploadProps) {
-  const { upload, isUploading: uploading } = useStorage(bucketName);
+  const { upload, isUploading: uploading, error: storageError } = useStorage(bucketName);
+  const [lastError, setLastError] = useState<string | null>(null);
+
+  // Reset error when bucketName changes
+  useState(() => {
+    setLastError(null);
+  }, [bucketName]);
 
   const uploadImage = async (event: React.ChangeEvent<HTMLInputElement>) => {
     try {
@@ -26,11 +32,13 @@ export function ImageUpload({ onUpload, label = "رفع صورة", bucketName = 
       const publicUrl = await upload(file);
       
       if (!publicUrl) {
-        throw new Error("فشل رفع الصورة، يرجى المحاولة مرة أخرى.");
+        // The useStorage hook should have set an error already
+        throw new Error(storageError || "فشل رفع الصورة، يرجى المحاولة مرة أخرى.");
       }
       
       console.log("تم رفع الصورة بنجاح، الرابط:", publicUrl);
       onUpload(publicUrl);
+      setLastError(null);
       
       toast({
         title: "تم الرفع",
@@ -38,6 +46,7 @@ export function ImageUpload({ onUpload, label = "رفع صورة", bucketName = 
       });
     } catch (error: any) {
       console.error("خطأ في رفع الصورة:", error);
+      setLastError(error.message);
       
       toast({
         title: "خطأ في رفع الصورة",
@@ -48,21 +57,27 @@ export function ImageUpload({ onUpload, label = "رفع صورة", bucketName = 
   };
 
   return (
-    <Button
-      variant="outline"
-      disabled={uploading}
-      className="relative overflow-hidden"
-      type="button"
-    >
-      <input
-        type="file"
-        className="absolute inset-0 cursor-pointer opacity-0"
-        onChange={uploadImage}
-        accept="image/*"
+    <div className="space-y-2">
+      <Button
+        variant="outline"
         disabled={uploading}
-      />
-      <Upload className="mr-2" />
-      {uploading ? "جاري الرفع..." : label}
-    </Button>
+        className="relative overflow-hidden"
+        type="button"
+      >
+        <input
+          type="file"
+          className="absolute inset-0 cursor-pointer opacity-0"
+          onChange={uploadImage}
+          accept="image/*"
+          disabled={uploading}
+        />
+        <Upload className="mr-2" />
+        {uploading ? "جاري الرفع..." : label}
+      </Button>
+      
+      {lastError && (
+        <p className="text-sm text-red-500 mt-1">{lastError}</p>
+      )}
+    </div>
   );
 }

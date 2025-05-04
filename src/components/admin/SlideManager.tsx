@@ -7,6 +7,10 @@ import { toast } from '@/components/ui/use-toast';
 import { Edit, Trash2, Plus } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { ImageUpload } from '@/components/admin/ImageUpload';
+import { SimpleImageUpload } from '@/components/admin/SimpleImageUpload';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 
 type Slide = {
   id: number;
@@ -198,6 +202,9 @@ export default function SlideManager() {
                 src={slide.image} 
                 alt={slide.title} 
                 className="h-40 w-full object-cover"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = "https://placehold.co/600x400?text=صورة+غير+متوفرة";
+                }}
               />
               <CardContent className="p-4">
                 <h3 className="font-bold text-trndsky-teal text-lg mb-1">{slide.title}</h3>
@@ -246,67 +253,74 @@ export default function SlideManager() {
           <form className="space-y-4">
             <div>
               <label className="font-medium block mb-1">عنوان السلايد</label>
-              <input
+              <Input
                 name="title"
                 value={slideForm.title}
                 onChange={handleSlideFormChange}
                 required
-                className="input border px-3 py-2 w-full rounded"
                 placeholder="عنوان السلايد"
               />
             </div>
             
             <div>
               <label className="font-medium block mb-1">العنوان الفرعي (اختياري)</label>
-              <input
+              <Input
                 name="subtitle"
                 value={slideForm.subtitle}
                 onChange={handleSlideFormChange}
-                className="input border px-3 py-2 w-full rounded"
                 placeholder="العنوان الفرعي"
               />
             </div>
             
             <div>
               <label className="font-medium block mb-1">الوصف</label>
-              <textarea
+              <Textarea
                 name="description"
                 value={slideForm.description}
                 onChange={handleSlideFormChange}
                 required
-                className="textarea border px-3 py-2 w-full rounded"
                 placeholder="وصف السلايد"
                 rows={3}
-              ></textarea>
+              />
             </div>
             
             <div>
-              <label className="font-medium block mb-1">رابط الصورة</label>
-              <div className="flex flex-col gap-2">
-                <input
-                  name="image"
-                  value={slideForm.image}
-                  onChange={handleSlideFormChange}
-                  required
-                  className="input border px-3 py-2 w-full rounded"
-                  placeholder="رابط صورة السلايد"
-                />
-                <div className="flex justify-between items-center">
+              <label className="font-medium block mb-1">صورة السلايد</label>
+              <Tabs defaultValue="upload" className="w-full">
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="upload">رفع صورة</TabsTrigger>
+                  <TabsTrigger value="link">إدخال رابط</TabsTrigger>
+                </TabsList>
+                <TabsContent value="upload" className="space-y-2 mt-2">
                   <ImageUpload
                     onUpload={(url: string) => setSlideForm(prev => ({ ...prev, image: url }))}
                     label="رفع صورة السلايد"
                   />
-                  {slideForm.image && (
-                    <div className="max-w-24 h-24">
-                      <img
-                        src={slideForm.image}
-                        alt="معاينة"
-                        className="h-full max-w-full object-cover rounded"
-                      />
-                    </div>
-                  )}
+                </TabsContent>
+                <TabsContent value="link" className="mt-2">
+                  <SimpleImageUpload
+                    onUpload={(url: string) => setSlideForm(prev => ({ ...prev, image: url }))}
+                    label="إدخال رابط الصورة"
+                    currentUrl={slideForm.image}
+                  />
+                </TabsContent>
+              </Tabs>
+              
+              {slideForm.image && (
+                <div className="mt-2">
+                  <p className="text-xs text-muted-foreground mb-1">معاينة الصورة الحالية:</p>
+                  <div className="max-w-full h-24">
+                    <img
+                      src={slideForm.image}
+                      alt="معاينة"
+                      className="h-full max-w-full object-cover rounded"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = "https://placehold.co/600x400?text=صورة+غير+متوفرة";
+                      }}
+                    />
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           </form>
           

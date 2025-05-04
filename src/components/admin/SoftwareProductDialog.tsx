@@ -14,7 +14,11 @@ import { toast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Textarea } from "@/components/ui/textarea";
 import { ImageUpload } from "./ImageUpload";
+import { SimpleImageUpload } from "./SimpleImageUpload";
 import { ImageGallery } from "./ImageGallery";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AlertTriangle } from "lucide-react";
 
 type SoftwareProduct = {
   id?: number;
@@ -48,6 +52,7 @@ export function SoftwareProductDialog({
   const [isSaving, setIsSaving] = useState(false);
   const [additionalImages, setAdditionalImages] = useState<string[]>([]);
   const [isLoadingImages, setIsLoadingImages] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
 
   // تحميل الصور الإضافية عند فتح نافذة تعديل منتج موجود
   useEffect(() => {
@@ -209,9 +214,10 @@ export function SoftwareProductDialog({
 
   const handleImageUpload = (url: string) => {
     setForm({ ...form, image_url: url });
+    setUploadError(null);
     toast({ 
-      title: "تم رفع الصورة", 
-      description: "تم إضافة رابط الصورة الرئيسية إلى النموذج" 
+      title: "تم إضافة الصورة", 
+      description: "��م إضافة رابط الصورة الرئيسية إلى النموذج" 
     });
   };
 
@@ -278,39 +284,72 @@ export function SoftwareProductDialog({
           </div>
           <div>
             <label className="font-medium block mb-1">الصورة الرئيسية للبرنامج</label>
-            <div className="space-y-2">
-              <ImageUpload onUpload={handleImageUpload} label="رفع صورة رئيسية للبرنامج" />
-              {form.image_url && (
-                <div className="mt-2 flex items-center gap-2">
+            
+            <Tabs defaultValue="upload" className="w-full">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="upload">رفع صورة</TabsTrigger>
+                <TabsTrigger value="link">إدخال رابط</TabsTrigger>
+              </TabsList>
+              <TabsContent value="upload" className="space-y-2 mt-2">
+                <ImageUpload onUpload={handleImageUpload} label="رفع صورة رئيسية للبرنامج" />
+                {uploadError && (
+                  <Alert variant="destructive" className="mt-2">
+                    <AlertTriangle className="h-4 w-4 ml-2" />
+                    <AlertDescription>
+                      {uploadError}
+                    </AlertDescription>
+                  </Alert>
+                )}
+              </TabsContent>
+              <TabsContent value="link" className="mt-2">
+                <SimpleImageUpload 
+                  onUpload={handleImageUpload} 
+                  label="إضافة رابط صورة" 
+                  currentUrl={form.image_url}
+                />
+              </TabsContent>
+            </Tabs>
+            
+            {form.image_url && (
+              <div className="mt-2">
+                <p className="text-xs text-muted-foreground mb-1">الصورة الحالية:</p>
+                <div className="flex items-center gap-2">
                   <img src={form.image_url} alt="معاينة الصورة" className="w-16 h-16 object-cover rounded" />
                   <div className="flex-1">
                     <Input
                       value={form.image_url}
                       onChange={(e) => setForm({ ...form, image_url: e.target.value })}
                       placeholder="رابط صورة البرنامج"
+                      dir="ltr"
                     />
                   </div>
                 </div>
-              )}
-              {!form.image_url && (
-                <Input
-                  value={form.image_url}
-                  onChange={(e) => setForm({ ...form, image_url: e.target.value })}
-                  placeholder="أو أدخل رابط صورة البرنامج يدوياً"
-                />
-              )}
-            </div>
+              </div>
+            )}
           </div>
 
           {/* قسم الصور الإضافية */}
           <div>
             <label className="font-medium block mb-1">صور إضافية للبرنامج</label>
             <div className="space-y-4">
-              <ImageUpload 
-                onUpload={handleAdditionalImageUpload} 
-                label="إضافة صور للمعرض" 
-                bucketName="public"
-              />
+              <Tabs defaultValue="upload" className="w-full">
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="upload">رفع صورة</TabsTrigger>
+                  <TabsTrigger value="link">إدخال رابط</TabsTrigger>
+                </TabsList>
+                <TabsContent value="upload" className="space-y-2 mt-2">
+                  <ImageUpload 
+                    onUpload={handleAdditionalImageUpload} 
+                    label="إضافة صور للمعرض"
+                  />
+                </TabsContent>
+                <TabsContent value="link" className="mt-2">
+                  <SimpleImageUpload 
+                    onUpload={handleAdditionalImageUpload} 
+                    label="إضافة رابط صورة للمعرض"
+                  />
+                </TabsContent>
+              </Tabs>
 
               {isLoadingImages ? (
                 <div className="text-center py-4">جاري تحميل الصور...</div>

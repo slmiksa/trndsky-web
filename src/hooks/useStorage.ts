@@ -7,11 +7,33 @@ export function useStorage(bucketName: string = "public") {
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Helper function to check if bucket exists
+  const checkBucketExists = async (bucket: string): Promise<boolean> => {
+    try {
+      const { data, error } = await supabase.storage.getBucket(bucket);
+      if (error) {
+        console.error("Error checking bucket:", error);
+        return false;
+      }
+      return !!data;
+    } catch (err) {
+      console.error("Exception checking bucket:", err);
+      return false;
+    }
+  };
+
   const upload = async (file: File, path?: string): Promise<string | null> => {
     setIsUploading(true);
     setError(null);
 
     try {
+      // First check if the bucket exists
+      const bucketExists = await checkBucketExists(bucketName);
+      if (!bucketExists) {
+        console.error(`Bucket "${bucketName}" does not exist`);
+        throw new Error(`حاوية التخزين "${bucketName}" غير موجودة`);
+      }
+
       const fileExt = file.name.split('.').pop();
       const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
       const filePath = path ? `${path}/${fileName}` : fileName;
