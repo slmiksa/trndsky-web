@@ -6,8 +6,12 @@ import { FeaturedSoftware } from '../components/SoftwareCard';
 import ProjectRequestForm from '../components/ProjectRequestForm';
 import PartnersSection from '../components/PartnersSection';
 import Footer from '../components/Footer';
+import { useState } from 'react';
+import TrialRequestForm from '../components/TrialRequestForm';
 
 const Index = () => {
+  const [showTrialForm, setShowTrialForm] = useState(false);
+  
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <Navbar />
@@ -51,6 +55,12 @@ const Index = () => {
         
         {/* Partners Section */}
         <PartnersSection />
+        
+        {/* نموذج طلب التجربة */}
+        <TrialRequestForm 
+          isOpen={showTrialForm} 
+          onClose={() => setShowTrialForm(false)} 
+        />
       </main>
       <Footer />
     </div>

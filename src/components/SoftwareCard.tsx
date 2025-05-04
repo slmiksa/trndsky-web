@@ -1,7 +1,9 @@
+
 import { useState, useEffect } from 'react';
 import { Send } from 'lucide-react';
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from 'sonner';
+import TrialRequestForm from './TrialRequestForm';
 
 interface SoftwareCardProps {
   title: string;
@@ -17,6 +19,7 @@ const SoftwareCard = ({ title, description, image, id, price }: SoftwareCardProp
   const [orderData, setOrderData] = useState({ company: '', whatsapp: '' });
   const [orderSent, setOrderSent] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showTrialForm, setShowTrialForm] = useState(false);
 
   const toggleDetails = () => {
     setShowDetails(!showDetails);
@@ -27,6 +30,10 @@ const SoftwareCard = ({ title, description, image, id, price }: SoftwareCardProp
   const handleOrderClick = () => {
     setShowOrderForm(!showOrderForm);
     setOrderSent(false);
+  };
+
+  const handleTrialClick = () => {
+    setShowTrialForm(true);
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -104,9 +111,10 @@ const SoftwareCard = ({ title, description, image, id, price }: SoftwareCardProp
                   </button>
                   <button
                     className="px-6 py-2 bg-white text-trndsky-blue border-2 border-trndsky-blue/20 hover:bg-gradient-to-l hover:from-trndsky-teal hover:to-trndsky-blue hover:text-white text-sm font-tajawal rounded-full shadow-md transition-all duration-300"
+                    onClick={handleTrialClick}
                     type="button"
                   >
-                    طلب المزيد من المعلومات
+                    طلب تجربة
                   </button>
                 </>
               )}
@@ -164,6 +172,12 @@ const SoftwareCard = ({ title, description, image, id, price }: SoftwareCardProp
           </div>
         )}
       </div>
+      
+      {/* نموذج طلب التجربة */}
+      <TrialRequestForm 
+        isOpen={showTrialForm} 
+        onClose={() => setShowTrialForm(false)} 
+      />
     </div>
   );
 };
