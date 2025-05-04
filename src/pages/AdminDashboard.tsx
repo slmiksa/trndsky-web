@@ -15,6 +15,7 @@ import { AdminUsersManager } from "@/components/admin/AdminUsersManager";
 import { DefaultAdminManager } from "@/components/admin/DefaultAdminManager";
 import SlideManager from "@/components/admin/SlideManager";
 import { useUploadPartnerLogo } from "@/hooks/useUploadPartnerLogo";
+import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
 
 const WISAL_PARTNER = {
   id: -1,
@@ -152,9 +153,10 @@ const AdminDashboard = () => {
     const {
       data,
       error
-    } = await supabase.from("trial_requests").select("*").in("status", ["new", "open"]).order("created_at", {
-      ascending: false
-    });
+    } = await supabase
+      .from("trial_requests")
+      .select("*")
+      .order("created_at", { ascending: false });
     
     if (error) {
       console.error("Error fetching trial requests:", error);
@@ -374,10 +376,31 @@ const AdminDashboard = () => {
   };
 
   const updateTrialStatus = async (id: string, newStatus: string) => {
-    await supabase.from("trial_requests").update({
-      status: newStatus
-    }).eq("id", id);
-    fetchTrialRequests();
+    try {
+      const { error } = await supabase
+        .from("trial_requests")
+        .update({ status: newStatus })
+        .eq("id", id);
+      
+      if (error) {
+        console.error("Error updating trial status:", error);
+        toast({
+          title: "خطأ",
+          description: "حدث خطأ أثناء تحديث حالة الطلب",
+          variant: "destructive"
+        });
+        return;
+      }
+      
+      toast({
+        title: "تم التحديث",
+        description: "تم تحديث حالة الطلب بنجاح"
+      });
+      
+      fetchTrialRequests();
+    } catch (err) {
+      console.error("Unexpected error:", err);
+    }
   };
 
   const openNewProductDialog = () => {
@@ -656,34 +679,40 @@ const AdminDashboard = () => {
                 <h2 className="text-2xl font-semibold mb-6 text-blue-900 border-b pb-4">
                   طلبات التجربة (جديدة/مفتوحة)
                 </h2>
-                {loadingTrials ? <div className="text-center py-8 text-trndsky-blue">
+                {loadingTrials ? (
+                  <div className="text-center py-8 text-trndsky-blue">
                     جارٍ التحميل...
-                  </div> : trialRequests.length === 0 ? <div className="text-center py-4 text-gray-500">
+                  </div>
+                ) : trialRequests.length === 0 ? (
+                  <div className="text-center py-4 text-gray-500">
                     لا توجد طلبات تجربة جديدة أو مفتوحة.
-                  </div> : <div className="overflow-x-auto">
-                    <table className="w-full text-base text-right border bg-white rounded-xl overflow-hidden">
-                      <thead>
-                        <tr className="bg-trndsky-teal/10">
-                          <th className="px-4 py-2">اسم الشركة / العميل</th>
-                          <th className="px-4 py-2">واتساب</th>
-                          <th className="px-4 py-2">الحالة</th>
-                          <th className="px-4 py-2">تاريخ الطلب</th>
-                          <th className="px-4 py-2">إجراءات</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {trialRequests.map(tr => <tr key={tr.id} className="border-t hover:bg-gray-50">
-                            <td className="px-4 py-2">{tr.company_name}</td>
-                            <td className="px-4 py-2">{tr.whatsapp}</td>
-                            <td className="px-4 py-2">
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow className="bg-trndsky-teal/10">
+                          <TableHead className="text-right">اسم الشركة / العميل</TableHead>
+                          <TableHead className="text-right">واتساب</TableHead>
+                          <TableHead className="text-right">الحالة</TableHead>
+                          <TableHead className="text-right">تاريخ الطلب</TableHead>
+                          <TableHead className="text-right">إجراءات</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {trialRequests.map((tr) => (
+                          <TableRow key={tr.id} className="border-t hover:bg-gray-50">
+                            <TableCell className="px-4 py-2">{tr.company_name}</TableCell>
+                            <TableCell className="px-4 py-2">{tr.whatsapp}</TableCell>
+                            <TableCell className="px-4 py-2">
                               <span className={`inline-block rounded px-2 py-1 text-xs font-semibold ${statusColors[tr.status] || ""}`}>
                                 {statusLabels[tr.status] || tr.status}
                               </span>
-                            </td>
-                            <td className="px-4 py-2">
+                            </TableCell>
+                            <TableCell className="px-4 py-2">
                               {new Date(tr.created_at).toLocaleString("ar-EG")}
-                            </td>
-                            <td className="px-4 py-2 flex items-center gap-1">
+                            </TableCell>
+                            <TableCell className="px-4 py-2 flex items-center gap-1">
                               <Dialog>
                                 <DialogTrigger asChild>
                                   <Button variant="outline" size="icon" title="استعراض كامل الطلب" onClick={() => setViewedTrialRequest(tr)}>
@@ -697,7 +726,8 @@ const AdminDashboard = () => {
                                       جميع معلومات طلب التجربة
                                     </DialogDescription>
                                   </DialogHeader>
-                                  {viewedTrialRequest && viewedTrialRequest.id === tr.id && <div className="text-base space-y-4 py-4">
+                                  {viewedTrialRequest && viewedTrialRequest.id === tr.id && (
+                                    <div className="text-base space-y-4 py-4">
                                       <div>
                                         <span className="font-medium">اسم الشركة / العميل: </span>
                                         {viewedTrialRequest.company_name}
@@ -716,7 +746,8 @@ const AdminDashboard = () => {
                                         <span className="font-medium">تاريخ الطلب: </span>
                                         {new Date(viewedTrialRequest.created_at).toLocaleString("ar-EG")}
                                       </div>
-                                    </div>}
+                                    </div>
+                                  )}
                                   <DialogFooter>
                                     <DialogClose asChild>
                                       <Button variant="secondary">إغلاق</Button>
@@ -724,17 +755,29 @@ const AdminDashboard = () => {
                                   </DialogFooter>
                                 </DialogContent>
                               </Dialog>
-                              <button disabled={tr.status === "open"} className="px-2 py-1 rounded bg-green-100 text-green-800 hover:bg-green-200 transition-all disabled:opacity-50" onClick={() => updateTrialStatus(tr.id, "open")} title="تحويل لمفتوح">
+                              <button 
+                                disabled={tr.status === "open"} 
+                                className="px-2 py-1 rounded bg-green-100 text-green-800 hover:bg-green-200 transition-all disabled:opacity-50" 
+                                onClick={() => updateTrialStatus(tr.id, "open")} 
+                                title="تحويل لمفتوح"
+                              >
                                 <FolderOpen size={16} />
                               </button>
-                              <button disabled={tr.status === "closed"} className="px-2 py-1 rounded bg-red-100 text-red-800 hover:bg-red-200 transition-all disabled:opacity-50" onClick={() => updateTrialStatus(tr.id, "closed")} title="إغلاق">
+                              <button 
+                                disabled={tr.status === "closed"} 
+                                className="px-2 py-1 rounded bg-red-100 text-red-800 hover:bg-red-200 transition-all disabled:opacity-50" 
+                                onClick={() => updateTrialStatus(tr.id, "closed")} 
+                                title="إغلاق"
+                              >
                                 <X size={16} />
                               </button>
-                            </td>
-                          </tr>)}
-                      </tbody>
-                    </table>
-                  </div>}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                )}
               </section>
             </div>
           </TabsContent>
