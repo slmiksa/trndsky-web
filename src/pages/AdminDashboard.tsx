@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useAdminAuth } from "@/components/AdminAuthContext";
 import { useNavigate } from "react-router-dom";
@@ -158,7 +157,7 @@ const AdminDashboard = () => {
     try {
       console.log("Fetching trial requests...");
       
-      // Fixed query - removed any join with users table that might be causing permission issues
+      // تم تعديل الاستعلام - استخدام استعلام مباشر بدون أي join مع جداول أخرى
       const { data, error } = await supabase
         .from("trial_requests")
         .select("*")
@@ -168,7 +167,7 @@ const AdminDashboard = () => {
         console.error("Error fetching trial requests:", error);
         toast({
           title: "خطأ",
-          description: "حدث خطأ أثناء جلب طلبات التجربة",
+          description: `حدث خطأ أثناء جلب طلبات التجربة: ${error.message}`,
           variant: "destructive"
         });
       } else {
