@@ -179,7 +179,7 @@ const ProjectRequestForm = () => {
                 disabled={loading}
                 className="w-full md:w-auto bg-gradient-to-l from-trndsky-teal to-trndsky-blue hover:from-trndsky-blue hover:to-trndsky-teal text-white py-3 px-12 rounded-full shadow-lg text-xl font-tajawal tracking-widest transition-all hover:scale-105 disabled:opacity-60"
               >
-                {loading ? "يتم الإرسال..." : "إر��ال الطلب"}
+                {loading ? "يتم الإرسال..." : "إرسال الطلب"}
               </button>
             </div>
           </form>
