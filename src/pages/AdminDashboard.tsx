@@ -82,10 +82,7 @@ const statusColors: Record<string, string> = {
 };
 
 const AdminDashboard = () => {
-  const {
-    isLoggedIn,
-    logout
-  } = useAdminAuth();
+  const { isLoggedIn, logout } = useAdminAuth();
   const navigate = useNavigate();
   const [requests, setRequests] = useState<ProjectRequest[]>([]);
   const [orders, setOrders] = useState<SoftwareOrder[]>([]);
@@ -161,6 +158,7 @@ const AdminDashboard = () => {
     try {
       console.log("Fetching trial requests...");
       
+      // Fixed query - removed any join with users table that might be causing permission issues
       const { data, error } = await supabase
         .from("trial_requests")
         .select("*")
