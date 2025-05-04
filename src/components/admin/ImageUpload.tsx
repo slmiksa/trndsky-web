@@ -32,7 +32,6 @@ export function ImageUpload({ onUpload, label = "رفع صورة", bucketName = 
       const publicUrl = await upload(file);
       
       if (!publicUrl) {
-        // The useStorage hook should have set an error already
         throw new Error(storageError || "فشل رفع الصورة، يرجى المحاولة مرة أخرى.");
       }
       

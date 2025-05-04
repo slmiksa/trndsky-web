@@ -7,63 +7,13 @@ export function useStorage(bucketName: string = "public") {
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Helper function to check if bucket exists
-  const checkBucketExists = async (bucket: string): Promise<boolean> => {
-    try {
-      const { data, error } = await supabase.storage.getBucket(bucket);
-      if (error) {
-        console.error("Error checking bucket:", error);
-        return false;
-      }
-      return !!data;
-    } catch (err) {
-      console.error("Exception checking bucket:", err);
-      return false;
-    }
-  };
-
-  // Helper function to create a bucket if it doesn't exist
-  const createBucketIfNotExists = async (bucket: string): Promise<boolean> => {
-    try {
-      // First check if bucket exists
-      const bucketExists = await checkBucketExists(bucket);
-      
-      if (!bucketExists) {
-        console.log(`Bucket "${bucket}" does not exist. Attempting to create it...`);
-        
-        // Create the bucket
-        const { error: createError } = await supabase.storage.createBucket(bucket, {
-          public: true,
-          fileSizeLimit: 5 * 1024 * 1024 // 5MB
-        });
-        
-        if (createError) {
-          console.error("Error creating bucket:", createError);
-          return false;
-        }
-        
-        console.log(`Bucket "${bucket}" created successfully`);
-        return true;
-      }
-      
-      return true;
-    } catch (err) {
-      console.error("Exception creating bucket:", err);
-      return false;
-    }
-  };
-
   const upload = async (file: File, path?: string): Promise<string | null> => {
     setIsUploading(true);
     setError(null);
 
     try {
-      // Make sure the bucket exists before trying to upload
-      const bucketReady = await createBucketIfNotExists(bucketName);
-      
-      if (!bucketReady) {
-        throw new Error(`تعذر التأكد من وجود حاوية التخزين "${bucketName}"`);
-      }
+      // Skip bucket checks and creation attempts since they require admin privileges
+      // Just try to upload directly to the existing bucket
 
       const fileExt = file.name.split('.').pop();
       const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
