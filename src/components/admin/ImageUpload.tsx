@@ -27,19 +27,29 @@ export function ImageUpload({ onUpload, label = "رفع صورة", bucketName = 
       // تحسين اسم الملف لتجنب التعارض
       const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
       
-      // حذف المسار الفرعي لتخزين الملفات مباشرة في جذر الحاوية
+      // تأكد من استخدام الحاوية الصحيحة والمسار الصحيح
+      console.log(`بدء عملية الرفع إلى حاوية: ${bucketName}`);
+      
+      // تأكد من عمل اتصال مع Supabase قبل الرفع
+      const { data: bucketExists } = await supabase.storage.getBucket(bucketName);
+      console.log("معلومات الحاوية:", bucketExists);
+      
       const filePath = fileName;
-
-      console.log(`محاولة الرفع إلى حاوية: ${bucketName}, المسار: ${filePath}`);
+      console.log(`محاولة الرفع إلى المسار: ${filePath}`);
 
       const { error: uploadError, data } = await supabase.storage
         .from(bucketName)
-        .upload(filePath, file);
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: true
+        });
 
       if (uploadError) {
         console.error("خطأ في الرفع:", uploadError);
         throw uploadError;
       }
+
+      console.log("تم الرفع بنجاح، البيانات:", data);
 
       const { data: { publicUrl } } = supabase.storage
         .from(bucketName)
