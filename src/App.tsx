@@ -14,9 +14,43 @@ import AdminDashboard from "./pages/AdminDashboard";
 import { AdminAuthProvider } from "@/components/AdminAuthContext";
 import ProtectedAdminRoute from "@/components/ProtectedAdminRoute";
 import React from 'react';
+import FloatingContactButton from "./components/FloatingContactButton";
+import { useWhatsAppNumber } from "./hooks/useWhatsAppNumber";
 
 // Create a client
 const queryClient = new QueryClient();
+
+const AppContent = () => {
+  const { whatsAppSettings, loading } = useWhatsAppNumber();
+  
+  return (
+    <>
+      <Routes>
+        <Route path="/" element={<Index />} />
+        <Route path="/software" element={<Software />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/adminlogin" element={<AdminLogin />} />
+        <Route
+          path="/admin"
+          element={
+            <ProtectedAdminRoute>
+              <AdminDashboard />
+            </ProtectedAdminRoute>
+          }
+        />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+      
+      {!loading && whatsAppSettings.enabled && (
+        <FloatingContactButton 
+          phoneNumber={whatsAppSettings.phone_number} 
+          defaultMessage={whatsAppSettings.default_message} 
+        />
+      )}
+    </>
+  );
+};
 
 const App = () => {
   return (
@@ -27,22 +61,7 @@ const App = () => {
           <Sonner />
           <AdminAuthProvider>
             <BrowserRouter>
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/software" element={<Software />} />
-                <Route path="/about" element={<About />} />
-                <Route path="/contact" element={<Contact />} />
-                <Route path="/adminlogin" element={<AdminLogin />} />
-                <Route
-                  path="/admin"
-                  element={
-                    <ProtectedAdminRoute>
-                      <AdminDashboard />
-                    </ProtectedAdminRoute>
-                  }
-                />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
+              <AppContent />
             </BrowserRouter>
           </AdminAuthProvider>
         </TooltipProvider>
