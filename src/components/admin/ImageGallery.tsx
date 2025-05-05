@@ -33,6 +33,13 @@ export function ImageGallery({ images, onRemoveImage, readOnly = false }: ImageG
     setSelectedImage(null);
   };
 
+  // التنقل بين الصور
+  const navigateImages = (newIndex: number) => {
+    if (newIndex >= 0 && newIndex < images.length) {
+      setSelectedIndex(newIndex);
+    }
+  };
+
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
@@ -104,8 +111,20 @@ export function ImageGallery({ images, onRemoveImage, readOnly = false }: ImageG
                     </CarouselItem>
                   ))}
                 </CarouselContent>
-                <CarouselPrevious className="left-1 lg:left-4 rounded-full" />
-                <CarouselNext className="right-1 lg:right-4 rounded-full" />
+                <CarouselPrevious 
+                  className="left-1 lg:left-4 rounded-full"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    navigateImages(selectedIndex - 1);
+                  }}
+                />
+                <CarouselNext 
+                  className="right-1 lg:right-4 rounded-full"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    navigateImages(selectedIndex + 1);
+                  }}
+                />
               </Carousel>
             )}
             <Button

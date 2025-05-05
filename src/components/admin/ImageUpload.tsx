@@ -24,7 +24,9 @@ export function ImageUpload({ onUpload, label = "رفع صورة", bucketName = 
       const file = event.target.files[0];
       console.log(`بدء رفع الصورة: ${file.name}`);
       
-      const publicUrl = await upload(file);
+      // تحديد المسار للصور
+      const uploadPath = "uploads";
+      const publicUrl = await upload(file, uploadPath);
       
       if (!publicUrl) {
         throw new Error(error || "فشل رفع الصورة، يرجى المحاولة مرة أخرى.");

@@ -40,6 +40,13 @@ export function useStorage(bucketName: string = "public") {
       
       console.log(`محاولة رفع الملف: ${filePath} إلى الحاوية: ${bucketName}`);
 
+      // Check if user is logged in (since we have RLS policies for authenticated users)
+      const { data: sessionData } = await supabase.auth.getSession();
+      if (!sessionData.session) {
+        // If not logged in, try to use public upload
+        console.log("المستخدم غير مسجل الدخول، محاولة استخدام الرفع العام");
+      }
+
       const { data, error: uploadError } = await supabase.storage
         .from(bucketName)
         .upload(filePath, file, {
