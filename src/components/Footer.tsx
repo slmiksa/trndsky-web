@@ -1,18 +1,13 @@
-
 import { Link } from 'react-router-dom';
-
 const Footer = () => {
-  return (
-    <footer className="bg-gray-900 text-white overflow-hidden">
+  return <footer className="bg-gray-900 text-white overflow-hidden">
       {/* Top section with gradient border */}
       <div className="h-1 bg-gradient-to-r from-trndsky-blue via-trndsky-teal to-trndsky-blue"></div>
       
       {/* Wave separator */}
       <div className="relative h-16">
-        <svg className="absolute bottom-0 left-0 w-full" 
-          viewBox="0 0 1440 100" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M0 58L48 52C96 46 192 34 288 35.3C384 36.7 480 50.3 576 55.3C672 60.3 768 56.7 864 53.3C960 50 1056 47 1152 48.3C1248 49.7 1344 55.3 1392 58L1440 60.7V100H1392C1344 100 1248 100 1152 100C1056 100 960 100 864 100C768 100 672 100 576 100C480 100 384 100 288 100C192 100 96 100 48 100H0V58Z" 
-          fill="#1A1A1A"/>
+        <svg className="absolute bottom-0 left-0 w-full" viewBox="0 0 1440 100" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M0 58L48 52C96 46 192 34 288 35.3C384 36.7 480 50.3 576 55.3C672 60.3 768 56.7 864 53.3C960 50 1056 47 1152 48.3C1248 49.7 1344 55.3 1392 58L1440 60.7V100H1392C1344 100 1248 100 1152 100C1056 100 960 100 864 100C768 100 672 100 576 100C480 100 384 100 288 100C192 100 96 100 48 100H0V58Z" fill="#1A1A1A" />
         </svg>
       </div>
       
@@ -31,7 +26,7 @@ const Footer = () => {
             </div>
 
             {/* Company Info Column */}
-            <div className="text-right">
+            <div className="text-right px-0 mx-0 my-0 py-0 rounded-none">
               <h2 className="text-3xl font-bold mb-6">
                 <span className="bg-gradient-to-r from-trndsky-teal to-trndsky-blue bg-clip-text text-transparent">
                   TRNDSKY
@@ -53,19 +48,17 @@ const Footer = () => {
           </div>
         </div>
       </div>
-    </footer>
-  );
+    </footer>;
 };
-
-const FooterLink = ({ to, children }: { to: string; children: React.ReactNode }) => (
-  <li>
-    <Link 
-      to={to} 
-      className="inline-block text-gray-400 hover:text-trndsky-teal transition-all duration-300"
-    >
+const FooterLink = ({
+  to,
+  children
+}: {
+  to: string;
+  children: React.ReactNode;
+}) => <li>
+    <Link to={to} className="inline-block text-gray-400 hover:text-trndsky-teal transition-all duration-300">
       {children}
     </Link>
-  </li>
-);
-
+  </li>;
 export default Footer;
