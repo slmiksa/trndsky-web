@@ -136,9 +136,7 @@ const AdminDashboard = () => {
             </Button>
           </li>
           <li>
-            <Button variant="ghost" className="w-full justify-start font-tajawal" onClick={() => setActiveTab('project_requests')}>
-              تذاكر الطلبات
-            </Button>
+            <Button variant="ghost" className="w-full justify-start font-tajawal" onClick={() => setActiveTab('project_requests')}>طلبات برمجة جديدة</Button>
           </li>
         </ul>
       </div>
