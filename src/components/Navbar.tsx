@@ -26,7 +26,7 @@ const Navbar = () => {
           {/* Desktop Navigation - Centered */}
           <div className="hidden md:flex items-center justify-center flex-1 font-tajawal space-x-6">
             {navLinks.map(link => <Link key={link.path} to={link.path} className={`transition-all duration-300 relative group ${location.pathname === link.path ? "text-trndsky-blue font-medium" : "text-gray-600 hover:text-trndsky-blue"}`}>
-                <span className="block px-3 py-2">
+                <span className="block px-3 py-2 text-lg font-extrabold">
                   {link.label}
                 </span>
                 {location.pathname === link.path && <span className="absolute bottom-0 left-0 right-0 h-1 bg-trndsky-blue rounded-full transition-all duration-300"></span>}
