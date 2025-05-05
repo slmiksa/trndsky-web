@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { X, Maximize, Trash2 } from "lucide-react";
+import { X, Maximize, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
@@ -33,10 +33,38 @@ export function ImageGallery({ images, onRemoveImage, readOnly = false }: ImageG
     setSelectedImage(null);
   };
 
-  // التنقل بين الصور
-  const navigateImages = (newIndex: number) => {
-    if (newIndex >= 0 && newIndex < images.length) {
-      setSelectedIndex(newIndex);
+  // التنقل بين الصور - للصورة السابقة
+  const navigatePrevious = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (selectedIndex > 0) {
+      setSelectedIndex(selectedIndex - 1);
+      setSelectedImage(images[selectedIndex - 1]);
+    }
+  };
+
+  // التنقل بين الصور - للصورة التالية
+  const navigateNext = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (selectedIndex < images.length - 1) {
+      setSelectedIndex(selectedIndex + 1);
+      setSelectedImage(images[selectedIndex + 1]);
+    }
+  };
+
+  // التعامل مع أحداث لوحة المفاتيح للتنقل
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'ArrowLeft') {
+      if (selectedIndex > 0) {
+        setSelectedIndex(selectedIndex - 1);
+        setSelectedImage(images[selectedIndex - 1]);
+      }
+    } else if (e.key === 'ArrowRight') {
+      if (selectedIndex < images.length - 1) {
+        setSelectedIndex(selectedIndex + 1);
+        setSelectedImage(images[selectedIndex + 1]);
+      }
+    } else if (e.key === 'Escape') {
+      closeFullScreen();
     }
   };
 
@@ -92,52 +120,72 @@ export function ImageGallery({ images, onRemoveImage, readOnly = false }: ImageG
       </div>
 
       {/* نافذة عرض الصورة بحجم كبير */}
-      <Dialog open={!!selectedImage} onOpenChange={(open) => !open && closeFullScreen()}>
-        <DialogContent className="max-w-4xl w-[90vw] p-1">
-          <div className="relative w-full h-[80vh]">
-            {selectedImage && (
-              <Carousel className="w-full h-full">
-                <CarouselContent className="h-full">
-                  {images.map((img, i) => (
-                    <CarouselItem key={i} className={cn("h-full flex items-center justify-center", i === selectedIndex ? "block" : "hidden")}>
-                      <img
-                        src={img}
-                        alt={`صورة ${i + 1}`}
-                        className="w-full h-full object-contain"
-                        onError={(e) => {
-                          e.currentTarget.src = "/placeholder.svg";
-                        }}
-                      />
-                    </CarouselItem>
-                  ))}
-                </CarouselContent>
-                <CarouselPrevious 
-                  className="left-1 lg:left-4 rounded-full"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    navigateImages(selectedIndex - 1);
+      {selectedImage && (
+        <Dialog 
+          open={!!selectedImage} 
+          onOpenChange={(open) => !open && closeFullScreen()}
+        >
+          <DialogContent 
+            className="max-w-4xl w-[90vw] p-1"
+            onKeyDown={handleKeyDown}
+            tabIndex={0}
+          >
+            <div className="relative w-full h-[80vh] outline-none" tabIndex={-1}>
+              <div className="h-full flex items-center justify-center">
+                <img
+                  src={images[selectedIndex]}
+                  alt={`صورة ${selectedIndex + 1}`}
+                  className="max-w-full max-h-full object-contain"
+                  onError={(e) => {
+                    e.currentTarget.src = "/placeholder.svg";
                   }}
                 />
-                <CarouselNext 
-                  className="right-1 lg:right-4 rounded-full"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    navigateImages(selectedIndex + 1);
-                  }}
-                />
-              </Carousel>
-            )}
-            <Button
-              size="icon"
-              variant="ghost"
-              className="absolute top-2 right-2 h-8 w-8 rounded-full bg-black/20 text-white hover:bg-black/40"
-              onClick={closeFullScreen}
-            >
-              <X size={16} />
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
+                
+                {/* زر الصورة السابقة */}
+                {selectedIndex > 0 && (
+                  <Button
+                    size="icon"
+                    variant="outline"
+                    className="absolute left-2 top-1/2 transform -translate-y-1/2 h-10 w-10 rounded-full bg-white/80 backdrop-blur-sm hover:bg-white"
+                    onClick={navigatePrevious}
+                  >
+                    <ChevronLeft className="h-6 w-6" />
+                    <span className="sr-only">الصورة السابقة</span>
+                  </Button>
+                )}
+                
+                {/* زر الصورة التالية */}
+                {selectedIndex < images.length - 1 && (
+                  <Button
+                    size="icon"
+                    variant="outline"
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2 h-10 w-10 rounded-full bg-white/80 backdrop-blur-sm hover:bg-white"
+                    onClick={navigateNext}
+                  >
+                    <ChevronRight className="h-6 w-6" />
+                    <span className="sr-only">الصورة التالية</span>
+                  </Button>
+                )}
+              </div>
+              
+              {/* زر إغلاق العرض */}
+              <Button
+                size="icon"
+                variant="ghost"
+                className="absolute top-2 right-2 h-8 w-8 rounded-full bg-black/20 text-white hover:bg-black/40"
+                onClick={closeFullScreen}
+              >
+                <X size={16} />
+              </Button>
+              
+              {/* عداد الصور */}
+              <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 bg-black/40 text-white px-3 py-1 rounded-full text-sm backdrop-blur-sm">
+                {selectedIndex + 1} / {images.length}
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 }
