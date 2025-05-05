@@ -24,15 +24,7 @@ const Contact = () => {
           <ContactDetails variant="card" />
           
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            <div>
-              <h2 className="text-3xl font-bold mb-6 text-trndsky-darkblue font-tajawal">
-                أرسل لنا <span className="text-trndsky-teal">رسالة</span>
-              </h2>
-              <p className="text-gray-700 mb-8 font-tajawal text-right">
-                نحن دائمًا سعداء بالتواصل معكم والإجابة على استفساراتكم. يمكنكم ملء النموذج التالي وسنقوم بالرد عليكم في أقرب وقت ممكن.
-              </p>
-              <ContactForm />
-            </div>
+            
             
             <div>
               
