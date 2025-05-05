@@ -162,8 +162,9 @@ const SoftwareManager = () => {
 
       <SoftwareProductDialog
         open={dialogOpen}
-        onClose={handleDialogClose}
+        onOpenChange={setDialogOpen}
         product={currentProduct}
+        onSuccess={() => fetchProducts()}
       />
 
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>

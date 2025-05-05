@@ -63,9 +63,14 @@ const AdminDashboard = () => {
         return;
       }
 
+      // Fix: Changed the format to match the expected schema
       const { data, error } = await supabase
         .from('admin_users')
-        .insert([{ user_id: user.user.id, email: newAdmin.email, role: newAdmin.role }]);
+        .insert([{ 
+          user_id: user.user!.id, 
+          username: newAdmin.email, // Using email as username
+          role: 'admin' as const // Cast as const to ensure it matches the expected enum type
+        }]);
 
       if (error) {
         console.error('Error creating admin user:', error);
