@@ -89,10 +89,10 @@ export function ImageGallery({ images, onRemoveImage, readOnly = false }: ImageG
         <DialogContent className="max-w-4xl w-[90vw] p-1">
           <div className="relative w-full h-[80vh]">
             {selectedImage && (
-              <Carousel className="w-full h-full" defaultIndex={selectedIndex}>
+              <Carousel className="w-full h-full">
                 <CarouselContent className="h-full">
                   {images.map((img, i) => (
-                    <CarouselItem key={i} className="h-full flex items-center justify-center">
+                    <CarouselItem key={i} className={cn("h-full flex items-center justify-center", i === selectedIndex ? "block" : "hidden")}>
                       <img
                         src={img}
                         alt={`صورة ${i + 1}`}
