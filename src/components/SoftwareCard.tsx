@@ -125,7 +125,7 @@ const SoftwareCard = ({
       backgroundSize: 'cover',
       backgroundPosition: 'center'
     }}>
-        <div className="absolute inset-0 bg-gradient-to-t from-black/100 to-transparent px-0 mx-0 my-0 rounded-none"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent px-0 mx-0 my-0 rounded-none"></div>
       </div>
       
       <div className="p-6">
