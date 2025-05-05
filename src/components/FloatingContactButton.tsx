@@ -74,7 +74,7 @@ const FloatingContactButton = ({
           scale: 0.9
         }} className="bg-white shadow-lg rounded-lg p-4 mb-4 w-72">
                 <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-lg font-bold font-tajawal">أي استفسار؟</h3>
+                  <h3 className="text-lg font-bold font-tajawal">مبيعات TRNDSKY</h3>
                   <button onClick={() => setIsOpen(false)} className="text-gray-400 hover:text-gray-600" aria-label="إغلاق">
                     <X size={20} />
                   </button>
