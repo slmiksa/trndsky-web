@@ -14,7 +14,8 @@ import { ContactManager } from "@/components/admin/ContactManager";
 import { AdminUsersManager } from "@/components/admin/AdminUsersManager";
 import { DefaultAdminManager } from "@/components/admin/DefaultAdminManager";
 import SlideManager from "@/components/admin/SlideManager";
-import { useUploadPartnerLogo } from "@/hooks/useUploadPartnerLogo";
+import { ImageUpload } from "@/components/admin/ImageUpload";
+import { ImageGallery } from "@/components/admin/ImageGallery";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
 
 const WISAL_PARTNER = {
@@ -100,7 +101,6 @@ const AdminDashboard = () => {
   const [viewedRequest, setViewedRequest] = useState<ProjectRequest | null>(null);
   const [viewedOrder, setViewedOrder] = useState<SoftwareOrder | null>(null);
   const [viewedTrialRequest, setViewedTrialRequest] = useState<TrialRequest | null>(null);
-  const [logoFile, setLogoFile] = useState<File | null>(null);
   const [products, setProducts] = useState<SoftwareProduct[]>([]);
   const [loadingProducts, setLoadingProducts] = useState(true);
   const [productDialogOpen, setProductDialogOpen] = useState(false);
@@ -108,11 +108,6 @@ const AdminDashboard = () => {
   const [productTitlesMap, setProductTitlesMap] = useState<{
     [key: number]: string;
   }>({});
-  const {
-    uploadLogo,
-    uploading: logoUploading,
-    error: logoUploadError
-  } = useUploadPartnerLogo();
 
   useEffect(() => {
     if (!isLoggedIn) {
@@ -269,28 +264,42 @@ const AdminDashboard = () => {
     }));
   };
 
-  const handleLogoFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setLogoFile(e.target.files[0]);
-    }
+  const handleLogoUpload = (url: string) => {
+    setPartnerForm(prev => ({
+      ...prev,
+      logo_url: url
+    }));
   };
 
   const handleSavePartner = async () => {
     setIsSavingPartner(true);
     try {
-      let logo_url = partnerForm.logo_url;
-      if (logoFile) {
-        const uploadedUrl = await uploadLogo(logoFile);
-        if (!uploadedUrl) {
-          throw new Error("لم يتم رفع الشعار");
-        }
-        logo_url = uploadedUrl;
+      // تحقق من وجود الشعار
+      if (!partnerForm.logo_url) {
+        toast({
+          title: "تنبيه",
+          description: "يرجى رفع شعار الشريك أولاً",
+          variant: "destructive"
+        });
+        setIsSavingPartner(false);
+        return;
       }
+
+      if (!partnerForm.name.trim()) {
+        toast({
+          title: "تنبيه",
+          description: "يرجى إدخال اسم الشريك",
+          variant: "destructive"
+        });
+        setIsSavingPartner(false);
+        return;
+      }
+
       if (partnerToEdit && partnerToEdit.id === -1) {
         const updatedWisal = {
           ...WISAL_PARTNER,
           name: partnerForm.name,
-          logo_url: logo_url
+          logo_url: partnerForm.logo_url
         };
         setPartners(prev => {
           const withoutWisal = prev.filter(p => p.id !== -1);
@@ -305,7 +314,7 @@ const AdminDashboard = () => {
           error
         } = await supabase.from("partners").update({
           name: partnerForm.name,
-          logo_url
+          logo_url: partnerForm.logo_url
         }).eq("id", partnerToEdit.id);
         if (error) throw error;
         toast({
@@ -317,7 +326,7 @@ const AdminDashboard = () => {
           error
         } = await supabase.from("partners").insert({
           name: partnerForm.name,
-          logo_url
+          logo_url: partnerForm.logo_url
         });
         if (error) throw error;
         toast({
@@ -327,7 +336,6 @@ const AdminDashboard = () => {
       }
       fetchPartners();
       setPartnerDialogOpen(false);
-      setLogoFile(null);
       setPartnerForm({
         name: "",
         logo_url: ""
@@ -825,6 +833,10 @@ const AdminDashboard = () => {
                               src={partner.logo_url}
                               alt={partner.name}
                               className="max-h-full max-w-full object-contain"
+                              onError={(e) => {
+                                e.currentTarget.src = "/placeholder.svg";
+                                e.currentTarget.alt = "صورة غير متوفرة";
+                              }}
                             />
                           ) : (
                             <div className="text-gray-400 text-sm">بدون شعار</div>
@@ -870,28 +882,42 @@ const AdminDashboard = () => {
                     </div>
                     <div>
                       <label className="block text-right mb-2">شعار الشريك</label>
-                      <div className="flex flex-col gap-2">
-                        <input
-                          type="file"
-                          onChange={handleLogoFileChange}
-                          className="w-full p-2 border rounded"
+                      {partnerForm.logo_url && (
+                        <div className="mb-4 bg-gray-50 p-4 flex justify-center">
+                          <img 
+                            src={partnerForm.logo_url} 
+                            alt="شعار الشريك" 
+                            className="h-20 object-contain"
+                            onError={(e) => {
+                              e.currentTarget.src = "/placeholder.svg";
+                            }}
+                          />
+                        </div>
+                      )}
+                      <div className="flex flex-col gap-4">
+                        <ImageUpload
+                          onUpload={handleLogoUpload}
+                          label="رفع شعار الشريك"
+                          bucketName="public"
                         />
-                        <p className="text-sm text-gray-500">أو أدخل رابط الشعار أدناه</p>
-                        <input
-                          name="logo_url"
-                          value={partnerForm.logo_url}
-                          onChange={handlePartnerFormChange}
-                          className="w-full p-2 border rounded"
-                          dir="ltr"
-                          placeholder="https://example.com/logo.png"
-                        />
+                        <div className="flex flex-col gap-2">
+                          <p className="text-sm text-gray-500">أو أدخل رابط الشعار أدناه</p>
+                          <input
+                            name="logo_url"
+                            value={partnerForm.logo_url}
+                            onChange={handlePartnerFormChange}
+                            className="w-full p-2 border rounded"
+                            dir="ltr"
+                            placeholder="https://example.com/logo.png"
+                          />
+                        </div>
                       </div>
                     </div>
                   </div>
                   <DialogFooter>
                     <Button
                       onClick={handleSavePartner}
-                      disabled={isSavingPartner || logoUploading}
+                      disabled={isSavingPartner}
                     >
                       {isSavingPartner ? "جارٍ الحفظ..." : "حفظ"}
                     </Button>
@@ -913,7 +939,7 @@ const AdminDashboard = () => {
                 {loadingProducts ? (
                   <div className="text-center py-8 text-trndsky-blue">جارٍ التحميل...</div>
                 ) : products.length === 0 ? (
-                  <div className="text-center py-8 text-gray-500">لا توجد برمجيات جاهزة حالياً. أضف برنامج جديد.</div>
+                  <div className="text-center py-8 text-gray-500">لا توجد برمجيات جاه��ة حالياً. أضف برنامج جديد.</div>
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {products.map((product) => (

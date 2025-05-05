@@ -20,10 +20,12 @@ type ImageGalleryProps = {
 
 export function ImageGallery({ images, onRemoveImage, readOnly = false }: ImageGalleryProps) {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [selectedIndex, setSelectedIndex] = useState<number>(0);
 
   // فتح الصورة في وضع كبير
-  const openFullScreen = (image: string) => {
+  const openFullScreen = (image: string, index: number) => {
     setSelectedImage(image);
+    setSelectedIndex(index);
   };
 
   // إغلاق الصورة
@@ -44,14 +46,17 @@ export function ImageGallery({ images, onRemoveImage, readOnly = false }: ImageG
                 src={image} 
                 alt={`صورة ${index + 1}`}
                 className="h-full w-full object-contain cursor-pointer"
-                onClick={() => openFullScreen(image)}
+                onClick={() => openFullScreen(image, index)}
+                onError={(e) => {
+                  e.currentTarget.src = "/placeholder.svg";
+                }}
               />
               <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all flex items-center justify-center opacity-0 group-hover:opacity-100">
                 <Button
                   size="icon"
                   variant="ghost"
                   className="h-8 w-8 rounded-full bg-white text-gray-800 hover:bg-gray-100 hover:text-gray-900"
-                  onClick={() => openFullScreen(image)}
+                  onClick={() => openFullScreen(image, index)}
                 >
                   <Maximize size={16} />
                 </Button>
@@ -84,7 +89,7 @@ export function ImageGallery({ images, onRemoveImage, readOnly = false }: ImageG
         <DialogContent className="max-w-4xl w-[90vw] p-1">
           <div className="relative w-full h-[80vh]">
             {selectedImage && (
-              <Carousel className="w-full h-full">
+              <Carousel className="w-full h-full" defaultIndex={selectedIndex}>
                 <CarouselContent className="h-full">
                   {images.map((img, i) => (
                     <CarouselItem key={i} className="h-full flex items-center justify-center">
@@ -92,6 +97,9 @@ export function ImageGallery({ images, onRemoveImage, readOnly = false }: ImageG
                         src={img}
                         alt={`صورة ${i + 1}`}
                         className="w-full h-full object-contain"
+                        onError={(e) => {
+                          e.currentTarget.src = "/placeholder.svg";
+                        }}
                       />
                     </CarouselItem>
                   ))}

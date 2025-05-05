@@ -12,8 +12,27 @@ export function useStorage(bucketName: string = "public") {
     setError(null);
 
     try {
-      // Skip bucket checks and creation attempts since they require admin privileges
-      // Just try to upload directly to the existing bucket
+      // تحقق من نوع الملف (صور فقط)
+      if (!file.type.startsWith('image/')) {
+        setError("يرجى اختيار ملف صورة صالح");
+        toast({
+          title: "خطأ في نوع الملف",
+          description: "يرجى اختيار ملف صورة صالح",
+          variant: "destructive"
+        });
+        return null;
+      }
+
+      // تحقق من حجم الملف (أقل من 5 ميجا)
+      if (file.size > 5 * 1024 * 1024) {
+        setError("حجم الملف كبير جداً، يجب أن يكون أقل من 5 ميجابايت");
+        toast({
+          title: "خطأ في حجم الملف",
+          description: "حجم الملف كبير جداً، يجب أن يكون أقل من 5 ميجابايت",
+          variant: "destructive"
+        });
+        return null;
+      }
 
       const fileExt = file.name.split('.').pop();
       const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
@@ -31,6 +50,11 @@ export function useStorage(bucketName: string = "public") {
       if (uploadError) {
         console.error("خطأ في رفع الملف:", uploadError);
         setError(uploadError.message);
+        toast({
+          title: "خطأ في رفع الملف",
+          description: uploadError.message,
+          variant: "destructive"
+        });
         return null;
       }
       
@@ -40,10 +64,20 @@ export function useStorage(bucketName: string = "public") {
         .from(bucketName)
         .getPublicUrl(filePath);
       
+      toast({
+        title: "تم بنجاح",
+        description: "تم رفع الملف بنجاح",
+      });
+      
       return publicUrl;
     } catch (err: any) {
       console.error("خطأ غير متوقع:", err);
       setError(err.message || "حدث خطأ أثناء رفع الملف");
+      toast({
+        title: "خطأ غير متوقع",
+        description: err.message || "حدث خطأ أثناء رفع الملف",
+        variant: "destructive"
+      });
       return null;
     } finally {
       setIsUploading(false);

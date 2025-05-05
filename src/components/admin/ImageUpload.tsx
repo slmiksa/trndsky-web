@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
 import { Upload } from "lucide-react";
@@ -12,13 +12,8 @@ interface ImageUploadProps {
 }
 
 export function ImageUpload({ onUpload, label = "رفع صورة", bucketName = "public" }: ImageUploadProps) {
-  const { upload, isUploading, error: storageError } = useStorage(bucketName);
+  const { upload, isUploading, error } = useStorage(bucketName);
   const [lastError, setLastError] = useState<string | null>(null);
-
-  // Reset error when bucketName changes
-  useEffect(() => {
-    setLastError(null);
-  }, [bucketName]);
 
   const uploadImage = async (event: React.ChangeEvent<HTMLInputElement>) => {
     try {
@@ -32,17 +27,12 @@ export function ImageUpload({ onUpload, label = "رفع صورة", bucketName = 
       const publicUrl = await upload(file);
       
       if (!publicUrl) {
-        throw new Error(storageError || "فشل رفع الصورة، يرجى المحاولة مرة أخرى.");
+        throw new Error(error || "فشل رفع الصورة، يرجى المحاولة مرة أخرى.");
       }
       
       console.log("تم رفع الصورة بنجاح، الرابط:", publicUrl);
       onUpload(publicUrl);
       setLastError(null);
-      
-      toast({
-        title: "تم الرفع",
-        description: "تم رفع الصورة بنجاح",
-      });
     } catch (error: any) {
       console.error("خطأ في رفع الصورة:", error);
       setLastError(error.message);
@@ -60,7 +50,7 @@ export function ImageUpload({ onUpload, label = "رفع صورة", bucketName = 
       <Button
         variant="outline"
         disabled={isUploading}
-        className="relative overflow-hidden"
+        className="relative overflow-hidden w-full"
         type="button"
       >
         <input
