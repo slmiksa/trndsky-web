@@ -40,13 +40,13 @@ export function useStorage(bucketName: string = "public") {
       
       console.log(`محاولة رفع الملف: ${filePath} إلى الحاوية: ${bucketName}`);
 
-      // Check if user is logged in (since we have RLS policies for authenticated users)
+      // تحقق من وضع الجلسة (لأغراض التسجيل فقط)
       const { data: sessionData } = await supabase.auth.getSession();
       if (!sessionData.session) {
-        // If not logged in, try to use public upload
-        console.log("المستخدم غير مسجل الدخول، محاولة استخدام الرفع العام");
+        console.log("المستخدم غير مسجل الدخول، استخدام الرفع العام المسموح به من خلال السياسات المحدثة");
       }
 
+      // محاولة رفع الملف
       const { data, error: uploadError } = await supabase.storage
         .from(bucketName)
         .upload(filePath, file, {
@@ -67,6 +67,7 @@ export function useStorage(bucketName: string = "public") {
       
       console.log("تم الرفع بنجاح:", data);
       
+      // الحصول على الرابط العام
       const { data: { publicUrl } } = supabase.storage
         .from(bucketName)
         .getPublicUrl(filePath);
