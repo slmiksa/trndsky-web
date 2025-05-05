@@ -16,8 +16,9 @@ import { AdminUsersManager } from '@/components/admin/AdminUsersManager';
 import { AboutContentManager } from '@/components/admin/AboutContentManager';
 import { ContactManager } from '@/components/admin/ContactManager';
 import WhatsAppSettingsManager from '@/components/admin/WhatsAppSettingsManager';
+import TicketsManager from '@/components/admin/TicketsManager';
 
-type AdminTab = 'slides' | 'software' | 'users' | 'about' | 'contact' | 'whatsapp';
+type AdminTab = 'slides' | 'software' | 'users' | 'about' | 'contact' | 'whatsapp' | 'tickets';
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState<AdminTab>('slides');
@@ -122,6 +123,11 @@ const AdminDashboard = () => {
               إعدادات واتساب
             </Button>
           </li>
+          <li>
+            <Button variant="ghost" className="w-full justify-start font-tajawal" onClick={() => setActiveTab('tickets')}>
+              تذاكر الدعم
+            </Button>
+          </li>
         </ul>
       </div>
       
@@ -136,6 +142,7 @@ const AdminDashboard = () => {
             {activeTab === 'about' && <AboutContentManager />}
             {activeTab === 'contact' && <ContactManager />}
             {activeTab === 'whatsapp' && <WhatsAppSettingsManager />}
+            {activeTab === 'tickets' && <TicketsManager />}
           </div>
         </div>
       </div>

@@ -8,8 +8,9 @@ import { AdminUsersManager } from './AdminUsersManager';
 import { ContactManager } from './ContactManager';
 import { AboutContentManager } from './AboutContentManager';
 import WhatsAppSettingsManager from './WhatsAppSettingsManager';
+import TicketsManager from './TicketsManager';
 
-type AdminTab = 'slides' | 'software' | 'users' | 'about' | 'contact' | 'whatsapp';
+type AdminTab = 'slides' | 'software' | 'users' | 'about' | 'contact' | 'whatsapp' | 'tickets';
 
 interface DefaultAdminManagerProps {
   setActiveTab: React.Dispatch<React.SetStateAction<AdminTab>>;
@@ -75,6 +76,16 @@ const DefaultAdminManager = ({ setActiveTab }: DefaultAdminManagerProps) => {
         <CardContent>
           <div className="text-center text-5xl mb-2">💬</div>
           <p className="text-center text-muted-foreground font-tajawal">إعدادات أيقونة الاستفسارات والواتساب</p>
+        </CardContent>
+      </Card>
+
+      <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => setActiveTab('tickets')}>
+        <CardHeader className="text-center">
+          <CardTitle className="font-tajawal">تذاكر الدعم</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-center text-5xl mb-2">🎫</div>
+          <p className="text-center text-muted-foreground font-tajawal">إدارة تذاكر الدعم الفني</p>
         </CardContent>
       </Card>
     </div>
