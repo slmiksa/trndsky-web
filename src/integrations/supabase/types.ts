@@ -406,6 +406,30 @@ export type Database = {
         }
         Relationships: []
       }
+      whatsapp_settings: {
+        Row: {
+          default_message: string
+          enabled: boolean
+          id: number
+          phone_number: string
+          updated_at: string | null
+        }
+        Insert: {
+          default_message?: string
+          enabled?: boolean
+          id?: number
+          phone_number?: string
+          updated_at?: string | null
+        }
+        Update: {
+          default_message?: string
+          enabled?: boolean
+          id?: number
+          phone_number?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

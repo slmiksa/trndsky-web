@@ -33,7 +33,11 @@ const WhatsAppSettingsManager = () => {
           console.error('Error fetching WhatsApp settings:', error);
           toast.error('حدث خطأ أثناء تحميل إعدادات واتساب');
         } else if (data) {
-          setSettings(data);
+          setSettings({
+            phone_number: data.phone_number,
+            default_message: data.default_message,
+            enabled: data.enabled
+          });
         }
       } catch (error) {
         console.error('Error:', error);
@@ -59,22 +63,19 @@ const WhatsAppSettingsManager = () => {
         return;
       }
 
-      const updatedSettings = {
-        ...settings,
-        phone_number: formattedNumber,
-      };
-
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('whatsapp_settings')
-        .upsert(updatedSettings)
-        .select()
-        .single();
+        .update({
+          phone_number: formattedNumber,
+          default_message: settings.default_message,
+          enabled: settings.enabled
+        })
+        .eq('id', 1);
 
       if (error) {
         throw error;
       }
 
-      setSettings(data);
       toast.success('تم حفظ إعدادات واتساب بنجاح');
     } catch (error) {
       console.error('Error saving WhatsApp settings:', error);

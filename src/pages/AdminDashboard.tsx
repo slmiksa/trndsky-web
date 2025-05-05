@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -11,9 +12,9 @@ import Navbar from '@/components/Navbar';
 import DefaultAdminManager from '@/components/admin/DefaultAdminManager';
 import SlideManager from '@/components/admin/SlideManager';
 import SoftwareManager from '@/components/admin/SoftwareManager';
-import AdminUsersManager from '@/components/admin/AdminUsersManager';
-import AboutContentManager from '@/components/admin/AboutContentManager';
-import ContactManager from '@/components/admin/ContactManager';
+import { AdminUsersManager } from '@/components/admin/AdminUsersManager';
+import { AboutContentManager } from '@/components/admin/AboutContentManager';
+import { ContactManager } from '@/components/admin/ContactManager';
 import WhatsAppSettingsManager from '@/components/admin/WhatsAppSettingsManager';
 
 type AdminTab = 'slides' | 'software' | 'users' | 'about' | 'contact' | 'whatsapp';

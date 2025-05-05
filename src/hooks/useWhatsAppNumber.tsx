@@ -29,7 +29,11 @@ export const useWhatsAppNumber = () => {
         if (error) {
           console.error('Error fetching WhatsApp settings:', error);
         } else if (data) {
-          setWhatsAppSettings(data);
+          setWhatsAppSettings({
+            phone_number: data.phone_number,
+            default_message: data.default_message,
+            enabled: data.enabled
+          });
         }
       } catch (error) {
         console.error('Error:', error);

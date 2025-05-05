@@ -4,9 +4,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import SlideManager from './SlideManager';
 import SoftwareManager from './SoftwareManager';
-import AdminUsersManager from './AdminUsersManager';
-import ContactManager from './ContactManager';
-import AboutContentManager from './AboutContentManager';
+import { AdminUsersManager } from './AdminUsersManager';
+import { ContactManager } from './ContactManager';
+import { AboutContentManager } from './AboutContentManager';
 import WhatsAppSettingsManager from './WhatsAppSettingsManager';
 
 type AdminTab = 'slides' | 'software' | 'users' | 'about' | 'contact' | 'whatsapp';
