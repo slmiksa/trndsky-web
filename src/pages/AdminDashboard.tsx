@@ -17,8 +17,10 @@ import { AboutContentManager } from '@/components/admin/AboutContentManager';
 import { ContactManager } from '@/components/admin/ContactManager';
 import WhatsAppSettingsManager from '@/components/admin/WhatsAppSettingsManager';
 import TicketsManager from '@/components/admin/TicketsManager';
+import TrialRequestsManager from '@/components/admin/TrialRequestsManager';
+import ProjectRequestsManager from '@/components/admin/ProjectRequestsManager';
 
-type AdminTab = 'slides' | 'software' | 'users' | 'about' | 'contact' | 'whatsapp' | 'tickets';
+type AdminTab = 'slides' | 'software' | 'users' | 'about' | 'contact' | 'whatsapp' | 'tickets' | 'trial_requests' | 'project_requests';
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState<AdminTab>('slides');
@@ -128,6 +130,16 @@ const AdminDashboard = () => {
               تذاكر الدعم
             </Button>
           </li>
+          <li>
+            <Button variant="ghost" className="w-full justify-start font-tajawal" onClick={() => setActiveTab('trial_requests')}>
+              طلبات التجربة
+            </Button>
+          </li>
+          <li>
+            <Button variant="ghost" className="w-full justify-start font-tajawal" onClick={() => setActiveTab('project_requests')}>
+              تذاكر الطلبات
+            </Button>
+          </li>
         </ul>
       </div>
       
@@ -143,6 +155,8 @@ const AdminDashboard = () => {
             {activeTab === 'contact' && <ContactManager />}
             {activeTab === 'whatsapp' && <WhatsAppSettingsManager />}
             {activeTab === 'tickets' && <TicketsManager />}
+            {activeTab === 'trial_requests' && <TrialRequestsManager />}
+            {activeTab === 'project_requests' && <ProjectRequestsManager />}
           </div>
         </div>
       </div>
