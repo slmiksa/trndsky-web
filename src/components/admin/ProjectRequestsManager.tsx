@@ -57,7 +57,14 @@ const ProjectRequestsManager = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setProjectRequests(data || []);
+      
+      // Cast the data to ensure it matches the ProjectRequest type
+      const typedData = (data || []).map(item => ({
+        ...item,
+        status: item.status as 'new' | 'contacted' | 'in_progress' | 'completed' | 'rejected'
+      }));
+      
+      setProjectRequests(typedData);
     } catch (error) {
       console.error('Error fetching project requests:', error);
       toast.error('حدث خطأ أثناء تحميل طلبات المشاريع');
@@ -179,8 +186,8 @@ const ProjectRequestsManager = () => {
     <div className="space-y-4">
       <Card>
         <CardHeader>
-          <CardTitle className="font-tajawal">إدارة طلبات البرمجة</CardTitle>
-          <CardDescription className="font-tajawal">إدارة طلبات تطوير البرمجيات والمشاريع الخاصة</CardDescription>
+          <CardTitle className="font-tajawal">إدارة طلبات البرمجة الخاصة</CardTitle>
+          <CardDescription className="font-tajawal">إدارة طلبات تطوير البرمجيات والمشاريع الخاصة من العملاء</CardDescription>
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="new" value={activeTab} onValueChange={(v) => setActiveTab(v as any)}>

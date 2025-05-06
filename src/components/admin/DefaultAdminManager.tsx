@@ -83,31 +83,31 @@ const DefaultAdminManager = ({ setActiveTab }: DefaultAdminManagerProps) => {
 
       <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => setActiveTab('tickets')}>
         <CardHeader className="text-center">
-          <CardTitle className="font-tajawal">تذاكر الدعم</CardTitle>
+          <CardTitle className="font-tajawal">تذاكر الدعم الفني</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="text-center text-5xl mb-2">🎫</div>
-          <p className="text-center text-muted-foreground font-tajawal">إدارة تذاكر الدعم الفني</p>
+          <p className="text-center text-muted-foreground font-tajawal">إدارة تذاكر الدعم من العملاء</p>
         </CardContent>
       </Card>
 
       <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => setActiveTab('trial_requests')}>
         <CardHeader className="text-center">
-          <CardTitle className="font-tajawal">طلبات التجربة</CardTitle>
+          <CardTitle className="font-tajawal">طلبات تجربة البرمجيات</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="text-center text-5xl mb-2">🧪</div>
-          <p className="text-center text-muted-foreground font-tajawal">إدارة طلبات تجربة البرمجيات</p>
+          <p className="text-center text-muted-foreground font-tajawal">إدارة طلبات تجربة البرمجيات الجاهزة</p>
         </CardContent>
       </Card>
 
       <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => setActiveTab('project_requests')}>
         <CardHeader className="text-center">
-          <CardTitle className="font-tajawal">تذاكر الطلبات</CardTitle>
+          <CardTitle className="font-tajawal">طلبات البرمجة الخاصة</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="text-center text-5xl mb-2">📋</div>
-          <p className="text-center text-muted-foreground font-tajawal">إدارة طلبات البرمجة الخاصة</p>
+          <p className="text-center text-muted-foreground font-tajawal">إدارة طلبات المشاريع البرمجية الخاصة</p>
         </CardContent>
       </Card>
     </div>

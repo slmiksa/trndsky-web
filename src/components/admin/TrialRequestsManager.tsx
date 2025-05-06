@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Eye, MessageSquare, Trash } from 'lucide-react';
 import { formatDistance } from 'date-fns';
 import { ar } from 'date-fns/locale';
+
 interface TrialRequest {
   id: string;
   created_at: string;
@@ -16,24 +17,34 @@ interface TrialRequest {
   whatsapp: string;
   status: 'new' | 'contacted' | 'completed' | 'rejected';
 }
+
 const TrialRequestsManager = () => {
   const [trialRequests, setTrialRequests] = useState<TrialRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'new' | 'contacted' | 'completed' | 'rejected'>('new');
+
   useEffect(() => {
     fetchTrialRequests();
   }, [activeTab]);
+
   const fetchTrialRequests = async () => {
     setLoading(true);
     try {
-      const {
-        data,
-        error
-      } = await supabase.from('trial_requests').select('*').eq('status', activeTab).order('created_at', {
-        ascending: false
-      });
+      const { data, error } = await supabase
+        .from('trial_requests')
+        .select('*')
+        .eq('status', activeTab)
+        .order('created_at', { ascending: false });
+
       if (error) throw error;
-      setTrialRequests(data || []);
+      
+      // Cast the data to ensure it matches the TrialRequest type
+      const typedData = (data || []).map(item => ({
+        ...item,
+        status: item.status as 'new' | 'contacted' | 'completed' | 'rejected'
+      }));
+      
+      setTrialRequests(typedData);
     } catch (error) {
       console.error('Error fetching trial requests:', error);
       toast.error('حدث خطأ أثناء تحميل طلبات التجربة');
@@ -41,6 +52,7 @@ const TrialRequestsManager = () => {
       setLoading(false);
     }
   };
+
   const updateRequestStatus = async (id: string, status: 'new' | 'contacted' | 'completed' | 'rejected') => {
     try {
       const {
@@ -56,6 +68,7 @@ const TrialRequestsManager = () => {
       toast.error('حدث خطأ أثناء تحديث حالة الطلب');
     }
   };
+
   const deleteRequest = async (id: string) => {
     if (!confirm('هل أنت متأكد من حذف هذا الطلب؟')) return;
     try {
@@ -70,6 +83,7 @@ const TrialRequestsManager = () => {
       toast.error('حدث خطأ أثناء حذف الطلب');
     }
   };
+
   const formatDate = (dateString: string) => {
     try {
       return formatDistance(new Date(dateString), new Date(), {
@@ -80,10 +94,12 @@ const TrialRequestsManager = () => {
       return 'تاريخ غير صالح';
     }
   };
+
   const openWhatsApp = (phone: string) => {
     const whatsappUrl = `https://wa.me/${phone.replace(/\+/g, '')}`;
     window.open(whatsappUrl, '_blank');
   };
+
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'new':
@@ -98,11 +114,12 @@ const TrialRequestsManager = () => {
         return <Badge>غير معروف</Badge>;
     }
   };
+
   return <div className="space-y-4">
       <Card>
         <CardHeader>
-          <CardTitle className="font-tajawal">إدارة طلبات البرمجيات الجاهزة</CardTitle>
-          <CardDescription className="font-tajawal">إدارة طلبات تجربة البرمجيات والحلول</CardDescription>
+          <CardTitle className="font-tajawal">إدارة طلبات تجربة البرمجيات</CardTitle>
+          <CardDescription className="font-tajawal">إدارة طلبات تجربة البرمجيات الجاهزة من العملاء</CardDescription>
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="new" value={activeTab} onValueChange={v => setActiveTab(v as any)}>
@@ -156,4 +173,5 @@ const TrialRequestsManager = () => {
       </Card>
     </div>;
 };
+
 export default TrialRequestsManager;
