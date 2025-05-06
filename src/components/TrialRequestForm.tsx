@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { useContactInfo } from "@/hooks/useContactInfo";
 
 type TrialRequestFormProps = {
   isOpen: boolean;
@@ -14,6 +15,7 @@ type TrialRequestFormProps = {
 
 const TrialRequestForm = ({ isOpen, onClose }: TrialRequestFormProps) => {
   const { toast } = useToast();
+  const { contactInfo } = useContactInfo();
   const [formData, setFormData] = useState({
     company_name: "",
     whatsapp: "",
@@ -33,6 +35,7 @@ const TrialRequestForm = ({ isOpen, onClose }: TrialRequestFormProps) => {
     setLoading(true);
 
     try {
+      // Insert the trial request into the database
       const { error } = await supabase.from("trial_requests").insert([
         {
           company_name: formData.company_name,
@@ -49,6 +52,24 @@ const TrialRequestForm = ({ isOpen, onClose }: TrialRequestFormProps) => {
           duration: 5000,
         });
         return;
+      }
+
+      // Send email notification
+      try {
+        await supabase.functions.invoke("send-notification-email", {
+          body: {
+            to: contactInfo.email,
+            subject: "طلب تجربة برمجيات جديد",
+            requestType: "trial",
+            requestDetails: {
+              company_name: formData.company_name,
+              whatsapp: formData.whatsapp,
+            }
+          }
+        });
+      } catch (emailError) {
+        // Log error but continue as the database entry was successful
+        console.error("Error sending email notification:", emailError);
       }
 
       toast({

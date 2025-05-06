@@ -3,10 +3,11 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import TrialRequestForm from "./TrialRequestForm";
 import { Button } from "@/components/ui/button";
+import { useContactInfo } from "@/hooks/useContactInfo";
+
 const ProjectRequestForm = () => {
-  const {
-    toast
-  } = useToast();
+  const { toast } = useToast();
+  const { contactInfo } = useContactInfo();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -16,23 +17,21 @@ const ProjectRequestForm = () => {
   });
   const [loading, setLoading] = useState(false);
   const [trialFormOpen, setTrialFormOpen] = useState(false);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const {
-      name,
-      value
-    } = e.target;
+    const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
       [name]: value
     }));
   };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     try {
-      const {
-        error
-      } = await supabase.from("project_requests").insert([{
+      // Insert the project request into the database
+      const { error } = await supabase.from("project_requests").insert([{
         name: formData.name,
         email: formData.email || null,
         phone: formData.phone || null,
@@ -40,6 +39,7 @@ const ProjectRequestForm = () => {
         description: formData.description,
         status: "new"
       }]);
+
       if (error) {
         console.error("Error submitting project request:", error);
         toast({
@@ -50,11 +50,34 @@ const ProjectRequestForm = () => {
         });
         return;
       }
+
+      // Send email notification
+      try {
+        await supabase.functions.invoke("send-notification-email", {
+          body: {
+            to: contactInfo.email,
+            subject: "طلب برمجة خاصة جديد",
+            requestType: "project",
+            requestDetails: {
+              name: formData.name,
+              email: formData.email || null,
+              phone: formData.phone || null,
+              title: formData.title,
+              description: formData.description,
+            }
+          }
+        });
+      } catch (emailError) {
+        // Log error but continue as the database entry was successful
+        console.error("Error sending email notification:", emailError);
+      }
+
       toast({
         title: "تم استلام طلبك",
         description: "سنتواصل معك قريباً لمناقشة تفاصيل المشروع",
         duration: 5000
       });
+
       setFormData({
         name: "",
         email: "",
@@ -74,10 +97,13 @@ const ProjectRequestForm = () => {
       setLoading(false);
     }
   };
+
   const openTrialForm = () => {
     setTrialFormOpen(true);
   };
-  return <section className="section-padding bg-white relative">
+
+  return (
+    <section className="section-padding bg-white relative">
       <div className="absolute -top-24 -left-20 w-60 h-60 rounded-full bg-trndsky-teal/10 z-0"></div>
       <div className="absolute -bottom-14 -right-24 w-72 h-72 rounded-full bg-trndsky-blue/10 z-0"></div>
       <div className="container mx-auto px-4 relative z-10">
@@ -130,6 +156,8 @@ const ProjectRequestForm = () => {
       </div>
       
       <TrialRequestForm isOpen={trialFormOpen} onClose={() => setTrialFormOpen(false)} />
-    </section>;
+    </section>
+  );
 };
+
 export default ProjectRequestForm;

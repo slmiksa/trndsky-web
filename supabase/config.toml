@@ -13,3 +13,5 @@ verify_jwt = false
 [functions.create_drop_constraint_function]
 verify_jwt = false
 
+[functions.send-notification-email]
+verify_jwt = false

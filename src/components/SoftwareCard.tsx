@@ -4,6 +4,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from 'sonner';
 import TrialRequestForm from './TrialRequestForm';
 import { ImageGallery } from './admin/ImageGallery';
+import { useContactInfo } from '@/hooks/useContactInfo';
+
 interface SoftwareCardProps {
   title: string;
   description: string;
@@ -12,6 +14,7 @@ interface SoftwareCardProps {
   price: string;
   onTrialRequest?: () => void;
 }
+
 const SoftwareCard = ({
   title,
   description,
@@ -31,15 +34,19 @@ const SoftwareCard = ({
   const [showTrialForm, setShowTrialForm] = useState(false);
   const [additionalImages, setAdditionalImages] = useState<string[]>([]);
   const [loadingImages, setLoadingImages] = useState(false);
+  const { contactInfo } = useContactInfo();
+
   const toggleDetails = () => {
     setShowDetails(!showDetails);
     setShowOrderForm(false);
     setOrderSent(false);
   };
+
   const handleOrderClick = () => {
     setShowOrderForm(!showOrderForm);
     setOrderSent(false);
   };
+
   const handleTrialClick = () => {
     // If an external handler is provided, use it, otherwise show the local form
     if (onTrialRequest) {
@@ -48,6 +55,7 @@ const SoftwareCard = ({
       setShowTrialForm(true);
     }
   };
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const {
       name,
@@ -58,10 +66,12 @@ const SoftwareCard = ({
       [name]: value
     }));
   };
+
   const handleOrderSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     try {
+      // Insert the software order into the database
       const {
         error
       } = await supabase.from('software_orders').insert({
@@ -70,12 +80,34 @@ const SoftwareCard = ({
         whatsapp: orderData.whatsapp,
         status: 'new'
       });
+
       if (error) {
         console.error('Error submitting order:', error);
         toast.error('حدث خطأ أثناء إرسال الطلب. الرجاء المحاولة مرة أخرى.');
         setIsSubmitting(false);
         return;
       }
+
+      // Send email notification
+      try {
+        await supabase.functions.invoke("send-notification-email", {
+          body: {
+            to: contactInfo.email,
+            subject: "طلب شراء برمجية جديد",
+            requestType: "purchase",
+            requestDetails: {
+              company_name: orderData.company,
+              whatsapp: orderData.whatsapp,
+              software_id: id,
+              software_title: title,
+            }
+          }
+        });
+      } catch (emailError) {
+        // Log error but continue as the database entry was successful
+        console.error("Error sending email notification:", emailError);
+      }
+
       setOrderSent(true);
       setOrderData({
         company: '',
@@ -99,6 +131,7 @@ const SoftwareCard = ({
       fetchProductImages(id);
     }
   }, [showDetails, id]);
+  
   const fetchProductImages = async (productId: number) => {
     setLoadingImages(true);
     try {
@@ -119,7 +152,9 @@ const SoftwareCard = ({
       setLoadingImages(false);
     }
   };
-  return <div className="bg-gradient-to-tr from-white via-trndsky-gray to-[#f3fafe] rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 border border-trndsky-blue/10 hover:scale-105">
+
+  return (
+    <div className="bg-gradient-to-tr from-white via-trndsky-gray to-[#f3fafe] rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 border border-trndsky-blue/10 hover:scale-105">
       <div className="h-48 overflow-hidden relative" style={{
       backgroundImage: `url(${image})`,
       backgroundSize: 'cover',
@@ -182,11 +217,14 @@ const SoftwareCard = ({
       
       {/* نموذج طلب التجربة */}
       {!onTrialRequest && <TrialRequestForm isOpen={showTrialForm} onClose={() => setShowTrialForm(false)} />}
-    </div>;
+    </div>
+  );
 };
+
 interface FeaturedSoftwareProps {
   onTrialRequest?: () => void;
 }
+
 export const FeaturedSoftware = ({
   onTrialRequest
 }: FeaturedSoftwareProps) => {
@@ -245,4 +283,5 @@ export const FeaturedSoftware = ({
       </div>
     </section>;
 };
+
 export default SoftwareCard;
