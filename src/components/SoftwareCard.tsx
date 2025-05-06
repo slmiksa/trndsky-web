@@ -156,17 +156,19 @@ const SoftwareCard = ({
   return (
     <div className="bg-gradient-to-tr from-white via-trndsky-gray to-[#f3fafe] rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 border border-trndsky-blue/10 hover:scale-105">
       <div className="h-48 overflow-hidden relative" style={{
-      backgroundImage: `url(${image})`,
-      backgroundSize: 'cover',
-      backgroundPosition: 'center'
-    }}>
+        backgroundImage: `url(${image})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center'
+      }}>
         <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent px-0 mx-0 my-0 rounded-none"></div>
       </div>
       
       <div className="p-6">
         <h3 className="text-2xl font-bold mb-2 font-tajawal text-right text-trndsky-darkblue">{title}</h3>
         <div className="flex items-center justify-between mb-3">
-          <span className="font-tajawal text-xl font-bold text-trndsky-teal">{price}</span>
+          {price && (
+            <span className="font-tajawal text-xl font-bold text-trndsky-teal">{price}</span>
+          )}
           <button onClick={toggleDetails} className="text-trndsky-teal hover:text-trndsky-blue font-medium transition-colors font-tajawal underline underline-offset-4">
             {showDetails ? 'إخفاء التفاصيل' : 'عرض التفاصيل'}
           </button>

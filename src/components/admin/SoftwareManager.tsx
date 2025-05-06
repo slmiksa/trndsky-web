@@ -48,7 +48,14 @@ const SoftwareManager = () => {
       
       if (error) throw error;
       console.log("Fetched products:", data);
-      setProducts(data || []);
+      
+      // Make sure each product has the show_price property
+      const formattedProducts = data?.map(product => ({
+        ...product,
+        show_price: product.show_price !== undefined ? product.show_price : true,
+      })) || [];
+      
+      setProducts(formattedProducts);
     } catch (error) {
       console.error('Error fetching products:', error);
       toast.error('حدث خطأ أثناء تحميل البرمجيات');
