@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -20,7 +19,6 @@ import TicketsManager from '@/components/admin/TicketsManager';
 import TrialRequestsManager from '@/components/admin/TrialRequestsManager';
 import ProjectRequestsManager from '@/components/admin/ProjectRequestsManager';
 import SoftwareOrdersManager from '@/components/admin/SoftwareOrdersManager';
-
 type AdminTab = 'slides' | 'software' | 'users' | 'about' | 'contact' | 'whatsapp' | 'tickets' | 'trial_requests' | 'project_requests' | 'software_orders';
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState<AdminTab>('slides');
@@ -131,24 +129,16 @@ const AdminDashboard = () => {
             </Button>
           </li>
           <li>
-            <Button variant="ghost" className="w-full justify-start font-tajawal" onClick={() => setActiveTab('tickets')}>
-              تذاكر الدعم الفني
-            </Button>
+            
           </li>
           <li>
-            <Button variant="ghost" className="w-full justify-start font-tajawal" onClick={() => setActiveTab('trial_requests')}>
-              طلبات تجربة البرمجيات
-            </Button>
+            <Button variant="ghost" className="w-full justify-start font-tajawal" onClick={() => setActiveTab('trial_requests')}>تذاكر التجربة للبرمجيات</Button>
           </li>
           <li>
-            <Button variant="ghost" className="w-full justify-start font-tajawal" onClick={() => setActiveTab('project_requests')}>
-              طلبات البرمجة الخاصة
-            </Button>
+            <Button variant="ghost" className="w-full justify-start font-tajawal" onClick={() => setActiveTab('project_requests')}>تذاكر البرمجيات الجاهزة</Button>
           </li>
           <li>
-            <Button variant="ghost" className="w-full justify-start font-tajawal" onClick={() => setActiveTab('software_orders')}>
-              طلبات شراء البرمجيات
-            </Button>
+            <Button variant="ghost" className="w-full justify-start font-tajawal" onClick={() => setActiveTab('software_orders')}>تذاكر برمجيات بأفكارك</Button>
           </li>
         </ul>
       </div>
