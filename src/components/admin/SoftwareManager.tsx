@@ -46,6 +46,7 @@ const SoftwareManager = () => {
         .order('id', { ascending: true });
       
       if (error) throw error;
+      console.log("Fetched products:", data);
       setProducts(data || []);
     } catch (error) {
       console.error('Error fetching products:', error);
@@ -56,7 +57,8 @@ const SoftwareManager = () => {
   };
 
   const handleEdit = (product: SoftwareProduct) => {
-    setCurrentProduct(product);
+    console.log("Editing product:", product);
+    setCurrentProduct({...product}); // Make a copy to avoid reference issues
     setDialogOpen(true);
   };
 

@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -19,7 +20,9 @@ import TicketsManager from '@/components/admin/TicketsManager';
 import TrialRequestsManager from '@/components/admin/TrialRequestsManager';
 import ProjectRequestsManager from '@/components/admin/ProjectRequestsManager';
 import SoftwareOrdersManager from '@/components/admin/SoftwareOrdersManager';
+
 type AdminTab = 'slides' | 'software' | 'users' | 'about' | 'contact' | 'whatsapp' | 'tickets' | 'trial_requests' | 'project_requests' | 'software_orders';
+
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState<AdminTab>('slides');
   const [adminUsers, setAdminUsers] = useState([]);
@@ -29,9 +32,11 @@ const AdminDashboard = () => {
     role: 'admin'
   });
   const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     fetchAdminUsers();
   }, []);
+
   const fetchAdminUsers = async () => {
     setLoading(true);
     try {
@@ -52,6 +57,7 @@ const AdminDashboard = () => {
       setLoading(false);
     }
   };
+
   const createAdminUser = async () => {
     try {
       const {
@@ -94,6 +100,7 @@ const AdminDashboard = () => {
       toast.error('Failed to create admin user');
     }
   };
+
   return <div className="min-h-screen bg-gray-50 flex">
       <div className="w-64 bg-gray-100 p-4">
         <h2 className="text-2xl font-bold mb-4 text-center font-tajawal">لوحة التحكم</h2>
@@ -129,7 +136,9 @@ const AdminDashboard = () => {
             </Button>
           </li>
           <li>
-            
+            <Button variant="ghost" className="w-full justify-start font-tajawal" onClick={() => setActiveTab('tickets')}>
+              تذاكر الدعم الفني
+            </Button>
           </li>
           <li>
             <Button variant="ghost" className="w-full justify-start font-tajawal" onClick={() => setActiveTab('trial_requests')}>تذاكر التجربة للبرمجيات</Button>
@@ -163,4 +172,5 @@ const AdminDashboard = () => {
       </div>
     </div>;
 };
+
 export default AdminDashboard;

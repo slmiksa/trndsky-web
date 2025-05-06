@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import {
   Dialog,
@@ -10,7 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Textarea } from "@/components/ui/textarea";
 import { ImageUpload } from "./ImageUpload";
@@ -31,7 +32,7 @@ type SoftwareProduct = {
 interface SoftwareProductDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  product?: SoftwareProduct;
+  product: SoftwareProduct | null;
   onSuccess: () => void;
 }
 
@@ -41,27 +42,44 @@ export function SoftwareProductDialog({
   product,
   onSuccess,
 }: SoftwareProductDialogProps) {
-  const [form, setForm] = useState<SoftwareProduct>(
-    product || {
-      title: "",
-      description: "",
-      price: 0,
-      image_url: "",
-    }
-  );
+  const [form, setForm] = useState<SoftwareProduct>({
+    title: "",
+    description: "",
+    price: 0,
+    image_url: "",
+  });
   const [isSaving, setIsSaving] = useState(false);
   const [additionalImages, setAdditionalImages] = useState<string[]>([]);
   const [isLoadingImages, setIsLoadingImages] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
 
-  // تحميل الصور الإضافية عند فتح نافذة تعديل منتج موجود
+  // Reset form when dialog opens/closes or product changes
   useEffect(() => {
-    if (product?.id) {
-      fetchProductImages(product.id);
-    } else {
-      setAdditionalImages([]);
+    if (open) {
+      if (product) {
+        console.log("Setting form with product data:", product);
+        setForm({
+          id: product.id,
+          title: product.title || "",
+          description: product.description || "",
+          price: product.price || 0,
+          image_url: product.image_url || "",
+        });
+        if (product.id) {
+          fetchProductImages(product.id);
+        }
+      } else {
+        // Reset form for new product
+        setForm({
+          title: "",
+          description: "",
+          price: 0,
+          image_url: "",
+        });
+        setAdditionalImages([]);
+      }
     }
-  }, [product]);
+  }, [open, product]);
 
   const fetchProductImages = async (productId: number) => {
     setIsLoadingImages(true);
@@ -74,16 +92,12 @@ export function SoftwareProductDialog({
 
       if (error) throw error;
       
-      // تجميع روابط الصور من البيانات المستلمة
+      // Extract image URLs from the received data
       const imageUrls = data.map(item => item.image_url);
       setAdditionalImages(imageUrls);
     } catch (error: any) {
-      console.error("خطأ في تحميل صور المنتج:", error);
-      toast({ 
-        title: "خطأ", 
-        description: "حدث خطأ أثناء تحميل صور المنتج",
-        variant: "destructive"
-      });
+      console.error("Error loading product images:", error);
+      toast("حدث خطأ أثناء تحميل صور المنتج");
     } finally {
       setIsLoadingImages(false);
     }
@@ -95,7 +109,7 @@ export function SoftwareProductDialog({
 
     try {
       if (product?.id) {
-        // تحديث المنتج الموجود
+        // Update existing product
         const { error } = await supabase
           .from("software_products")
           .update({
@@ -109,18 +123,18 @@ export function SoftwareProductDialog({
 
         if (error) throw error;
         
-        // حفظ الصور الإضافية
+        // Save additional images
         await saveAdditionalImages(product.id);
         
-        toast({ title: "تم التحديث", description: "تم تحديث البرنامج بنجاح" });
+        toast.success("تم تحديث البرنامج بنجاح");
       } else {
-        console.log("بدء إضافة منتج جديد:", form);
+        console.log("Adding new product:", form);
         
-        // الحصول على معرف جديد للمنتج
+        // Get next product ID
         const nextId = await getNextProductId();
-        console.log("ID المنتج الجديد:", nextId);
+        console.log("New product ID:", nextId);
         
-        // إضافة منتج جديد مع معرف صريح وطوابع زمنية
+        // Add new product with explicit ID and timestamps
         const { data, error } = await supabase.from("software_products").insert([
           {
             id: nextId,
@@ -134,43 +148,39 @@ export function SoftwareProductDialog({
         ]).select("id");
         
         if (error) {
-          console.error("خطأ في إضافة المنتج:", error);
+          console.error("Error adding product:", error);
           throw error;
         }
         
         if (data && data.length > 0) {
-          // حفظ الصور الإضافية للمنتج الجديد
+          // Save additional images for new product
           await saveAdditionalImages(nextId);
         }
         
-        console.log("تم إضافة منتج جديد بنجاح:", data);
-        toast({ title: "تمت الإضافة", description: "تم إضافة البرنامج بنجاح" });
+        console.log("Added new product successfully:", data);
+        toast.success("تم إضافة البرنامج بنجاح");
       }
 
       onSuccess();
       onOpenChange(false);
     } catch (error: any) {
       console.error("Error saving product:", error);
-      toast({
-        title: "خطأ",
-        description: error.message || "حدث خطأ أثناء حفظ البرنامج",
-        variant: "destructive",
-      });
+      toast.error(error.message || "حدث خطأ أثناء حفظ البرنامج");
     } finally {
       setIsSaving(false);
     }
   };
 
-  // حفظ الصور الإضافية للمنتج
+  // Save additional images for product
   const saveAdditionalImages = async (productId: number) => {
     try {
-      // أولاً، حذف جميع صور المنتج الحالية
+      // First, delete all current product images
       await supabase
         .from("software_product_images")
         .delete()
         .eq("product_id", productId);
       
-      // ثم إدراج الصور الجديدة
+      // Then insert new images
       if (additionalImages.length > 0) {
         const imagesToInsert = additionalImages.map(url => ({
           product_id: productId,
@@ -186,12 +196,12 @@ export function SoftwareProductDialog({
         if (error) throw error;
       }
     } catch (error: any) {
-      console.error("خطأ في حفظ الصور الإضافية:", error);
+      console.error("Error saving additional images:", error);
       throw error;
     }
   };
 
-  // الحصول على المعرف التالي المتاح
+  // Get next available ID
   const getNextProductId = async (): Promise<number> => {
     try {
       const { data, error } = await supabase
@@ -202,39 +212,30 @@ export function SoftwareProductDialog({
       
       if (error) {
         console.error("Error getting max product ID:", error);
-        return 1; // التقديم الافتراضي إلى 1 في حالة وجود خطأ
+        return 1; // Default to 1 if error
       }
       
       return data && data.length > 0 ? (data[0].id + 1) : 1;
     } catch (err) {
       console.error("Unexpected error getting next ID:", err);
-      return Math.floor(Date.now() / 1000); // الاحتياطي للمعرف المستند إلى الطابع الزمني
+      return Math.floor(Date.now() / 1000); // Fallback to timestamp-based ID
     }
   };
 
   const handleImageUpload = (url: string) => {
     setForm({ ...form, image_url: url });
     setUploadError(null);
-    toast({ 
-      title: "تم إضافة الصورة", 
-      description: "��م إضافة رابط الصورة الرئيسية إلى النموذج" 
-    });
+    toast.success("تم إضافة الصورة الرئيسية");
   };
 
   const handleAdditionalImageUpload = (url: string) => {
     setAdditionalImages(prev => [...prev, url]);
-    toast({ 
-      title: "تم رفع الصورة", 
-      description: "تم إضافة صورة جديدة إلى معرض الصور" 
-    });
+    toast.success("تم إضافة صورة جديدة إلى معرض الصور");
   };
 
   const handleRemoveAdditionalImage = (index: number) => {
     setAdditionalImages(prev => prev.filter((_, i) => i !== index));
-    toast({ 
-      title: "تم حذف الصورة", 
-      description: "تم حذف الصورة من معرض الصور" 
-    });
+    toast.success("تم حذف الصورة من معرض الصور");
   };
 
   return (
@@ -272,9 +273,9 @@ export function SoftwareProductDialog({
             <label className="font-medium block mb-1">السعر</label>
             <Input
               type="number"
-              value={form.price}
+              value={form.price || ""}
               onChange={(e) =>
-                setForm({ ...form, price: parseFloat(e.target.value) })
+                setForm({ ...form, price: parseFloat(e.target.value) || 0 })
               }
               required
               min="0"
@@ -328,7 +329,7 @@ export function SoftwareProductDialog({
             )}
           </div>
 
-          {/* قسم الصور الإضافية */}
+          {/* Additional images section */}
           <div>
             <label className="font-medium block mb-1">صور إضافية للبرنامج</label>
             <div className="space-y-4">
