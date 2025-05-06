@@ -11,8 +11,9 @@ import WhatsAppSettingsManager from './WhatsAppSettingsManager';
 import TicketsManager from './TicketsManager';
 import TrialRequestsManager from './TrialRequestsManager';
 import ProjectRequestsManager from './ProjectRequestsManager';
+import SoftwareOrdersManager from './SoftwareOrdersManager';
 
-type AdminTab = 'slides' | 'software' | 'users' | 'about' | 'contact' | 'whatsapp' | 'tickets' | 'trial_requests' | 'project_requests';
+type AdminTab = 'slides' | 'software' | 'users' | 'about' | 'contact' | 'whatsapp' | 'tickets' | 'trial_requests' | 'project_requests' | 'software_orders';
 
 interface DefaultAdminManagerProps {
   setActiveTab: React.Dispatch<React.SetStateAction<AdminTab>>;
@@ -108,6 +109,16 @@ const DefaultAdminManager = ({ setActiveTab }: DefaultAdminManagerProps) => {
         <CardContent>
           <div className="text-center text-5xl mb-2">📋</div>
           <p className="text-center text-muted-foreground font-tajawal">إدارة طلبات المشاريع البرمجية الخاصة</p>
+        </CardContent>
+      </Card>
+
+      <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => setActiveTab('software_orders')}>
+        <CardHeader className="text-center">
+          <CardTitle className="font-tajawal">طلبات شراء البرمجيات</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-center text-5xl mb-2">🛒</div>
+          <p className="text-center text-muted-foreground font-tajawal">إدارة طلبات شراء البرمجيات الجاهزة</p>
         </CardContent>
       </Card>
     </div>
