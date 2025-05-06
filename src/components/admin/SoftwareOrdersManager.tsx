@@ -36,6 +36,11 @@ interface SoftwareOrder {
   software_image_url?: string;
 }
 
+interface SoftwareProduct {
+  title: string;
+  image_url: string;
+}
+
 const SoftwareOrdersManager = () => {
   const [orders, setOrders] = useState<SoftwareOrder[]>([]);
   const [loading, setLoading] = useState(true);
@@ -50,28 +55,40 @@ const SoftwareOrdersManager = () => {
   const fetchSoftwareOrders = async () => {
     setLoading(true);
     try {
-      const { data, error } = await supabase
+      // First, fetch the orders
+      const { data: ordersData, error: ordersError } = await supabase
         .from('software_orders')
-        .select(`
-          *,
-          software_products:software_id (
-            title,
-            image_url
-          )
-        `)
+        .select('*')
         .eq('status', activeTab)
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (ordersError) throw ordersError;
       
-      // Transform the data to flatten the structure and include software details
-      const transformedData = data.map(order => ({
-        ...order,
-        software_title: order.software_products?.title,
-        software_image_url: order.software_products?.image_url,
-      }));
+      // Create a transformed array with correct typing
+      const transformedOrders: SoftwareOrder[] = [];
       
-      setOrders(transformedData);
+      // For each order, fetch the related software product details
+      for (const order of ordersData || []) {
+        // Fetch the related software product
+        const { data: productData, error: productError } = await supabase
+          .from('software_products')
+          .select('title, image_url')
+          .eq('id', order.software_id)
+          .single();
+          
+        // Type assertion to ensure the status is one of the allowed values
+        const typedStatus = order.status as 'new' | 'contacted' | 'completed' | 'rejected';
+        
+        // Add to our transformed array with correct typing
+        transformedOrders.push({
+          ...order,
+          status: typedStatus,
+          software_title: productError ? 'برنامج غير معروف' : productData?.title,
+          software_image_url: productError ? null : productData?.image_url
+        });
+      }
+      
+      setOrders(transformedOrders);
     } catch (error) {
       console.error('Error fetching software orders:', error);
       toast.error('حدث خطأ أثناء تحميل طلبات البرمجيات');
