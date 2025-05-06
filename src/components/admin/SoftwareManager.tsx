@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { SoftwareProductDialog } from './SoftwareProductDialog';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Pencil, Trash2, Plus } from 'lucide-react';
+import { Pencil, Trash2, Plus, Eye, EyeOff } from 'lucide-react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -21,7 +21,8 @@ type SoftwareProduct = {
   id: number;
   title: string;
   description: string;
-  price: number;
+  price: number | null;
+  show_price: boolean;
   image_url: string;
 };
 
@@ -101,6 +102,16 @@ const SoftwareManager = () => {
     }
   };
 
+  const formatPrice = (product: SoftwareProduct) => {
+    if (!product.show_price) {
+      return null;
+    }
+    
+    return product.price !== null ? 
+      `${product.price.toLocaleString()} ر.س` : 
+      null;
+  };
+
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
@@ -134,9 +145,12 @@ const SoftwareManager = () => {
               </div>
               <CardHeader className="pb-2">
                 <CardTitle className="text-right font-tajawal">{product.title}</CardTitle>
-                <CardDescription className="text-right font-tajawal">
-                  {product.price.toLocaleString()} ر.س
-                </CardDescription>
+                {formatPrice(product) && (
+                  <CardDescription className="text-right font-tajawal flex items-center justify-end">
+                    {product.show_price && <Eye className="w-4 h-4 ml-1" />}
+                    {formatPrice(product)}
+                  </CardDescription>
+                )}
               </CardHeader>
               <CardContent className="text-right">
                 <p className="text-sm text-gray-600 line-clamp-3 font-tajawal">{product.description}</p>

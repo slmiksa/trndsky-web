@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import {
   Dialog,
@@ -19,13 +18,16 @@ import { SimpleImageUpload } from "./SimpleImageUpload";
 import { ImageGallery } from "./ImageGallery";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertTriangle } from "lucide-react";
+import { AlertTriangle, Eye, EyeOff } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 
 type SoftwareProduct = {
   id?: number;
   title: string;
   description: string;
-  price: number;
+  price: number | null;
+  show_price: boolean;
   image_url: string;
 };
 
@@ -45,7 +47,8 @@ export function SoftwareProductDialog({
   const [form, setForm] = useState<SoftwareProduct>({
     title: "",
     description: "",
-    price: 0,
+    price: null,
+    show_price: true,
     image_url: "",
   });
   const [isSaving, setIsSaving] = useState(false);
@@ -62,7 +65,8 @@ export function SoftwareProductDialog({
           id: product.id,
           title: product.title || "",
           description: product.description || "",
-          price: product.price || 0,
+          price: product.price ?? null,
+          show_price: product.show_price !== false, // Default to true if not specified
           image_url: product.image_url || "",
         });
         if (product.id) {
@@ -73,7 +77,8 @@ export function SoftwareProductDialog({
         setForm({
           title: "",
           description: "",
-          price: 0,
+          price: null,
+          show_price: true,
           image_url: "",
         });
         setAdditionalImages([]);
@@ -116,6 +121,7 @@ export function SoftwareProductDialog({
             title: form.title,
             description: form.description,
             price: form.price,
+            show_price: form.show_price,
             image_url: form.image_url,
             updated_at: new Date().toISOString(),
           })
@@ -141,6 +147,7 @@ export function SoftwareProductDialog({
             title: form.title,
             description: form.description,
             price: form.price,
+            show_price: form.show_price,
             image_url: form.image_url,
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),
@@ -238,6 +245,15 @@ export function SoftwareProductDialog({
     toast.success("تم حذف الصورة من معرض الصور");
   };
 
+  const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    if (value === "" || value === null) {
+      setForm({ ...form, price: null });
+    } else {
+      setForm({ ...form, price: parseFloat(value) || 0 });
+    }
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent dir="rtl" className="max-w-2xl">
@@ -269,19 +285,32 @@ export function SoftwareProductDialog({
               rows={4}
             />
           </div>
-          <div>
-            <label className="font-medium block mb-1">السعر</label>
-            <Input
-              type="number"
-              value={form.price || ""}
-              onChange={(e) =>
-                setForm({ ...form, price: parseFloat(e.target.value) || 0 })
-              }
-              required
-              min="0"
-              step="0.01"
-              placeholder="سعر البرنامج"
-            />
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <Label htmlFor="show-price" className="font-medium">إظهار السعر</Label>
+              <div className="flex items-center space-x-2 space-x-reverse">
+                {form.show_price ? <Eye className="h-4 w-4 ml-1" /> : <EyeOff className="h-4 w-4 ml-1" />}
+                <Switch
+                  id="show-price"
+                  checked={form.show_price}
+                  onCheckedChange={(checked) => setForm({ ...form, show_price: checked })}
+                />
+              </div>
+            </div>
+            
+            {form.show_price && (
+              <div>
+                <label className="font-medium block mb-1">السعر</label>
+                <Input
+                  type="number"
+                  value={form.price ?? ""}
+                  onChange={handlePriceChange}
+                  min="0"
+                  step="0.01"
+                  placeholder="سعر البرنامج"
+                />
+              </div>
+            )}
           </div>
           <div>
             <label className="font-medium block mb-1">الصورة الرئيسية للبرنامج</label>
