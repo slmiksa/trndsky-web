@@ -232,14 +232,15 @@ export const FeaturedSoftware = ({
 }: FeaturedSoftwareProps) => {
   const [softwareItems, setSoftwareItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  
   const fetchFeaturedSoftware = async () => {
     try {
-      const {
-        data,
-        error
-      } = await supabase.from('software_products').select('*').order('id', {
-        ascending: true
-      }).limit(3);
+      const { data, error } = await supabase
+        .from('software_products')
+        .select('*')
+        .order('id', { ascending: true })
+        .limit(3);
+        
       if (error) {
         console.error('Error fetching featured software products:', error);
         return;
@@ -251,9 +252,11 @@ export const FeaturedSoftware = ({
       setLoading(false);
     }
   };
+  
   useEffect(() => {
     fetchFeaturedSoftware();
   }, []);
+  
   return <section className="section-padding bg-white">
       <div className="container mx-auto">
         <div className="text-center mb-16">
@@ -276,7 +279,17 @@ export const FeaturedSoftware = ({
           </div> : softwareItems.length === 0 ? <div className="text-center py-8">
             <p className="text-gray-500">لا توجد برمجيات متاحة حالياً</p>
           </div> : <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-9">
-            {softwareItems.map(item => <SoftwareCard key={item.id} id={item.id} title={item.title} description={item.description} image={item.image_url} price={`${item.price.toLocaleString()} ر.س`} onTrialRequest={onTrialRequest} />)}
+            {softwareItems.map(item => (
+              <SoftwareCard 
+                key={item.id} 
+                id={item.id} 
+                title={item.title} 
+                description={item.description} 
+                image={item.image_url} 
+                price={item.show_price && item.price ? `${item.price.toLocaleString()} ر.س` : ""} 
+                onTrialRequest={onTrialRequest} 
+              />
+            ))}
           </div>}
         
         <div className="mt-12 text-center">
