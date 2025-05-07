@@ -14,10 +14,13 @@ export const AppInitializer = () => {
   useEffect(() => {
     const loadSiteSettings = async () => {
       try {
+        console.log('جاري تحميل الإعدادات العامة...');
+        
         // Use maybeSingle instead of single to handle cases where no data exists
         const { data, error } = await supabase
           .from('general_settings')
           .select('*')
+          .eq('id', 1)
           .maybeSingle();
         
         if (error) {
@@ -76,6 +79,8 @@ export const AppInitializer = () => {
             
             console.log('تم تحديث الأيقونة بنجاح');
           }
+        } else {
+          console.log('لم يتم العثور على إعدادات عامة');
         }
       } catch (error) {
         console.error('Error initializing app settings:', error);

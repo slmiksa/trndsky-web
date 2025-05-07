@@ -30,10 +30,13 @@ export const GeneralSettingsManager = () => {
   const fetchSettings = async () => {
     setLoading(true);
     try {
+      console.log('جاري تحميل الإعدادات العامة...');
+      
       // Use maybeSingle to handle cases where no data exists yet
       const { data, error } = await supabase
         .from('general_settings')
         .select('*')
+        .eq('id', 1)
         .maybeSingle();
       
       if (error) {
@@ -45,6 +48,8 @@ export const GeneralSettingsManager = () => {
           site_title: data.site_title || 'TRNDSKY - خدمات برمجية احترافية',
           favicon_url: data.favicon_url || ''
         });
+      } else {
+        console.log('لم يتم العثور على إعدادات عامة، سيتم استخدام القيم الافتراضية');
       }
     } catch (error) {
       console.error('Error:', error);
@@ -57,7 +62,7 @@ export const GeneralSettingsManager = () => {
   const saveSettings = async () => {
     setSaving(true);
     try {
-      console.log('حفظ الإعدادات:', settings);
+      console.log('جاري حفظ الإعدادات:', settings);
       
       const { data, error } = await supabase
         .from('general_settings')
@@ -65,29 +70,31 @@ export const GeneralSettingsManager = () => {
           id: 1, // استخدام معرف ثابت للإعدادات العامة
           site_title: settings.site_title,
           favicon_url: settings.favicon_url,
-          updated_at: new Date().toISOString() // Convert to ISO string
+          updated_at: new Date().toISOString()
         })
         .select();
 
       if (error) {
         console.error('Error saving settings:', error);
         toast.error('فشل في حفظ الإعدادات');
-      } else {
-        toast.success('تم حفظ الإعدادات بنجاح');
-        
-        // تطبيق التغييرات على العنوان والأيقونة مباشرة
-        document.title = settings.site_title;
-        
-        // تحديث الأيقونة مع إضافة timestamp لمنع التخزين المؤقت
-        if (settings.favicon_url) {
-          updateFavicon(settings.favicon_url);
-        }
-        
-        // إعادة تحميل الصفحة بعد ثانية واحدة لتطبيق التغييرات بشكل كامل
-        setTimeout(() => {
-          window.location.reload();
-        }, 1000);
+        return;
       }
+      
+      console.log('تم حفظ الإعدادات بنجاح:', data);
+      toast.success('تم حفظ الإعدادات بنجاح');
+      
+      // تطبيق التغييرات على العنوان والأيقونة مباشرة
+      document.title = settings.site_title;
+      
+      // تحديث الأيقونة مع إضافة timestamp لمنع التخزين المؤقت
+      if (settings.favicon_url) {
+        updateFavicon(settings.favicon_url);
+      }
+      
+      // إعادة تحميل الصفحة بعد ثانية واحدة لتطبيق التغييرات بشكل كامل
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
     } catch (error) {
       console.error('Error:', error);
       toast.error('حدث خطأ أثناء حفظ الإعدادات');
