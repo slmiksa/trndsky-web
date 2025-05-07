@@ -1,6 +1,7 @@
 
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 interface GeneralSettings {
   site_title: string;
@@ -13,14 +14,11 @@ export const AppInitializer = () => {
   useEffect(() => {
     const loadSiteSettings = async () => {
       try {
-        // Explicitly cast the table name to work with TypeScript
-        const { data, error } = await (supabase
+        // Use maybeSingle instead of single to handle cases where no data exists
+        const { data, error } = await supabase
           .from('general_settings')
           .select('*')
-          .single()) as unknown as { 
-            data: GeneralSettings | null; 
-            error: any; 
-          };
+          .maybeSingle();
         
         if (error) {
           console.error('Error loading general settings:', error);
@@ -33,11 +31,15 @@ export const AppInitializer = () => {
           // تحديث عنوان الصفحة
           if (data.site_title) {
             document.title = data.site_title;
+            console.log('تم تحديث عنوان الصفحة إلى:', data.site_title);
           }
           
           // تحديث الأيقونة
           if (data.favicon_url) {
             console.log('تحديث الأيقونة إلى:', data.favicon_url);
+            
+            const timestamp = new Date().getTime(); // Add timestamp to prevent caching
+            const faviconUrl = `${data.favicon_url}?t=${timestamp}`;
             
             // تحديث favicon
             let link = document.querySelector("link[rel~='icon']") as HTMLLinkElement;
@@ -48,7 +50,7 @@ export const AppInitializer = () => {
               document.head.appendChild(link);
             }
             
-            link.href = data.favicon_url;
+            link.href = faviconUrl;
             
             // تحديث apple-touch-icon
             let touchIcon = document.querySelector("link[rel='apple-touch-icon']") as HTMLLinkElement;
@@ -59,7 +61,7 @@ export const AppInitializer = () => {
               document.head.appendChild(touchIcon);
             }
             
-            touchIcon.href = data.favicon_url;
+            touchIcon.href = faviconUrl;
             
             // إضافة رابط آخر للتأكد من تحديث الأيقونة في متصفحات مختلفة
             let shortcutIcon = document.querySelector("link[rel='shortcut icon']") as HTMLLinkElement;
@@ -70,7 +72,7 @@ export const AppInitializer = () => {
               document.head.appendChild(shortcutIcon);
             }
             
-            shortcutIcon.href = data.favicon_url;
+            shortcutIcon.href = faviconUrl;
             
             console.log('تم تحديث الأيقونة بنجاح');
           }

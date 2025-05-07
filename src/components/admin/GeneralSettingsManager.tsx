@@ -30,14 +30,11 @@ export const GeneralSettingsManager = () => {
   const fetchSettings = async () => {
     setLoading(true);
     try {
-      // Explicitly cast the table name and result to work with TypeScript
-      const { data, error } = await (supabase
+      // Use maybeSingle to handle cases where no data exists yet
+      const { data, error } = await supabase
         .from('general_settings')
         .select('*')
-        .single()) as unknown as { 
-          data: GeneralSettings | null; 
-          error: any; 
-        };
+        .maybeSingle();
       
       if (error) {
         console.error('Error fetching general settings:', error);
@@ -62,8 +59,7 @@ export const GeneralSettingsManager = () => {
     try {
       console.log('حفظ الإعدادات:', settings);
       
-      // Explicitly cast table name and data structure
-      const { data, error } = await (supabase
+      const { data, error } = await supabase
         .from('general_settings')
         .upsert({ 
           id: 1, // استخدام معرف ثابت للإعدادات العامة
@@ -71,10 +67,7 @@ export const GeneralSettingsManager = () => {
           favicon_url: settings.favicon_url,
           updated_at: new Date().toISOString() // Convert to ISO string
         })
-        .select()) as unknown as { 
-          data: any; 
-          error: any; 
-        };
+        .select();
 
       if (error) {
         console.error('Error saving settings:', error);
@@ -84,7 +77,16 @@ export const GeneralSettingsManager = () => {
         
         // تطبيق التغييرات على العنوان والأيقونة مباشرة
         document.title = settings.site_title;
-        updateFavicon(settings.favicon_url || '');
+        
+        // تحديث الأيقونة مع إضافة timestamp لمنع التخزين المؤقت
+        if (settings.favicon_url) {
+          updateFavicon(settings.favicon_url);
+        }
+        
+        // إعادة تحميل الصفحة بعد ثانية واحدة لتطبيق التغييرات بشكل كامل
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
       }
     } catch (error) {
       console.error('Error:', error);
@@ -116,6 +118,9 @@ export const GeneralSettingsManager = () => {
     
     console.log('تحديث الأيقونة إلى:', url);
     
+    const timestamp = new Date().getTime(); // Add timestamp to prevent caching
+    const faviconUrl = `${url}?t=${timestamp}`;
+    
     // تحديث favicon
     let link = document.querySelector("link[rel~='icon']") as HTMLLinkElement;
     
@@ -125,9 +130,7 @@ export const GeneralSettingsManager = () => {
       document.head.appendChild(link);
     }
     
-    // إضافة timestamp للتأكد من تحديث الصورة (منع التخزين المؤقت)
-    const urlWithTimestamp = `${url}?t=${Date.now()}`;
-    link.href = urlWithTimestamp;
+    link.href = faviconUrl;
     
     // تحديث apple-touch-icon
     let touchIcon = document.querySelector("link[rel='apple-touch-icon']") as HTMLLinkElement;
@@ -138,7 +141,7 @@ export const GeneralSettingsManager = () => {
       document.head.appendChild(touchIcon);
     }
     
-    touchIcon.href = urlWithTimestamp;
+    touchIcon.href = faviconUrl;
     
     // إضافة رابط آخر للتأكد من تحديث الأيقونة في متصفحات مختلفة
     let shortcutIcon = document.querySelector("link[rel='shortcut icon']") as HTMLLinkElement;
@@ -149,7 +152,7 @@ export const GeneralSettingsManager = () => {
       document.head.appendChild(shortcutIcon);
     }
     
-    shortcutIcon.href = urlWithTimestamp;
+    shortcutIcon.href = faviconUrl;
     
     console.log('تم تحديث الأيقونة بنجاح');
     
@@ -162,7 +165,7 @@ export const GeneralSettingsManager = () => {
     const newFavicon = document.createElement('link');
     newFavicon.id = 'favicon';
     newFavicon.rel = 'icon';
-    newFavicon.href = urlWithTimestamp;
+    newFavicon.href = faviconUrl;
     document.head.appendChild(newFavicon);
   };
 
