@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from "react";
+
+import React, { useEffect, useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { toast } from "@/components/ui/use-toast";
+import { useCallback } from "react";
 
 // شعار شركة الوصل الوطنية المرفق مباشرة ضمن المشروع
 const WISAL_PARTNER = {
@@ -9,18 +11,52 @@ const WISAL_PARTNER = {
   name: "شركة الوصل الوطنية لتحصيل ديون جهات التمويل",
   logo_url: "/lovable-uploads/aa977791-13b8-471b-92c8-d9ef4ef03f27.png"
 };
+
 type Partner = {
   id: number;
   name: string;
   logo_url: string;
 };
+
 const PartnersSection = () => {
   const [partners, setPartners] = useState<Partner[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [api, setApi] = useState<any>(null);
+  const autoplayTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const intervalTimeMs = 3000; // وقت الانتقال بين الشرائح (3 ثوان)
+
   useEffect(() => {
     fetchPartners();
   }, []);
+
+  // تعريف وظيفة الانتقال التلقائي
+  const startAutoplay = useCallback(() => {
+    if (autoplayTimerRef.current) {
+      clearTimeout(autoplayTimerRef.current);
+    }
+
+    autoplayTimerRef.current = setTimeout(() => {
+      if (api) {
+        api.scrollNext();
+        startAutoplay();
+      }
+    }, intervalTimeMs);
+  }, [api]);
+
+  // بدء التشغيل التلقائي عندما تكون API جاهزة
+  useEffect(() => {
+    if (api && partners.length > 0) {
+      startAutoplay();
+    }
+
+    return () => {
+      if (autoplayTimerRef.current) {
+        clearTimeout(autoplayTimerRef.current);
+      }
+    };
+  }, [api, partners, startAutoplay]);
+
   const fetchPartners = async () => {
     try {
       setLoading(true);
@@ -52,6 +88,19 @@ const PartnersSection = () => {
       setLoading(false);
     }
   };
+
+  // إيقاف التشغيل التلقائي عند تحريك المؤشر فوق الشريط
+  const handleMouseEnter = () => {
+    if (autoplayTimerRef.current) {
+      clearTimeout(autoplayTimerRef.current);
+    }
+  };
+
+  // إعادة تشغيل التشغيل التلقائي عندما يغادر المؤشر الشريط
+  const handleMouseLeave = () => {
+    startAutoplay();
+  };
+
   if (loading) {
     return <div className="container mx-auto px-6 py-8">
         <div className="text-center py-12">
@@ -60,6 +109,7 @@ const PartnersSection = () => {
         </div>
       </div>;
   }
+
   if (error) {
     return <div className="container mx-auto px-6 py-8">
         <div className="text-center py-12">
@@ -70,6 +120,7 @@ const PartnersSection = () => {
         </div>
       </div>;
   }
+
   return <div className="container mx-auto px-6 py-8">
       <div className="text-center mb-16">
         <span className="inline-block py-1 px-4 bg-trndsky-blue/10 text-trndsky-blue rounded-full text-sm mb-4 font-tajawal border border-trndsky-blue/20">
@@ -89,11 +140,19 @@ const PartnersSection = () => {
       <div className="relative mx-auto max-w-5xl">
         {partners.length === 0 ? <div className="text-center py-12">
             <p className="text-xl text-gray-500">لا يوجد شركاء حالياً</p>
-          </div> : <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 px-[43px] mx-[38px] my-[27px]">
-            <Carousel opts={{
-          align: "center",
-          loop: true
-        }} className="w-full">
+          </div> : <div 
+            className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 px-[43px] mx-[38px] my-[27px]"
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+          >
+            <Carousel 
+              opts={{
+                align: "center",
+                loop: true
+              }} 
+              className="w-full"
+              setApi={setApi}
+            >
               <CarouselContent className="py-4">
                 {partners.map(partner => <CarouselItem key={partner.id} className="basis-1/2 md:basis-1/3 lg:basis-1/4 p-1">
                     <div className="bg-white border border-trndsky-blue/10 shadow hover:shadow-md transition-all flex flex-col items-center justify-center h-44 p-4 mx-auto rounded-3xl py-[7px] px-[2px]">
@@ -118,4 +177,5 @@ const PartnersSection = () => {
       </div>
     </div>;
 };
+
 export default PartnersSection;
