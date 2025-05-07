@@ -12,11 +12,17 @@ export const AppInitializer = () => {
   const [initialized, setInitialized] = useState(false);
   
   useEffect(() => {
+    // تنفيذ هذا الكود مرة واحدة فقط عند تحميل الصفحة
     const loadSiteSettings = async () => {
       try {
         console.log('جاري تحميل الإعدادات العامة...');
         
-        // Use maybeSingle instead of single to handle cases where no data exists
+        // ميزة إزالة العنوان والأيقونة الافتراضيين قبل تحميل الإعدادات من قاعدة البيانات
+        // إزالة أي أيقونات موجودة مسبقاً من رأس الصفحة
+        const existingIcons = document.querySelectorAll("link[rel*='icon']");
+        existingIcons.forEach(icon => document.head.removeChild(icon));
+
+        // استخدام maybeSingle لمعالجة الحالات التي لا توجد فيها بيانات
         const { data, error } = await supabase
           .from('general_settings')
           .select('*')
@@ -41,41 +47,31 @@ export const AppInitializer = () => {
           if (data.favicon_url) {
             console.log('تحديث الأيقونة إلى:', data.favicon_url);
             
-            const timestamp = new Date().getTime(); // Add timestamp to prevent caching
+            const timestamp = new Date().getTime(); // إضافة طابع زمني لمنع التخزين المؤقت
             const faviconUrl = `${data.favicon_url}?t=${timestamp}`;
             
-            // تحديث favicon
-            let link = document.querySelector("link[rel~='icon']") as HTMLLinkElement;
+            // تأكد من إزالة جميع الأيقونات القديمة أولا
+            document.querySelectorAll("link[rel*='icon']").forEach(icon => {
+              document.head.removeChild(icon);
+            });
             
-            if (!link) {
-              link = document.createElement('link');
-              link.rel = 'icon';
-              document.head.appendChild(link);
-            }
-            
+            // إضافة أيقونة عادية
+            const link = document.createElement('link');
+            link.rel = 'icon';
             link.href = faviconUrl;
+            document.head.appendChild(link);
             
-            // تحديث apple-touch-icon
-            let touchIcon = document.querySelector("link[rel='apple-touch-icon']") as HTMLLinkElement;
-            
-            if (!touchIcon) {
-              touchIcon = document.createElement('link');
-              touchIcon.rel = 'apple-touch-icon';
-              document.head.appendChild(touchIcon);
-            }
-            
+            // إضافة أيقونة لأجهزة آبل
+            const touchIcon = document.createElement('link');
+            touchIcon.rel = 'apple-touch-icon';
             touchIcon.href = faviconUrl;
+            document.head.appendChild(touchIcon);
             
-            // إضافة رابط آخر للتأكد من تحديث الأيقونة في متصفحات مختلفة
-            let shortcutIcon = document.querySelector("link[rel='shortcut icon']") as HTMLLinkElement;
-            
-            if (!shortcutIcon) {
-              shortcutIcon = document.createElement('link');
-              shortcutIcon.rel = 'shortcut icon';
-              document.head.appendChild(shortcutIcon);
-            }
-            
+            // إضافة اختصار أيقونة للتوافق مع جميع المتصفحات
+            const shortcutIcon = document.createElement('link');
+            shortcutIcon.rel = 'shortcut icon';
             shortcutIcon.href = faviconUrl;
+            document.head.appendChild(shortcutIcon);
             
             console.log('تم تحديث الأيقونة بنجاح');
           }
@@ -90,6 +86,39 @@ export const AppInitializer = () => {
     };
     
     loadSiteSettings();
+    
+    // منع الأيقونة الافتراضية من الظهور بعد إعادة تحميل الصفحة
+    const preventDefaultFavicon = () => {
+      const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+          if (mutation.addedNodes.length) {
+            mutation.addedNodes.forEach((node) => {
+              // التحقق إذا كانت العقدة المضافة هي رابط أيقونة
+              if (node.nodeName === 'LINK' && 
+                  (node as HTMLLinkElement).rel && 
+                  (node as HTMLLinkElement).rel.includes('icon') && 
+                  !(node as HTMLLinkElement).href.includes('?t=')) {
+                // إزالة الأيقونة الافتراضية إذا تم إضافتها تلقائيًا
+                node.parentNode?.removeChild(node);
+              }
+            });
+          }
+        });
+      });
+      
+      // مراقبة التغييرات في رأس الصفحة
+      observer.observe(document.head, { 
+        childList: true,
+        subtree: true
+      });
+      
+      return observer;
+    };
+    
+    const observer = preventDefaultFavicon();
+    
+    // تنظيف المراقب عند إلغاء تحميل المكون
+    return () => observer.disconnect();
   }, []);
   
   return null; // هذا المكون لا يقوم بعرض أي عناصر واجهة

@@ -17,7 +17,7 @@ interface GeneralSettings {
 
 export const GeneralSettingsManager = () => {
   const [settings, setSettings] = useState<GeneralSettings>({
-    site_title: 'TRNDSKY - خدمات برمجية احترافية',
+    site_title: '',
     favicon_url: ''
   });
   const [loading, setLoading] = useState(true);
@@ -32,7 +32,7 @@ export const GeneralSettingsManager = () => {
     try {
       console.log('جاري تحميل الإعدادات العامة...');
       
-      // Use maybeSingle to handle cases where no data exists yet
+      // استخدام maybeSingle للتعامل مع الحالات التي لا توجد فيها بيانات بعد
       const { data, error } = await supabase
         .from('general_settings')
         .select('*')
@@ -45,11 +45,12 @@ export const GeneralSettingsManager = () => {
       } else if (data) {
         console.log('تم تحميل الإعدادات:', data);
         setSettings({
-          site_title: data.site_title || 'TRNDSKY - خدمات برمجية احترافية',
+          site_title: data.site_title || '',
           favicon_url: data.favicon_url || ''
         });
       } else {
         console.log('لم يتم العثور على إعدادات عامة، سيتم استخدام القيم الافتراضية');
+        // لا نقوم بتعيين قيم افتراضية هنا للسماح للمستخدم بإدخالها
       }
     } catch (error) {
       console.error('Error:', error);
@@ -83,13 +84,8 @@ export const GeneralSettingsManager = () => {
       console.log('تم حفظ الإعدادات بنجاح:', data);
       toast.success('تم حفظ الإعدادات بنجاح');
       
-      // تطبيق التغييرات على العنوان والأيقونة مباشرة
-      document.title = settings.site_title;
-      
-      // تحديث الأيقونة مع إضافة timestamp لمنع التخزين المؤقت
-      if (settings.favicon_url) {
-        updateFavicon(settings.favicon_url);
-      }
+      // تطبيق التغييرات فوراً
+      applySettings(settings);
       
       // إعادة تحميل الصفحة بعد ثانية واحدة لتطبيق التغييرات بشكل كامل
       setTimeout(() => {
@@ -100,6 +96,19 @@ export const GeneralSettingsManager = () => {
       toast.error('حدث خطأ أثناء حفظ الإعدادات');
     } finally {
       setSaving(false);
+    }
+  };
+
+  // دالة جديدة لتطبيق الإعدادات مباشرة
+  const applySettings = ({ site_title, favicon_url }: GeneralSettings) => {
+    // تحديث عنوان الصفحة
+    if (site_title) {
+      document.title = site_title;
+    }
+      
+    // تحديث الأيقونة
+    if (favicon_url) {
+      updateFavicon(favicon_url);
     }
   };
 
@@ -125,55 +134,33 @@ export const GeneralSettingsManager = () => {
     
     console.log('تحديث الأيقونة إلى:', url);
     
-    const timestamp = new Date().getTime(); // Add timestamp to prevent caching
+    const timestamp = new Date().getTime(); // إضافة طابع زمني لمنع التخزين المؤقت
     const faviconUrl = `${url}?t=${timestamp}`;
     
+    // إزالة جميع الأيقونات الموجودة أولاً
+    document.querySelectorAll("link[rel*='icon']").forEach(icon => {
+      document.head.removeChild(icon);
+    });
+    
     // تحديث favicon
-    let link = document.querySelector("link[rel~='icon']") as HTMLLinkElement;
-    
-    if (!link) {
-      link = document.createElement('link');
-      link.rel = 'icon';
-      document.head.appendChild(link);
-    }
-    
+    const link = document.createElement('link');
+    link.rel = 'icon';
     link.href = faviconUrl;
+    document.head.appendChild(link);
     
     // تحديث apple-touch-icon
-    let touchIcon = document.querySelector("link[rel='apple-touch-icon']") as HTMLLinkElement;
-    
-    if (!touchIcon) {
-      touchIcon = document.createElement('link');
-      touchIcon.rel = 'apple-touch-icon';
-      document.head.appendChild(touchIcon);
-    }
-    
+    const touchIcon = document.createElement('link');
+    touchIcon.rel = 'apple-touch-icon';
     touchIcon.href = faviconUrl;
+    document.head.appendChild(touchIcon);
     
     // إضافة رابط آخر للتأكد من تحديث الأيقونة في متصفحات مختلفة
-    let shortcutIcon = document.querySelector("link[rel='shortcut icon']") as HTMLLinkElement;
-    
-    if (!shortcutIcon) {
-      shortcutIcon = document.createElement('link');
-      shortcutIcon.rel = 'shortcut icon';
-      document.head.appendChild(shortcutIcon);
-    }
-    
+    const shortcutIcon = document.createElement('link');
+    shortcutIcon.rel = 'shortcut icon';
     shortcutIcon.href = faviconUrl;
+    document.head.appendChild(shortcutIcon);
     
     console.log('تم تحديث الأيقونة بنجاح');
-    
-    // لإجبار المتصفح على إعادة تحميل الأيقونة
-    const favicon = document.getElementById('favicon') as HTMLLinkElement;
-    if (favicon) {
-      document.head.removeChild(favicon);
-    }
-    
-    const newFavicon = document.createElement('link');
-    newFavicon.id = 'favicon';
-    newFavicon.rel = 'icon';
-    newFavicon.href = faviconUrl;
-    document.head.appendChild(newFavicon);
   };
 
   if (loading) {
