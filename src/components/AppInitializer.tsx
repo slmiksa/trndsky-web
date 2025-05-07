@@ -13,11 +13,14 @@ export const AppInitializer = () => {
   useEffect(() => {
     const loadSiteSettings = async () => {
       try {
-        // Use type assertion to work around TypeScript error
-        const { data, error } = await supabase
-          .from('general_settings' as any)
+        // Explicitly cast the table name to work with TypeScript
+        const { data, error } = await (supabase
+          .from('general_settings')
           .select('*')
-          .single();
+          .single()) as unknown as { 
+            data: GeneralSettings | null; 
+            error: any; 
+          };
         
         if (error) {
           console.error('Error loading general settings:', error);
@@ -25,17 +28,19 @@ export const AppInitializer = () => {
         }
         
         if (data) {
-          // Cast the data to our interface
-          const settings = data as unknown as GeneralSettings;
+          console.log('تم تحميل الإعدادات العامة:', data);
           
           // تحديث عنوان الصفحة
-          if (settings.site_title) {
-            document.title = settings.site_title;
+          if (data.site_title) {
+            document.title = data.site_title;
           }
           
           // تحديث الأيقونة
-          if (settings.favicon_url) {
-            let link: HTMLLinkElement | null = document.querySelector("link[rel~='icon']");
+          if (data.favicon_url) {
+            console.log('تحديث الأيقونة إلى:', data.favicon_url);
+            
+            // تحديث favicon
+            let link = document.querySelector("link[rel~='icon']") as HTMLLinkElement;
             
             if (!link) {
               link = document.createElement('link');
@@ -43,10 +48,10 @@ export const AppInitializer = () => {
               document.head.appendChild(link);
             }
             
-            link.href = settings.favicon_url;
+            link.href = data.favicon_url;
             
-            // إضافة علامة للموبايل أيضًا
-            let touchIcon: HTMLLinkElement | null = document.querySelector("link[rel='apple-touch-icon']");
+            // تحديث apple-touch-icon
+            let touchIcon = document.querySelector("link[rel='apple-touch-icon']") as HTMLLinkElement;
             
             if (!touchIcon) {
               touchIcon = document.createElement('link');
@@ -54,7 +59,20 @@ export const AppInitializer = () => {
               document.head.appendChild(touchIcon);
             }
             
-            touchIcon.href = settings.favicon_url;
+            touchIcon.href = data.favicon_url;
+            
+            // إضافة رابط آخر للتأكد من تحديث الأيقونة في متصفحات مختلفة
+            let shortcutIcon = document.querySelector("link[rel='shortcut icon']") as HTMLLinkElement;
+            
+            if (!shortcutIcon) {
+              shortcutIcon = document.createElement('link');
+              shortcutIcon.rel = 'shortcut icon';
+              document.head.appendChild(shortcutIcon);
+            }
+            
+            shortcutIcon.href = data.favicon_url;
+            
+            console.log('تم تحديث الأيقونة بنجاح');
           }
         }
       } catch (error) {

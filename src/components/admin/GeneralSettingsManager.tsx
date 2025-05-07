@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -31,20 +30,23 @@ export const GeneralSettingsManager = () => {
   const fetchSettings = async () => {
     setLoading(true);
     try {
-      const { data, error } = await supabase
-        .from('general_settings' as any)
+      // Explicitly cast the table name and result to work with TypeScript
+      const { data, error } = await (supabase
+        .from('general_settings')
         .select('*')
-        .single();
+        .single()) as unknown as { 
+          data: GeneralSettings | null; 
+          error: any; 
+        };
       
       if (error) {
         console.error('Error fetching general settings:', error);
         toast.error('فشل في تحميل إعدادات الموقع');
       } else if (data) {
-        // Cast the data to our interface
-        const settingsData = data as unknown as GeneralSettings;
+        console.log('تم تحميل الإعدادات:', data);
         setSettings({
-          site_title: settingsData.site_title || 'TRNDSKY - خدمات برمجية احترافية',
-          favicon_url: settingsData.favicon_url || ''
+          site_title: data.site_title || 'TRNDSKY - خدمات برمجية احترافية',
+          favicon_url: data.favicon_url || ''
         });
       }
     } catch (error) {
@@ -58,21 +60,28 @@ export const GeneralSettingsManager = () => {
   const saveSettings = async () => {
     setSaving(true);
     try {
-      const { data, error } = await supabase
-        .from('general_settings' as any)
+      console.log('حفظ الإعدادات:', settings);
+      
+      // Explicitly cast table name and data structure
+      const { data, error } = await (supabase
+        .from('general_settings')
         .upsert({ 
           id: 1, // استخدام معرف ثابت للإعدادات العامة
           site_title: settings.site_title,
           favicon_url: settings.favicon_url,
-          updated_at: new Date().toISOString() // Convert to ISO string to fix Date type error
+          updated_at: new Date().toISOString() // Convert to ISO string
         })
-        .select();
+        .select()) as unknown as { 
+          data: any; 
+          error: any; 
+        };
 
       if (error) {
         console.error('Error saving settings:', error);
         toast.error('فشل في حفظ الإعدادات');
       } else {
         toast.success('تم حفظ الإعدادات بنجاح');
+        
         // تطبيق التغييرات على العنوان والأيقونة مباشرة
         document.title = settings.site_title;
         updateFavicon(settings.favicon_url || '');
@@ -94,6 +103,7 @@ export const GeneralSettingsManager = () => {
   };
 
   const handleFaviconUpload = (url: string) => {
+    console.log('تم تحديث رابط الأيقونة:', url);
     setSettings(prev => ({
       ...prev,
       favicon_url: url
@@ -104,18 +114,56 @@ export const GeneralSettingsManager = () => {
   const updateFavicon = (url: string) => {
     if (!url) return;
     
-    // البحث عن علامة الأيقونة الحالية
-    let link: HTMLLinkElement | null = document.querySelector("link[rel~='icon']");
+    console.log('تحديث الأيقونة إلى:', url);
     
-    // إنشاء علامة جديدة إذا لم تكن موجودة
+    // تحديث favicon
+    let link = document.querySelector("link[rel~='icon']") as HTMLLinkElement;
+    
     if (!link) {
       link = document.createElement('link');
       link.rel = 'icon';
       document.head.appendChild(link);
     }
     
-    // تحديث المسار
-    link.href = url;
+    // إضافة timestamp للتأكد من تحديث الصورة (منع التخزين المؤقت)
+    const urlWithTimestamp = `${url}?t=${Date.now()}`;
+    link.href = urlWithTimestamp;
+    
+    // تحديث apple-touch-icon
+    let touchIcon = document.querySelector("link[rel='apple-touch-icon']") as HTMLLinkElement;
+    
+    if (!touchIcon) {
+      touchIcon = document.createElement('link');
+      touchIcon.rel = 'apple-touch-icon';
+      document.head.appendChild(touchIcon);
+    }
+    
+    touchIcon.href = urlWithTimestamp;
+    
+    // إضافة رابط آخر للتأكد من تحديث الأيقونة في متصفحات مختلفة
+    let shortcutIcon = document.querySelector("link[rel='shortcut icon']") as HTMLLinkElement;
+    
+    if (!shortcutIcon) {
+      shortcutIcon = document.createElement('link');
+      shortcutIcon.rel = 'shortcut icon';
+      document.head.appendChild(shortcutIcon);
+    }
+    
+    shortcutIcon.href = urlWithTimestamp;
+    
+    console.log('تم تحديث الأيقونة بنجاح');
+    
+    // لإجبار المتصفح على إعادة تحميل الأيقونة
+    const favicon = document.getElementById('favicon') as HTMLLinkElement;
+    if (favicon) {
+      document.head.removeChild(favicon);
+    }
+    
+    const newFavicon = document.createElement('link');
+    newFavicon.id = 'favicon';
+    newFavicon.rel = 'icon';
+    newFavicon.href = urlWithTimestamp;
+    document.head.appendChild(newFavicon);
   };
 
   if (loading) {
@@ -179,7 +227,7 @@ export const GeneralSettingsManager = () => {
                 <p className="text-sm text-muted-foreground mb-2 font-tajawal">معاينة الأيقونة المختارة:</p>
                 <div className="flex items-center gap-2">
                   <img 
-                    src={settings.favicon_url} 
+                    src={`${settings.favicon_url}?t=${Date.now()}`} 
                     alt="أيقونة الموقع" 
                     className="w-8 h-8 object-contain"
                     onError={(e) => {
