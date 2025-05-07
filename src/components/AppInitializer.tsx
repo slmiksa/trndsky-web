@@ -2,14 +2,20 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
+interface GeneralSettings {
+  site_title: string;
+  favicon_url: string | null;
+}
+
 export const AppInitializer = () => {
   const [initialized, setInitialized] = useState(false);
   
   useEffect(() => {
     const loadSiteSettings = async () => {
       try {
+        // Use type assertion to work around TypeScript error
         const { data, error } = await supabase
-          .from('general_settings')
+          .from('general_settings' as any)
           .select('*')
           .single();
         
@@ -19,13 +25,16 @@ export const AppInitializer = () => {
         }
         
         if (data) {
+          // Cast the data to our interface
+          const settings = data as unknown as GeneralSettings;
+          
           // تحديث عنوان الصفحة
-          if (data.site_title) {
-            document.title = data.site_title;
+          if (settings.site_title) {
+            document.title = settings.site_title;
           }
           
           // تحديث الأيقونة
-          if (data.favicon_url) {
+          if (settings.favicon_url) {
             let link: HTMLLinkElement | null = document.querySelector("link[rel~='icon']");
             
             if (!link) {
@@ -34,7 +43,7 @@ export const AppInitializer = () => {
               document.head.appendChild(link);
             }
             
-            link.href = data.favicon_url;
+            link.href = settings.favicon_url;
             
             // إضافة علامة للموبايل أيضًا
             let touchIcon: HTMLLinkElement | null = document.querySelector("link[rel='apple-touch-icon']");
@@ -45,7 +54,7 @@ export const AppInitializer = () => {
               document.head.appendChild(touchIcon);
             }
             
-            touchIcon.href = data.favicon_url;
+            touchIcon.href = settings.favicon_url;
           }
         }
       } catch (error) {

@@ -13,7 +13,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface GeneralSettings {
   site_title: string;
-  favicon_url: string;
+  favicon_url: string | null;
 }
 
 export const GeneralSettingsManager = () => {
@@ -32,7 +32,7 @@ export const GeneralSettingsManager = () => {
     setLoading(true);
     try {
       const { data, error } = await supabase
-        .from('general_settings')
+        .from('general_settings' as any)
         .select('*')
         .single();
       
@@ -40,9 +40,11 @@ export const GeneralSettingsManager = () => {
         console.error('Error fetching general settings:', error);
         toast.error('فشل في تحميل إعدادات الموقع');
       } else if (data) {
+        // Cast the data to our interface
+        const settingsData = data as unknown as GeneralSettings;
         setSettings({
-          site_title: data.site_title || 'TRNDSKY - خدمات برمجية احترافية',
-          favicon_url: data.favicon_url || ''
+          site_title: settingsData.site_title || 'TRNDSKY - خدمات برمجية احترافية',
+          favicon_url: settingsData.favicon_url || ''
         });
       }
     } catch (error) {
@@ -57,12 +59,12 @@ export const GeneralSettingsManager = () => {
     setSaving(true);
     try {
       const { data, error } = await supabase
-        .from('general_settings')
+        .from('general_settings' as any)
         .upsert({ 
           id: 1, // استخدام معرف ثابت للإعدادات العامة
           site_title: settings.site_title,
           favicon_url: settings.favicon_url,
-          updated_at: new Date()
+          updated_at: new Date().toISOString() // Convert to ISO string to fix Date type error
         })
         .select();
 
@@ -73,7 +75,7 @@ export const GeneralSettingsManager = () => {
         toast.success('تم حفظ الإعدادات بنجاح');
         // تطبيق التغييرات على العنوان والأيقونة مباشرة
         document.title = settings.site_title;
-        updateFavicon(settings.favicon_url);
+        updateFavicon(settings.favicon_url || '');
       }
     } catch (error) {
       console.error('Error:', error);
@@ -167,7 +169,7 @@ export const GeneralSettingsManager = () => {
                 <SimpleImageUpload 
                   onUpload={handleFaviconUpload} 
                   label="استخدام رابط للأيقونة" 
-                  currentUrl={settings.favicon_url}
+                  currentUrl={settings.favicon_url || ''}
                 />
               </TabsContent>
             </Tabs>
