@@ -16,6 +16,7 @@ import ProtectedAdminRoute from "@/components/ProtectedAdminRoute";
 import React from 'react';
 import FloatingContactButton from "./components/FloatingContactButton";
 import { useWhatsAppNumber } from "./hooks/useWhatsAppNumber";
+import AppInitializer from "./components/AppInitializer";
 
 // Create a client
 const queryClient = new QueryClient();
@@ -25,6 +26,7 @@ const AppContent = () => {
   
   return (
     <>
+      <AppInitializer />
       <Routes>
         <Route path="/" element={<Index />} />
         <Route path="/software" element={<Software />} />

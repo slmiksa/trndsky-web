@@ -20,8 +20,9 @@ import TicketsManager from '@/components/admin/TicketsManager';
 import TrialRequestsManager from '@/components/admin/TrialRequestsManager';
 import ProjectRequestsManager from '@/components/admin/ProjectRequestsManager';
 import SoftwareOrdersManager from '@/components/admin/SoftwareOrdersManager';
+import GeneralSettingsManager from '@/components/admin/GeneralSettingsManager';
 
-type AdminTab = 'slides' | 'software' | 'users' | 'about' | 'contact' | 'whatsapp' | 'tickets' | 'trial_requests' | 'project_requests' | 'software_orders';
+type AdminTab = 'slides' | 'software' | 'users' | 'about' | 'contact' | 'whatsapp' | 'tickets' | 'trial_requests' | 'project_requests' | 'software_orders' | 'general_settings';
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState<AdminTab>('slides');
@@ -149,6 +150,11 @@ const AdminDashboard = () => {
           <li>
             <Button variant="ghost" className="w-full justify-start font-tajawal" onClick={() => setActiveTab('software_orders')}>تذاكر برمجيات بأفكارك</Button>
           </li>
+          <li>
+            <Button variant="ghost" className="w-full justify-start font-tajawal" onClick={() => setActiveTab('general_settings')}>
+              الإعدادات العامة للموقع
+            </Button>
+          </li>
         </ul>
       </div>
       
@@ -167,6 +173,7 @@ const AdminDashboard = () => {
             {activeTab === 'trial_requests' && <TrialRequestsManager />}
             {activeTab === 'project_requests' && <ProjectRequestsManager />}
             {activeTab === 'software_orders' && <SoftwareOrdersManager />}
+            {activeTab === 'general_settings' && <GeneralSettingsManager />}
           </div>
         </div>
       </div>

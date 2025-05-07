@@ -13,7 +13,7 @@ import TrialRequestsManager from './TrialRequestsManager';
 import ProjectRequestsManager from './ProjectRequestsManager';
 import SoftwareOrdersManager from './SoftwareOrdersManager';
 
-type AdminTab = 'slides' | 'software' | 'users' | 'about' | 'contact' | 'whatsapp' | 'tickets' | 'trial_requests' | 'project_requests' | 'software_orders';
+type AdminTab = 'slides' | 'software' | 'users' | 'about' | 'contact' | 'whatsapp' | 'tickets' | 'trial_requests' | 'project_requests' | 'software_orders' | 'general_settings';
 
 interface DefaultAdminManagerProps {
   setActiveTab: React.Dispatch<React.SetStateAction<AdminTab>>;
@@ -119,6 +119,16 @@ const DefaultAdminManager = ({ setActiveTab }: DefaultAdminManagerProps) => {
         <CardContent>
           <div className="text-center text-5xl mb-2">🛒</div>
           <p className="text-center text-muted-foreground font-tajawal">إدارة طلبات شراء البرمجيات الجاهزة</p>
+        </CardContent>
+      </Card>
+
+      <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => setActiveTab('general_settings')}>
+        <CardHeader className="text-center">
+          <CardTitle className="font-tajawal">الإعدادات العامة</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-center text-5xl mb-2">⚙️</div>
+          <p className="text-center text-muted-foreground font-tajawal">تغيير عنوان الموقع وأيقونة المتصفح</p>
         </CardContent>
       </Card>
     </div>
