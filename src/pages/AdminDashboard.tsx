@@ -21,8 +21,9 @@ import TrialRequestsManager from '@/components/admin/TrialRequestsManager';
 import ProjectRequestsManager from '@/components/admin/ProjectRequestsManager';
 import SoftwareOrdersManager from '@/components/admin/SoftwareOrdersManager';
 import GeneralSettingsManager from '@/components/admin/GeneralSettingsManager';
+import PartnersManager from '@/components/admin/PartnersManager';
 
-type AdminTab = 'slides' | 'software' | 'users' | 'about' | 'contact' | 'whatsapp' | 'tickets' | 'trial_requests' | 'project_requests' | 'software_orders' | 'general_settings';
+type AdminTab = 'slides' | 'software' | 'users' | 'about' | 'contact' | 'whatsapp' | 'tickets' | 'trial_requests' | 'project_requests' | 'software_orders' | 'general_settings' | 'partners';
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState<AdminTab>('slides');
@@ -151,6 +152,11 @@ const AdminDashboard = () => {
             <Button variant="ghost" className="w-full justify-start font-tajawal" onClick={() => setActiveTab('software_orders')}>تذاكر برمجيات بأفكارك</Button>
           </li>
           <li>
+            <Button variant="ghost" className="w-full justify-start font-tajawal" onClick={() => setActiveTab('partners')}>
+              شركاء النجاح
+            </Button>
+          </li>
+          <li>
             <Button variant="ghost" className="w-full justify-start font-tajawal" onClick={() => setActiveTab('general_settings')}>
               الإعدادات العامة للموقع
             </Button>
@@ -174,6 +180,7 @@ const AdminDashboard = () => {
             {activeTab === 'project_requests' && <ProjectRequestsManager />}
             {activeTab === 'software_orders' && <SoftwareOrdersManager />}
             {activeTab === 'general_settings' && <GeneralSettingsManager />}
+            {activeTab === 'partners' && <PartnersManager />}
           </div>
         </div>
       </div>
