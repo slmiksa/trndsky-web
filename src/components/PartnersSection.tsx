@@ -107,12 +107,6 @@ const PartnersSection = () => {
     startAutoplay();
   };
 
-  // تحديد عدد البطاقات حسب حجم الشاشة
-  const getItemsPerSlide = () => {
-    if (isMobile === undefined) return 1; // عندما لا يكون التحميل مكتمل بعد
-    return isMobile ? 1 : 4; // 1 على الجوال، 4 على الشاشات الأكبر
-  };
-
   if (loading) {
     return <div className="container mx-auto px-6 py-8">
         <div className="text-center py-12">
@@ -163,7 +157,7 @@ const PartnersSection = () => {
           >
             <Carousel 
               opts={{
-                align: "center",
+                align: "start",
                 loop: true,
               }} 
               className="w-full"
@@ -171,7 +165,7 @@ const PartnersSection = () => {
             >
               <CarouselContent className="py-4">
                 {partners.map(partner => (
-                  <CarouselItem key={partner.id} className={isMobile ? "basis-full" : "basis-1/2 md:basis-1/3 lg:basis-1/4"}>
+                  <CarouselItem key={partner.id} className="basis-full">
                     <div className="bg-white border border-trndsky-blue/10 shadow hover:shadow-md transition-all flex flex-col items-center justify-center h-44 p-4 mx-1 rounded-3xl animate-slide-in-right">
                       <div className="bg-gray-50 w-full h-24 flex items-center justify-center rounded-xl p-2 mb-3">
                         <img 
