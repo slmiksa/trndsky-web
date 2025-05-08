@@ -1,3 +1,4 @@
+
 import { Link } from 'react-router-dom';
 const Footer = () => {
   return <footer className="bg-gray-900 text-white overflow-hidden">
@@ -41,9 +42,13 @@ const Footer = () => {
           {/* Copyright */}
           <div className="pt-8 border-t border-gray-800">
             <div className="text-center">
-              <p className="text-gray-500 font-tajawal">
+              <p className="text-gray-500 font-tajawal mb-2">
                 © {new Date().getFullYear()} TRNDSKY. جميع الحقوق محفوظة
               </p>
+              <div className="text-gray-600 font-tajawal text-sm space-y-1">
+                <p>شهادة العمل الحر: FL-083548418</p>
+                <p>رقم توثيق منصة الأعمال: 0000032128</p>
+              </div>
             </div>
           </div>
         </div>
