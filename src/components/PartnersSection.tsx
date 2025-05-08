@@ -80,6 +80,10 @@ const PartnersSection = () => {
       // إضافة شركة الوصل دائمًا أول القائمة إن لم تكن موجودة
       const partnerList = data || [];
       const exist = partnerList.some(p => p.name === WISAL_PARTNER.name || p.logo_url === WISAL_PARTNER.logo_url);
+      
+      // تحقق من البيانات المستلمة قبل التعيين
+      console.log("Fetched partners:", partnerList);
+      
       setPartners(exist ? partnerList : [WISAL_PARTNER, ...(partnerList as Partner[])]);
     } catch (err) {
       setError("حدث خطأ غير متوقع");
@@ -121,6 +125,9 @@ const PartnersSection = () => {
       </div>;
   }
 
+  // طباعة عدد الشركاء وأسماءهم للتأكد من استلام البيانات بشكل صحيح
+  console.log(`تم تحميل ${partners.length} شركاء:`, partners.map(p => p.name));
+
   return <div className="container mx-auto px-6 py-8">
       <div className="text-center mb-16">
         <span className="inline-block py-1 px-4 bg-trndsky-blue/10 text-trndsky-blue rounded-full text-sm mb-4 font-tajawal border border-trndsky-blue/20">
@@ -141,36 +148,44 @@ const PartnersSection = () => {
         {partners.length === 0 ? <div className="text-center py-12">
             <p className="text-xl text-gray-500">لا يوجد شركاء حالياً</p>
           </div> : <div 
-            className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 px-[43px] mx-[38px] my-[27px]"
+            className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 overflow-hidden"
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
           >
             <Carousel 
               opts={{
                 align: "center",
-                loop: true
+                loop: true,
               }} 
               className="w-full"
               setApi={setApi}
             >
               <CarouselContent className="py-4">
-                {partners.map(partner => <CarouselItem key={partner.id} className="basis-1/2 md:basis-1/3 lg:basis-1/4 p-1">
-                    <div className="bg-white border border-trndsky-blue/10 shadow hover:shadow-md transition-all flex flex-col items-center justify-center h-44 p-4 mx-auto rounded-3xl py-[7px] px-[2px]">
+                {partners.map(partner => (
+                  <CarouselItem key={partner.id} className="basis-1/2 md:basis-1/3 lg:basis-1/4">
+                    <div className="bg-white border border-trndsky-blue/10 shadow hover:shadow-md transition-all flex flex-col items-center justify-center h-44 p-4 mx-1 rounded-3xl animate-slide-in-right">
                       <div className="bg-gray-50 w-full h-24 flex items-center justify-center rounded-xl p-2 mb-3">
-                        <img src={partner.logo_url} alt={partner.name} className="object-contain max-h-20 max-w-[80%]" onError={e => {
-                    e.currentTarget.src = "/placeholder.svg";
-                    e.currentTarget.alt = "صورة غير متوفرة";
-                  }} />
+                        <img 
+                          src={partner.logo_url} 
+                          alt={partner.name} 
+                          className="object-contain max-h-20 max-w-[80%]" 
+                          onError={(e) => {
+                            e.currentTarget.src = "/placeholder.svg";
+                            e.currentTarget.alt = "صورة غير متوفرة";
+                            console.log(`تعذر تحميل الصورة: ${partner.logo_url}`);
+                          }}
+                        />
                       </div>
                       <div className="text-trndsky-darkblue font-bold text-sm text-center mt-2 line-clamp-2">
                         {partner.name}
                       </div>
                     </div>
-                  </CarouselItem>)}
+                  </CarouselItem>
+                ))}
               </CarouselContent>
               <div className="flex justify-center gap-2 mt-6">
-                <CarouselPrevious className="position-static mx-1 opacity-80 hover:opacity-100" />
-                <CarouselNext className="position-static mx-1 opacity-80 hover:opacity-100" />
+                <CarouselPrevious className="relative static mx-1 opacity-80 hover:opacity-100" />
+                <CarouselNext className="relative static mx-1 opacity-80 hover:opacity-100" />
               </div>
             </Carousel>
           </div>}

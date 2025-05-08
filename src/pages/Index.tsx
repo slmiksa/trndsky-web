@@ -55,7 +55,9 @@ const Index = () => {
         </section>
         
         {/* Partners Section */}
-        <PartnersSection />
+        <section className="py-16 bg-gray-50">
+          <PartnersSection />
+        </section>
         
         {/* نموذج طلب التجربة */}
         <TrialRequestForm 
