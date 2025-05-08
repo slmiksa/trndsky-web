@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { ArrowRight, ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -30,43 +30,53 @@ const defaultSlides = [
 
 const HeroSlider = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [slides, setSlides] = useState<Slide[]>([]); 
+  const [slides, setSlides] = useState<Slide[]>(defaultSlides); // استخدام السلايدات الافتراضية مباشرة
   const [loading, setLoading] = useState(true);
+  const [retryCount, setRetryCount] = useState(0);
+  const maxRetries = 2;
 
-  // جلب السلايدات من قاعدة البيانات
-  useEffect(() => {
-    const fetchSlides = async () => {
-      try {
-        setLoading(true);
-        const { data, error } = await supabase
-          .from('slides')
-          .select('*')
-          .order('id', { ascending: true });
+  // جلب السلايدات من قاعدة البيانات مع محاولات إعادة الاتصال
+  const fetchSlides = useCallback(async () => {
+    try {
+      setLoading(true);
+      
+      const { data, error } = await supabase
+        .from('slides')
+        .select('*')
+        .order('id', { ascending: true });
 
-        if (error) {
-          console.error('Error fetching slides:', error);
-          toast({ 
-            title: "خطأ في تحميل السلايدات", 
-            description: "سيتم عرض السلايدات الافتراضية", 
-            variant: "destructive" 
-          });
-          setSlides(defaultSlides);
-        } else if (data && data.length > 0) {
-          setSlides(data);
-        } else {
-          console.log('No slides found, using defaults');
-          setSlides(defaultSlides);
+      if (error) {
+        console.error('Error fetching slides:', error);
+        
+        if (retryCount < maxRetries) {
+          // محاولة إعادة الاتصال بعد فترة
+          setTimeout(() => {
+            setRetryCount(prev => prev + 1);
+            fetchSlides();
+          }, 1000 * (retryCount + 1)); // زيادة وقت الانتظار مع كل محاولة
+          
+          return;
         }
-      } catch (error) {
-        console.error('Unexpected error:', error);
-        setSlides(defaultSlides);
-      } finally {
-        setLoading(false);
+        
+        toast({ 
+          title: "استخدام السلايدات الافتراضية", 
+          description: "سيتم عرض السلايدات الافتراضية بسبب مشكلة في الاتصال", 
+          variant: "default" 
+        });
+      } else if (data && data.length > 0) {
+        setSlides(data);
       }
-    };
+    } catch (error) {
+      console.error('Unexpected error:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, [retryCount]);
 
+  // استدعاء وظيفة جلب السلايدات عند تحميل المكون
+  useEffect(() => {
     fetchSlides();
-  }, []);
+  }, [fetchSlides]);
 
   // تغيير السلايد تلقائياً كل 5 ثوانٍ
   useEffect(() => {
@@ -91,16 +101,36 @@ const HeroSlider = () => {
     setCurrentSlide((prev) => (prev === 0 ? slides.length - 1 : prev - 1));
   };
 
-  if (loading) {
+  const handleRetry = () => {
+    setRetryCount(0);
+    fetchSlides();
+  };
+
+  if (loading && retryCount === 0) {
     return (
       <div className="relative pt-16 flex items-center justify-center overflow-hidden bg-black border-b-4 border-trndsky-teal h-[50vh]">
-        <div className="text-white text-xl">جاري تحميل السلايدات...</div>
+        <div className="text-white text-xl flex flex-col items-center">
+          <div className="w-8 h-8 border-4 border-trndsky-teal border-t-transparent rounded-full animate-spin mb-4"></div>
+          جاري تحميل السلايدات...
+        </div>
       </div>
     );
   }
 
   if (slides.length === 0) {
-    return null;
+    return (
+      <div className="relative pt-16 flex items-center justify-center overflow-hidden bg-black border-b-4 border-trndsky-teal h-[50vh]">
+        <div className="text-white text-xl flex flex-col items-center">
+          <p className="mb-4">لا توجد سلايدات متاحة</p>
+          <button 
+            onClick={handleRetry}
+            className="px-6 py-2 bg-trndsky-teal text-white rounded-full hover:bg-trndsky-darkblue transition-colors"
+          >
+            إعادة المحاولة
+          </button>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -125,6 +155,10 @@ const HeroSlider = () => {
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
                 zIndex: -1
+              }}
+              onError={(e) => {
+                (e.currentTarget as HTMLElement).style.backgroundImage = 
+                  'url(https://images.unsplash.com/photo-1531297484001-80022131f5a1?ixlib=rb-4.0.3)';
               }}
             ></div>
           </div>
