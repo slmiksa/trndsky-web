@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
@@ -58,6 +59,9 @@ const navLinks = [{
 }, {
   path: "/software",
   label: "البرمجيات الجاهزة"
+}, {
+  path: "/partners",
+  label: "شركاء النجاح"
 }, {
   path: "/about",
   label: "من نحن"
