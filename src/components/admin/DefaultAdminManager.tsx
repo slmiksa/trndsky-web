@@ -1,17 +1,7 @@
 
 import React from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import SlideManager from './SlideManager';
-import SoftwareManager from './SoftwareManager';
-import { AdminUsersManager } from './AdminUsersManager';
-import { ContactManager } from './ContactManager';
-import { AboutContentManager } from './AboutContentManager';
-import WhatsAppSettingsManager from './WhatsAppSettingsManager';
-import TicketsManager from './TicketsManager';
-import TrialRequestsManager from './TrialRequestsManager';
-import ProjectRequestsManager from './ProjectRequestsManager';
-import SoftwareOrdersManager from './SoftwareOrdersManager';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { useIsMobile } from '@/hooks/use-mobile';
 
 type AdminTab = 'slides' | 'software' | 'users' | 'about' | 'contact' | 'whatsapp' | 'tickets' | 'trial_requests' | 'project_requests' | 'software_orders' | 'general_settings' | 'partners';
 
@@ -20,127 +10,100 @@ interface DefaultAdminManagerProps {
 }
 
 const DefaultAdminManager = ({ setActiveTab }: DefaultAdminManagerProps) => {
+  const isMobile = useIsMobile();
+  
+  const adminCards = [
+    {
+      tab: 'slides',
+      title: 'إدارة العرض الرئيسي',
+      icon: '🖼️',
+      description: 'إدارة شرائح العرض في الصفحة الرئيسية'
+    },
+    {
+      tab: 'software',
+      title: 'إدارة البرمجيات',
+      icon: '💻',
+      description: 'إضافة وتعديل البرمجيات الجاهزة'
+    },
+    {
+      tab: 'users',
+      title: 'إدارة المستخدمين',
+      icon: '👥',
+      description: 'إدارة مستخدمي لوحة التحكم'
+    },
+    {
+      tab: 'about',
+      title: 'إدارة من نحن',
+      icon: 'ℹ️',
+      description: 'تعديل محتوى صفحة من نحن'
+    },
+    {
+      tab: 'contact',
+      title: 'معلومات الاتصال',
+      icon: '📞',
+      description: 'تعديل معلومات الاتصال وساعات العمل'
+    },
+    {
+      tab: 'whatsapp',
+      title: 'إعدادات واتساب',
+      icon: '💬',
+      description: 'إعدادات أيقونة الاستفسارات والواتساب'
+    },
+    {
+      tab: 'tickets',
+      title: 'تذاكر الدعم الفني',
+      icon: '🎫',
+      description: 'إدارة تذاكر الدعم من العملاء'
+    },
+    {
+      tab: 'trial_requests',
+      title: 'طلبات تجربة البرمجيات',
+      icon: '🧪',
+      description: 'إدارة طلبات تجربة البرمجيات الجاهزة'
+    },
+    {
+      tab: 'project_requests',
+      title: 'طلبات البرمجة الخاصة',
+      icon: '📋',
+      description: 'إدارة طلبات المشاريع البرمجية الخاصة'
+    },
+    {
+      tab: 'software_orders',
+      title: 'طلبات شراء البرمجيات',
+      icon: '🛒',
+      description: 'إدارة طلبات شراء البرمجيات الجاهزة'
+    },
+    {
+      tab: 'partners',
+      title: 'شركاء النجاح',
+      icon: '🤝',
+      description: 'إدارة شركاء النجاح الذين يظهرون في الصفحة الرئيسية'
+    },
+    {
+      tab: 'general_settings',
+      title: 'الإعدادات العامة',
+      icon: '⚙️',
+      description: 'تغيير عنوان الموقع وأيقونة المتصفح'
+    }
+  ];
+
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-      <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => setActiveTab('slides')}>
-        <CardHeader className="text-center">
-          <CardTitle className="font-tajawal">إدارة العرض الرئيسي</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-center text-5xl mb-2">🖼️</div>
-          <p className="text-center text-muted-foreground font-tajawal">إدارة شرائح العرض في الصفحة الرئيسية</p>
-        </CardContent>
-      </Card>
-
-      <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => setActiveTab('software')}>
-        <CardHeader className="text-center">
-          <CardTitle className="font-tajawal">إدارة البرمجيات</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-center text-5xl mb-2">💻</div>
-          <p className="text-center text-muted-foreground font-tajawal">إضافة وتعديل البرمجيات الجاهزة</p>
-        </CardContent>
-      </Card>
-
-      <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => setActiveTab('users')}>
-        <CardHeader className="text-center">
-          <CardTitle className="font-tajawal">إدارة المستخدمين</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-center text-5xl mb-2">👥</div>
-          <p className="text-center text-muted-foreground font-tajawal">إدارة مستخدمي لوحة التحكم</p>
-        </CardContent>
-      </Card>
-
-      <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => setActiveTab('about')}>
-        <CardHeader className="text-center">
-          <CardTitle className="font-tajawal">إدارة من نحن</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-center text-5xl mb-2">ℹ️</div>
-          <p className="text-center text-muted-foreground font-tajawal">تعديل محتوى صفحة من نحن</p>
-        </CardContent>
-      </Card>
-
-      <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => setActiveTab('contact')}>
-        <CardHeader className="text-center">
-          <CardTitle className="font-tajawal">معلومات الاتصال</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-center text-5xl mb-2">📞</div>
-          <p className="text-center text-muted-foreground font-tajawal">تعديل معلومات الاتصال وساعات العمل</p>
-        </CardContent>
-      </Card>
-
-      <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => setActiveTab('whatsapp')}>
-        <CardHeader className="text-center">
-          <CardTitle className="font-tajawal">إعدادات واتساب</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-center text-5xl mb-2">💬</div>
-          <p className="text-center text-muted-foreground font-tajawal">إعدادات أيقونة الاستفسارات والواتساب</p>
-        </CardContent>
-      </Card>
-
-      <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => setActiveTab('tickets')}>
-        <CardHeader className="text-center">
-          <CardTitle className="font-tajawal">تذاكر الدعم الفني</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-center text-5xl mb-2">🎫</div>
-          <p className="text-center text-muted-foreground font-tajawal">إدارة تذاكر الدعم من العملاء</p>
-        </CardContent>
-      </Card>
-
-      <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => setActiveTab('trial_requests')}>
-        <CardHeader className="text-center">
-          <CardTitle className="font-tajawal">طلبات تجربة البرمجيات</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-center text-5xl mb-2">🧪</div>
-          <p className="text-center text-muted-foreground font-tajawal">إدارة طلبات تجربة البرمجيات الجاهزة</p>
-        </CardContent>
-      </Card>
-
-      <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => setActiveTab('project_requests')}>
-        <CardHeader className="text-center">
-          <CardTitle className="font-tajawal">طلبات البرمجة الخاصة</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-center text-5xl mb-2">📋</div>
-          <p className="text-center text-muted-foreground font-tajawal">إدارة طلبات المشاريع البرمجية الخاصة</p>
-        </CardContent>
-      </Card>
-
-      <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => setActiveTab('software_orders')}>
-        <CardHeader className="text-center">
-          <CardTitle className="font-tajawal">طلبات شراء البرمجيات</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-center text-5xl mb-2">🛒</div>
-          <p className="text-center text-muted-foreground font-tajawal">إدارة طلبات شراء البرمجيات الجاهزة</p>
-        </CardContent>
-      </Card>
-
-      <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => setActiveTab('partners')}>
-        <CardHeader className="text-center">
-          <CardTitle className="font-tajawal">شركاء النجاح</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-center text-5xl mb-2">🤝</div>
-          <p className="text-center text-muted-foreground font-tajawal">إدارة شركاء النجاح الذين يظهرون في الصفحة الرئيسية</p>
-        </CardContent>
-      </Card>
-
-      <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => setActiveTab('general_settings')}>
-        <CardHeader className="text-center">
-          <CardTitle className="font-tajawal">الإعدادات العامة</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-center text-5xl mb-2">⚙️</div>
-          <p className="text-center text-muted-foreground font-tajawal">تغيير عنوان الموقع وأيقونة المتصفح</p>
-        </CardContent>
-      </Card>
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 sm:grid-cols-1">
+      {adminCards.map((card) => (
+        <Card 
+          key={card.tab}
+          className="hover:shadow-md transition-shadow cursor-pointer" 
+          onClick={() => setActiveTab(card.tab as AdminTab)}
+        >
+          <CardHeader className="text-center">
+            <CardTitle className="font-tajawal">{card.title}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-center text-4xl md:text-5xl mb-2">{card.icon}</div>
+            <p className="text-center text-muted-foreground font-tajawal">{card.description}</p>
+          </CardContent>
+        </Card>
+      ))}
     </div>
   );
 };

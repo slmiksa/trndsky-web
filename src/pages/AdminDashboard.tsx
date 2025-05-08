@@ -3,12 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Loader2 } from 'lucide-react';
-import Navbar from '@/components/Navbar';
+import { Loader2, Menu, X } from 'lucide-react';
 import DefaultAdminManager from '@/components/admin/DefaultAdminManager';
 import SlideManager from '@/components/admin/SlideManager';
 import SoftwareManager from '@/components/admin/SoftwareManager';
@@ -22,30 +17,51 @@ import ProjectRequestsManager from '@/components/admin/ProjectRequestsManager';
 import SoftwareOrdersManager from '@/components/admin/SoftwareOrdersManager';
 import GeneralSettingsManager from '@/components/admin/GeneralSettingsManager';
 import PartnersManager from '@/components/admin/PartnersManager';
+import { useIsMobile } from '@/hooks/use-mobile';
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarProvider,
+  SidebarTrigger,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuItem,
+  SidebarMenuButton,
+} from "@/components/ui/sidebar";
 
 type AdminTab = 'slides' | 'software' | 'users' | 'about' | 'contact' | 'whatsapp' | 'tickets' | 'trial_requests' | 'project_requests' | 'software_orders' | 'general_settings' | 'partners';
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState<AdminTab>('slides');
   const [adminUsers, setAdminUsers] = useState([]);
-  const [newAdmin, setNewAdmin] = useState({
-    email: '',
-    password: '',
-    role: 'admin'
-  });
   const [loading, setLoading] = useState(true);
+  const isMobile = useIsMobile();
+  const [sidebarOpen, setSidebarOpen] = useState(!isMobile);
+  
+  const menuItems = [
+    { id: 'slides', label: 'إدارة العرض الرئيسي' },
+    { id: 'software', label: 'إدارة البرمجيات' },
+    { id: 'users', label: 'إدارة المستخدمين' },
+    { id: 'about', label: 'إدارة من نحن' },
+    { id: 'contact', label: 'معلومات الاتصال' },
+    { id: 'whatsapp', label: 'إعدادات واتساب' },
+    { id: 'tickets', label: 'تذاكر الدعم الفني' },
+    { id: 'trial_requests', label: 'تذاكر التجربة للبرمجيات' },
+    { id: 'project_requests', label: 'تذاكر البرمجيات الجاهزة' },
+    { id: 'software_orders', label: 'تذاكر برمجيات بأفكارك' },
+    { id: 'partners', label: 'شركاء النجاح' },
+    { id: 'general_settings', label: 'الإعدادات العامة للموقع' }
+  ];
 
   useEffect(() => {
     fetchAdminUsers();
-  }, []);
+    setSidebarOpen(!isMobile);
+  }, [isMobile]);
 
   const fetchAdminUsers = async () => {
     setLoading(true);
     try {
-      const {
-        data,
-        error
-      } = await supabase.from('admin_users').select('*');
+      const { data, error } = await supabase.from('admin_users').select('*');
       if (error) {
         console.error('Error fetching admin users:', error);
         toast.error('Failed to load admin users');
@@ -60,131 +76,80 @@ const AdminDashboard = () => {
     }
   };
 
-  const createAdminUser = async () => {
-    try {
-      const {
-        data: user,
-        error: userError
-      } = await supabase.auth.signUp({
-        email: newAdmin.email,
-        password: newAdmin.password
-      });
-      if (userError) {
-        console.error('Error creating user:', userError);
-        toast.error('Failed to create user');
-        return;
-      }
+  const toggleSidebar = () => {
+    setSidebarOpen(!sidebarOpen);
+  };
 
-      // Fix: Changed the format to match the expected schema
-      const {
-        data,
-        error
-      } = await supabase.from('admin_users').insert([{
-        user_id: user.user!.id,
-        username: newAdmin.email,
-        // Using email as username
-        role: 'admin' as const // Cast as const to ensure it matches the expected enum type
-      }]);
-      if (error) {
-        console.error('Error creating admin user:', error);
-        toast.error('Failed to create admin user');
-        return;
-      }
-      setNewAdmin({
-        email: '',
-        password: '',
-        role: 'admin'
-      });
-      fetchAdminUsers();
-      toast.success('Admin user created successfully');
-    } catch (error) {
-      console.error('Error:', error);
-      toast.error('Failed to create admin user');
+  const renderActiveContent = () => {
+    switch (activeTab) {
+      case 'slides': return <SlideManager />;
+      case 'software': return <SoftwareManager />;
+      case 'users': return <AdminUsersManager />;
+      case 'about': return <AboutContentManager />;
+      case 'contact': return <ContactManager />;
+      case 'whatsapp': return <WhatsAppSettingsManager />;
+      case 'tickets': return <TicketsManager />;
+      case 'trial_requests': return <TrialRequestsManager />;
+      case 'project_requests': return <ProjectRequestsManager />;
+      case 'software_orders': return <SoftwareOrdersManager />;
+      case 'general_settings': return <GeneralSettingsManager />;
+      case 'partners': return <PartnersManager />;
+      default: return <DefaultAdminManager setActiveTab={setActiveTab} />;
     }
   };
 
-  return <div className="min-h-screen bg-gray-50 flex">
-      <div className="w-64 bg-gray-100 p-4">
-        <h2 className="text-2xl font-bold mb-4 text-center font-tajawal">لوحة التحكم</h2>
-        <ul className="space-y-2 font-tajawal">
-          <li>
-            <Button variant="ghost" className="w-full justify-start font-tajawal" onClick={() => setActiveTab('slides')}>
-              إدارة العرض الرئيسي
+  return (
+    <SidebarProvider defaultOpen={!isMobile}>
+      <div className="min-h-screen bg-gray-50 flex flex-col">
+        {isMobile && (
+          <div className="bg-gray-100 p-4 flex justify-between items-center border-b">
+            <Button variant="outline" size="icon" onClick={toggleSidebar}>
+              <Menu size={18} />
             </Button>
-          </li>
-          <li>
-            <Button variant="ghost" className="w-full justify-start font-tajawal" onClick={() => setActiveTab('software')}>
-              إدارة البرمجيات
-            </Button>
-          </li>
-          <li>
-            <Button variant="ghost" className="w-full justify-start font-tajawal" onClick={() => setActiveTab('users')}>
-              إدارة المستخدمين
-            </Button>
-          </li>
-          <li>
-            <Button variant="ghost" className="w-full justify-start font-tajawal" onClick={() => setActiveTab('about')}>
-              إدارة من نحن
-            </Button>
-          </li>
-          <li>
-            <Button variant="ghost" className="w-full justify-start font-tajawal" onClick={() => setActiveTab('contact')}>
-              معلومات الاتصال
-            </Button>
-          </li>
-          <li>
-            <Button variant="ghost" className="w-full justify-start font-tajawal" onClick={() => setActiveTab('whatsapp')}>
-              إعدادات واتساب
-            </Button>
-          </li>
-          <li>
-            <Button variant="ghost" className="w-full justify-start font-tajawal" onClick={() => setActiveTab('tickets')}>
-              تذاكر الدعم الفني
-            </Button>
-          </li>
-          <li>
-            <Button variant="ghost" className="w-full justify-start font-tajawal" onClick={() => setActiveTab('trial_requests')}>تذاكر التجربة للبرمجيات</Button>
-          </li>
-          <li>
-            <Button variant="ghost" className="w-full justify-start font-tajawal" onClick={() => setActiveTab('project_requests')}>تذاكر البرمجيات الجاهزة</Button>
-          </li>
-          <li>
-            <Button variant="ghost" className="w-full justify-start font-tajawal" onClick={() => setActiveTab('software_orders')}>تذاكر برمجيات بأفكارك</Button>
-          </li>
-          <li>
-            <Button variant="ghost" className="w-full justify-start font-tajawal" onClick={() => setActiveTab('partners')}>
-              شركاء النجاح
-            </Button>
-          </li>
-          <li>
-            <Button variant="ghost" className="w-full justify-start font-tajawal" onClick={() => setActiveTab('general_settings')}>
-              الإعدادات العامة للموقع
-            </Button>
-          </li>
-        </ul>
-      </div>
-      
-      <div className="flex-1 p-4 overflow-y-auto">
-        <div className="container max-w-7xl mx-auto">
-          <div className="py-8">
-            <h1 className="text-3xl font-bold mb-4 text-right font-tajawal">لوحة التحكم</h1>
-            
-            {activeTab === 'slides' && <SlideManager />}
-            {activeTab === 'software' && <SoftwareManager />}
-            {activeTab === 'users' && <AdminUsersManager />}
-            {activeTab === 'about' && <AboutContentManager />}
-            {activeTab === 'contact' && <ContactManager />}
-            {activeTab === 'whatsapp' && <WhatsAppSettingsManager />}
-            {activeTab === 'tickets' && <TicketsManager />}
-            {activeTab === 'trial_requests' && <TrialRequestsManager />}
-            {activeTab === 'project_requests' && <ProjectRequestsManager />}
-            {activeTab === 'software_orders' && <SoftwareOrdersManager />}
-            {activeTab === 'general_settings' && <GeneralSettingsManager />}
-            {activeTab === 'partners' && <PartnersManager />}
+            <h1 className="text-xl font-bold text-center font-tajawal">لوحة التحكم</h1>
+            <div className="w-8"></div> {/* Spacer to center the heading */}
+          </div>
+        )}
+        
+        <div className="flex flex-1">
+          <Sidebar className="bg-gray-100 font-tajawal" collapsible={isMobile ? "offcanvas" : "none"}>
+            <SidebarHeader className="p-4 text-center">
+              <h2 className="text-2xl font-bold font-tajawal">لوحة التحكم</h2>
+            </SidebarHeader>
+            <SidebarContent>
+              <SidebarMenu>
+                {menuItems.map((item) => (
+                  <SidebarMenuItem key={item.id}>
+                    <SidebarMenuButton
+                      className="justify-end text-right font-tajawal"
+                      isActive={activeTab === item.id}
+                      onClick={() => {
+                        setActiveTab(item.id as AdminTab);
+                        if (isMobile) {
+                          setSidebarOpen(false);
+                        }
+                      }}
+                    >
+                      {item.label}
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarContent>
+          </Sidebar>
+          
+          <div className="flex-1 p-4 overflow-y-auto">
+            <div className="container max-w-7xl mx-auto">
+              <div className="py-4 md:py-8">
+                {!isMobile && <h1 className="text-3xl font-bold mb-6 text-right font-tajawal">لوحة التحكم</h1>}
+                {renderActiveContent()}
+              </div>
+            </div>
           </div>
         </div>
       </div>
-    </div>;
+    </SidebarProvider>
+  );
 };
 
 export default AdminDashboard;
