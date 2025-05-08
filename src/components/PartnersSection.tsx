@@ -1,9 +1,7 @@
 
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { toast } from "@/components/ui/use-toast";
-import { useCallback } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 // شعار شركة الوصل الوطنية المرفق مباشرة ضمن المشروع
@@ -23,41 +21,11 @@ const PartnersSection = () => {
   const [partners, setPartners] = useState<Partner[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [api, setApi] = useState<any>(null);
-  const autoplayTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const intervalTimeMs = 3000; // وقت الانتقال بين الشرائح (3 ثوان)
   const isMobile = useIsMobile();
 
   useEffect(() => {
     fetchPartners();
   }, []);
-
-  // تعريف وظيفة الانتقال التلقائي
-  const startAutoplay = useCallback(() => {
-    if (autoplayTimerRef.current) {
-      clearTimeout(autoplayTimerRef.current);
-    }
-
-    autoplayTimerRef.current = setTimeout(() => {
-      if (api) {
-        api.scrollNext();
-        startAutoplay();
-      }
-    }, intervalTimeMs);
-  }, [api]);
-
-  // بدء التشغيل التلقائي عندما تكون API جاهزة
-  useEffect(() => {
-    if (api && partners.length > 0) {
-      startAutoplay();
-    }
-
-    return () => {
-      if (autoplayTimerRef.current) {
-        clearTimeout(autoplayTimerRef.current);
-      }
-    };
-  }, [api, partners, startAutoplay]);
 
   const fetchPartners = async () => {
     try {
@@ -93,18 +61,6 @@ const PartnersSection = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  // إيقاف التشغيل التلقائي عند تحريك المؤشر فوق الشريط
-  const handleMouseEnter = () => {
-    if (autoplayTimerRef.current) {
-      clearTimeout(autoplayTimerRef.current);
-    }
-  };
-
-  // إعادة تشغيل التشغيل التلقائي عندما يغادر المؤشر الشريط
-  const handleMouseLeave = () => {
-    startAutoplay();
   };
 
   if (loading) {
@@ -148,50 +104,38 @@ const PartnersSection = () => {
       </div>
 
       <div className="relative mx-auto max-w-5xl">
-        {partners.length === 0 ? <div className="text-center py-12">
+        {partners.length === 0 ? (
+          <div className="text-center py-12">
             <p className="text-xl text-gray-500">لا يوجد شركاء حالياً</p>
-          </div> : <div 
-            className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 overflow-hidden"
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
-          >
-            <Carousel 
-              opts={{
-                align: "start",
-                loop: true,
-              }} 
-              className="w-full"
-              setApi={setApi}
-            >
-              <CarouselContent className="py-4">
-                {partners.map(partner => (
-                  <CarouselItem key={partner.id} className="basis-full">
-                    <div className="bg-white border border-trndsky-blue/10 shadow hover:shadow-md transition-all flex flex-col items-center justify-center h-44 p-4 mx-1 rounded-3xl animate-slide-in-right">
-                      <div className="bg-gray-50 w-full h-24 flex items-center justify-center rounded-xl p-2 mb-3">
-                        <img 
-                          src={partner.logo_url} 
-                          alt={partner.name} 
-                          className="object-contain max-h-20 max-w-[80%]" 
-                          onError={(e) => {
-                            e.currentTarget.src = "/placeholder.svg";
-                            e.currentTarget.alt = "صورة غير متوفرة";
-                            console.log(`تعذر تحميل الصورة: ${partner.logo_url}`);
-                          }}
-                        />
-                      </div>
-                      <div className="text-trndsky-darkblue font-bold text-sm text-center mt-2 line-clamp-2">
-                        {partner.name}
-                      </div>
-                    </div>
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-              <div className="flex justify-center gap-2 mt-6">
-                <CarouselPrevious className="relative static mx-1 opacity-80 hover:opacity-100" />
-                <CarouselNext className="relative static mx-1 opacity-80 hover:opacity-100" />
-              </div>
-            </Carousel>
-          </div>}
+          </div>
+        ) : (
+          <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              {partners.map(partner => (
+                <div 
+                  key={partner.id} 
+                  className="bg-white border border-trndsky-blue/10 shadow hover:shadow-md transition-all flex flex-col items-center justify-center h-44 p-4 rounded-3xl animate-fade-in"
+                >
+                  <div className="bg-gray-50 w-full h-24 flex items-center justify-center rounded-xl p-2 mb-3">
+                    <img 
+                      src={partner.logo_url} 
+                      alt={partner.name} 
+                      className="object-contain max-h-20 max-w-[80%]" 
+                      onError={(e) => {
+                        e.currentTarget.src = "/placeholder.svg";
+                        e.currentTarget.alt = "صورة غير متوفرة";
+                        console.log(`تعذر تحميل الصورة: ${partner.logo_url}`);
+                      }}
+                    />
+                  </div>
+                  <div className="text-trndsky-darkblue font-bold text-sm text-center mt-2 line-clamp-2">
+                    {partner.name}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>;
 };
