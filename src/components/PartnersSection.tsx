@@ -2,7 +2,9 @@
 import React, { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/components/ui/use-toast";
-import { useIsMobile } from "@/hooks/use-mobile";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
+import { ChevronRight } from "lucide-react";
 
 // شعار شركة الوصل الوطنية المرفق مباشرة ضمن المشروع
 const WISAL_PARTNER = {
@@ -21,7 +23,6 @@ const PartnersSection = () => {
   const [partners, setPartners] = useState<Partner[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const isMobile = useIsMobile();
 
   useEffect(() => {
     fetchPartners();
@@ -47,12 +48,10 @@ const PartnersSection = () => {
         setPartners([WISAL_PARTNER]);
         return;
       }
+      
       // إضافة شركة الوصل دائمًا أول القائمة إن لم تكن موجودة
       const partnerList = data || [];
       const exist = partnerList.some(p => p.name === WISAL_PARTNER.name || p.logo_url === WISAL_PARTNER.logo_url);
-      
-      // تحقق من البيانات المستلمة قبل التعيين
-      console.log("Fetched partners:", partnerList);
       
       setPartners(exist ? partnerList : [WISAL_PARTNER, ...(partnerList as Partner[])]);
     } catch (err) {
@@ -62,6 +61,9 @@ const PartnersSection = () => {
       setLoading(false);
     }
   };
+
+  // محدود للشركاء الأربعة الأولى فقط
+  const limitedPartners = partners.slice(0, 4);
 
   if (loading) {
     return <div className="container mx-auto px-6 py-8">
@@ -83,10 +85,6 @@ const PartnersSection = () => {
       </div>;
   }
 
-  // طباعة عدد الشركاء وأسماءهم للتأكد من استلام البيانات بشكل صحيح
-  console.log(`تم تحميل ${partners.length} شركاء:`, partners.map(p => p.name));
-  console.log("الجهاز محمول؟", isMobile);
-
   return <div className="container mx-auto px-6 py-8">
       <div className="text-center mb-16">
         <span className="inline-block py-1 px-4 bg-trndsky-blue/10 text-trndsky-blue rounded-full text-sm mb-4 font-tajawal border border-trndsky-blue/20">
@@ -104,14 +102,14 @@ const PartnersSection = () => {
       </div>
 
       <div className="relative mx-auto max-w-5xl">
-        {partners.length === 0 ? (
+        {limitedPartners.length === 0 ? (
           <div className="text-center py-12">
             <p className="text-xl text-gray-500">لا يوجد شركاء حالياً</p>
           </div>
         ) : (
           <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-              {partners.map(partner => (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+              {limitedPartners.map(partner => (
                 <div 
                   key={partner.id} 
                   className="bg-white border border-trndsky-blue/10 shadow hover:shadow-md transition-all flex flex-col items-center justify-center h-44 p-4 rounded-3xl animate-fade-in"
@@ -124,7 +122,6 @@ const PartnersSection = () => {
                       onError={(e) => {
                         e.currentTarget.src = "/placeholder.svg";
                         e.currentTarget.alt = "صورة غير متوفرة";
-                        console.log(`تعذر تحميل الصورة: ${partner.logo_url}`);
                       }}
                     />
                   </div>
@@ -133,6 +130,19 @@ const PartnersSection = () => {
                   </div>
                 </div>
               ))}
+            </div>
+            
+            {/* زر عرض جميع الشركاء */}
+            <div className="mt-8 text-center">
+              <Link to="/partners">
+                <Button 
+                  variant="outline" 
+                  className="border-trndsky-blue text-trndsky-blue hover:bg-trndsky-blue/10 font-tajawal"
+                >
+                  عرض جميع الشركاء
+                  <ChevronRight className="mr-2 h-4 w-4 rtl:rotate-180" />
+                </Button>
+              </Link>
             </div>
           </div>
         )}

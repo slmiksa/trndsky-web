@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import Software from "./pages/Software";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
+import Partners from "./pages/Partners";
 import NotFound from "./pages/NotFound";
 import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
@@ -32,6 +33,7 @@ const AppContent = () => {
         <Route path="/software" element={<Software />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="/partners" element={<Partners />} />
         <Route path="/adminlogin" element={<AdminLogin />} />
         <Route
           path="/admin"
