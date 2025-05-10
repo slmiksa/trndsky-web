@@ -31,7 +31,7 @@ export function useContactInfo() {
         const { data, error } = await supabase
           .from('contact_info')
           .select('*')
-          .single();
+          .maybeSingle();
         
         if (error) {
           console.error("Error fetching contact info:", error);

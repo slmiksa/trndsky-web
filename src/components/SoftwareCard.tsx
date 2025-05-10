@@ -223,13 +223,11 @@ const SoftwareCard = ({
   );
 };
 
-interface FeaturedSoftwareProps {
-  onTrialRequest?: () => void;
-}
-
 export const FeaturedSoftware = ({
   onTrialRequest
-}: FeaturedSoftwareProps) => {
+}: {
+  onTrialRequest?: () => void;
+}) => {
   const [softwareItems, setSoftwareItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   

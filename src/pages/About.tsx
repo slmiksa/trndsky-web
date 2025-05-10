@@ -59,7 +59,7 @@ const About = () => {
             ? data.team_members.map((item: any): TeamMember => ({
                 name: String(item.name || ''),
                 title: String(item.title || ''),
-                image: String(item.image || '/placeholder.svg')
+                image: String(item.image || '')
               })) 
             : []
         };
@@ -90,10 +90,10 @@ const About = () => {
       >
         <div className="container mx-auto px-4 text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-6 font-tajawal">
-            {loading ? <Skeleton className="h-12 w-2/3 mx-auto" /> : content?.title || 'من نحن'}
+            {loading ? <Skeleton className="h-12 w-2/3 mx-auto" /> : content?.title}
           </h1>
           <p className="text-xl max-w-3xl mx-auto font-tajawal">
-            {loading ? <Skeleton className="h-6 w-full mx-auto mt-4" /> : content?.subtitle || ''}
+            {loading ? <Skeleton className="h-6 w-full mx-auto mt-4" /> : content?.subtitle}
           </p>
         </div>
       </div>
@@ -113,9 +113,7 @@ const About = () => {
                     <Skeleton className="h-4 w-5/6 mb-2" />
                     <Skeleton className="h-4 w-4/6" />
                   </>
-                ) : (
-                  content?.vision || 'نسعى لأن نكون الرواد في مجال تطوير البرمجيات والحلول التقنية المتكاملة على مستوى المنطقة'
-                )}
+                ) : content?.vision}
               </p>
             </div>
             
@@ -130,9 +128,7 @@ const About = () => {
                     <Skeleton className="h-4 w-5/6 mb-2" />
                     <Skeleton className="h-4 w-4/6" />
                   </>
-                ) : (
-                  content?.mission || 'نسعى لتقديم حلول تقنية مبتكرة ومتكاملة تساعد عملائنا على تحقيق أهدافهم الرقمية بكفاءة وإبداع'
-                )}
+                ) : content?.mission}
               </p>
             </div>
           </div>
@@ -160,14 +156,14 @@ const About = () => {
           {content?.team_members && content.team_members.length > 0 && (
             <div className="py-16">
               <h2 className="text-3xl font-bold text-center mb-12 text-trndsky-darkblue font-tajawal">
-                {content?.team_title || 'فريقنا المتميز'}
+                {content?.team_title}
               </h2>
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {content.team_members.map((member, index) => (
                   <div key={index} className="bg-white rounded-xl shadow-md overflow-hidden">
                     <div className="h-64 overflow-hidden">
                       <img 
-                        src={member.image || '/placeholder.svg'} 
+                        src={member.image} 
                         alt={member.name}
                         className="w-full h-full object-cover" 
                       />
