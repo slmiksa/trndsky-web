@@ -2,10 +2,12 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
+
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
+
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
@@ -13,15 +15,17 @@ const Navbar = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
   return <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 
       ${scrolled ? "bg-white shadow-md" : "bg-white"}`}>
       <div className="container mx-auto px-6">
         <div className="flex justify-between items-center h-20">
-          <Link to="/" className="text-2xl font-bold text-trndsky-darkblue flex items-center gap-2">
-            <div className="relative">
-              <span>TRNDSKY</span>
-              <span className="absolute -top-1 -right-4 bg-gradient-to-r from-trndsky-teal to-trndsky-blue text-white p-1 rounded text-sm">ᐩ</span>
-            </div>
+          <Link to="/" className="flex items-center gap-2">
+            <img 
+              src="/lovable-uploads/d478d2a6-fe65-491d-b0eb-5beeace8f5ae.png" 
+              alt="TRNDSKY Logo" 
+              className="h-10" 
+            />
           </Link>
 
           {/* Desktop Navigation - Centered */}
@@ -53,6 +57,7 @@ const Navbar = () => {
       </div>
     </nav>;
 };
+
 const navLinks = [{
   path: "/",
   label: "الرئيسية"
@@ -69,4 +74,5 @@ const navLinks = [{
   path: "/contact",
   label: "تواصل معنا"
 }];
+
 export default Navbar;

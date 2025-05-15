@@ -1,69 +1,120 @@
 
 import { Link } from 'react-router-dom';
-const Footer = () => {
-  return <footer className="bg-gray-900 text-white overflow-hidden">
-      {/* Top section with gradient border */}
-      <div className="h-1 bg-gradient-to-r from-trndsky-blue via-trndsky-teal to-trndsky-blue"></div>
-      
-      {/* Wave separator */}
-      <div className="relative h-16">
-        <svg className="absolute bottom-0 left-0 w-full" viewBox="0 0 1440 100" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M0 58L48 52C96 46 192 34 288 35.3C384 36.7 480 50.3 576 55.3C672 60.3 768 56.7 864 53.3C960 50 1056 47 1152 48.3C1248 49.7 1344 55.3 1392 58L1440 60.7V100H1392C1344 100 1248 100 1152 100C1056 100 960 100 864 100C768 100 672 100 576 100C480 100 384 100 288 100C192 100 96 100 48 100H0V58Z" fill="#1A1A1A" />
-        </svg>
-      </div>
-      
-      <div className="bg-[#1A1A1A] pt-16 pb-8">
-        <div className="container mx-auto px-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-16">
-            {/* Quick Links Column */}
-            <div className="text-right">
-              <h3 className="text-xl font-bold mb-6 font-tajawal text-white">روابط سريعة</h3>
-              <ul className="space-y-4 font-tajawal">
-                <FooterLink to="/">الرئيسية</FooterLink>
-                <FooterLink to="/software">البرمجيات الجاهزة</FooterLink>
-                <FooterLink to="/about">من نحن</FooterLink>
-                <FooterLink to="/contact">تواصل معنا</FooterLink>
-              </ul>
-            </div>
+import { Facebook, Twitter, Instagram, Mail, Phone, MapPin } from 'lucide-react';
+import { useContactInfo } from '../hooks/useContactInfo';
 
-            {/* Company Info Column */}
-            <div className="text-right px-0 mx-0 my-0 py-0 rounded-none">
-              <h2 className="text-3xl font-bold mb-6">
-                <span className="bg-gradient-to-r from-trndsky-teal to-trndsky-blue bg-clip-text text-transparent">
-                  TRNDSKY
-                </span>
-              </h2>
-              <p className="text-gray-400 mb-8 font-tajawal text-lg leading-relaxed">
-                شريكك في التحول الرقمي وتطوير الحلول التقنية المبتكرة. نعمل على تقديم خدمات تقنية متميزة بأعلى معايير الجودة لعملائنا في مختلف القطاعات.
-              </p>
+const Footer = () => {
+  const { contactInfo, loading } = useContactInfo();
+
+  return (
+    <footer className="bg-gradient-to-br from-trndsky-darkblue to-gray-900 text-white pt-20 pb-8 font-tajawal">
+      <div className="container mx-auto px-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+          {/* Column 1: Logo and Info */}
+          <div className="space-y-6">
+            <Link to="/" className="inline-block">
+              <img 
+                src="/lovable-uploads/d478d2a6-fe65-491d-b0eb-5beeace8f5ae.png" 
+                alt="TRNDSKY Logo" 
+                className="h-12" 
+              />
+            </Link>
+            <p className="text-gray-300 mt-4 text-sm leading-relaxed">
+              نقدم خدمات برمجية احترافية وحلول تقنية متكاملة بأعلى معايير الجودة لتلبية احتياجات عملائنا وتطوير أعمالهم
+            </p>
+            <div className="flex items-center space-x-4 rtl:space-x-reverse">
+              <a href="#" className="bg-white/10 hover:bg-white/20 p-2 rounded-full transition-colors">
+                <Facebook size={18} />
+              </a>
+              <a href="#" className="bg-white/10 hover:bg-white/20 p-2 rounded-full transition-colors">
+                <Twitter size={18} />
+              </a>
+              <a href="#" className="bg-white/10 hover:bg-white/20 p-2 rounded-full transition-colors">
+                <Instagram size={18} />
+              </a>
             </div>
           </div>
 
-          {/* Copyright */}
-          <div className="pt-8 border-t border-gray-800">
-            <div className="text-center">
-              <p className="text-gray-500 font-tajawal mb-2">
-                © {new Date().getFullYear()} TRNDSKY. جميع الحقوق محفوظة
-              </p>
-              <div className="text-gray-600 font-tajawal text-sm space-y-1">
-                <p>شهادة العمل الحر: FL-083548418</p>
-                <p>رقم توثيق منصة الأعمال: 0000032128</p>
-              </div>
-            </div>
+          {/* Column 2: Quick Links */}
+          <div className="space-y-6">
+            <h3 className="text-lg font-bold relative inline-block">
+              روابط سريعة
+              <span className="absolute -bottom-1 right-0 w-12 h-1 bg-trndsky-blue rounded-full"></span>
+            </h3>
+            <ul className="space-y-3">
+              <li>
+                <Link to="/" className="text-gray-300 hover:text-white transition-colors inline-block">الرئيسية</Link>
+              </li>
+              <li>
+                <Link to="/software" className="text-gray-300 hover:text-white transition-colors inline-block">البرمجيات الجاهزة</Link>
+              </li>
+              <li>
+                <Link to="/about" className="text-gray-300 hover:text-white transition-colors inline-block">من نحن</Link>
+              </li>
+              <li>
+                <Link to="/contact" className="text-gray-300 hover:text-white transition-colors inline-block">تواصل معنا</Link>
+              </li>
+              <li>
+                <Link to="/partners" className="text-gray-300 hover:text-white transition-colors inline-block">شركاء النجاح</Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Column 3: Services */}
+          <div className="space-y-6">
+            <h3 className="text-lg font-bold relative inline-block">
+              خدماتنا
+              <span className="absolute -bottom-1 right-0 w-12 h-1 bg-trndsky-blue rounded-full"></span>
+            </h3>
+            <ul className="space-y-3">
+              <li className="text-gray-300 hover:text-white transition-colors">تطوير تطبيقات الويب</li>
+              <li className="text-gray-300 hover:text-white transition-colors">تطوير تطبيقات الجوال</li>
+              <li className="text-gray-300 hover:text-white transition-colors">تصميم واجهات المستخدم</li>
+              <li className="text-gray-300 hover:text-white transition-colors">الاستضافة السحابية</li>
+              <li className="text-gray-300 hover:text-white transition-colors">الحلول البرمجية المخصصة</li>
+            </ul>
+          </div>
+
+          {/* Column 4: Contact Info */}
+          <div className="space-y-6">
+            <h3 className="text-lg font-bold relative inline-block">
+              معلومات التواصل
+              <span className="absolute -bottom-1 right-0 w-12 h-1 bg-trndsky-blue rounded-full"></span>
+            </h3>
+            <ul className="space-y-4">
+              {!loading && contactInfo ? (
+                <>
+                  <li className="flex items-center gap-3 text-gray-300">
+                    <Mail size={18} className="text-trndsky-blue flex-shrink-0" />
+                    <a href={`mailto:${contactInfo.email}`} className="hover:text-white transition-colors">
+                      {contactInfo.email}
+                    </a>
+                  </li>
+                  <li className="flex items-center gap-3 text-gray-300">
+                    <Phone size={18} className="text-trndsky-blue flex-shrink-0" />
+                    <a href={`tel:${contactInfo.phone}`} className="hover:text-white transition-colors">
+                      {contactInfo.phone}
+                    </a>
+                  </li>
+                  <li className="flex items-start gap-3 text-gray-300">
+                    <MapPin size={18} className="text-trndsky-blue flex-shrink-0 mt-1" />
+                    <span>{contactInfo.address}</span>
+                  </li>
+                </>
+              ) : (
+                <li>جاري تحميل معلومات التواصل...</li>
+              )}
+            </ul>
           </div>
         </div>
+
+        {/* Copyright */}
+        <div className="border-t border-white/10 mt-16 pt-8 text-center text-gray-400 text-sm">
+          <p>© {new Date().getFullYear()} TRNDSKY. جميع الحقوق محفوظة.</p>
+        </div>
       </div>
-    </footer>;
+    </footer>
+  );
 };
-const FooterLink = ({
-  to,
-  children
-}: {
-  to: string;
-  children: React.ReactNode;
-}) => <li>
-    <Link to={to} className="inline-block text-gray-400 hover:text-trndsky-teal transition-all duration-300">
-      {children}
-    </Link>
-  </li>;
+
 export default Footer;
