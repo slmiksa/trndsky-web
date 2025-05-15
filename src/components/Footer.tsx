@@ -16,7 +16,7 @@ const Footer = () => {
               <img 
                 src="/lovable-uploads/494b749b-6590-48df-b844-3fd9b22b299f.png" 
                 alt="TRNDSKY Logo" 
-                className="h-20" 
+                className="h-20 rounded-lg" 
               />
             </Link>
             <p className="text-gray-300 mt-4 text-sm leading-relaxed">
