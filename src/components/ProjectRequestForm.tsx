@@ -1,13 +1,12 @@
+
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import TrialRequestForm from "./TrialRequestForm";
 import { Button } from "@/components/ui/button";
-import { useContactInfo } from "@/hooks/useContactInfo";
 
 const ProjectRequestForm = () => {
   const { toast } = useToast();
-  const { contactInfo } = useContactInfo();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -55,7 +54,6 @@ const ProjectRequestForm = () => {
       try {
         await supabase.functions.invoke("send-notification-email", {
           body: {
-            to: contactInfo.email,
             subject: "طلب برمجة خاصة جديد",
             requestType: "project",
             requestDetails: {

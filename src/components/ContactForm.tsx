@@ -1,6 +1,7 @@
 
 import { useState } from 'react';
 import { useToast } from '@/components/ui/use-toast';
+import { supabase } from "@/integrations/supabase/client";
 
 const ContactForm = () => {
   const { toast } = useToast();
@@ -11,6 +12,7 @@ const ContactForm = () => {
     subject: '',
     message: '',
   });
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -20,23 +22,50 @@ const ContactForm = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Contact form submitted:', formData);
+    setLoading(true);
     
-    toast({
-      title: "تم إرسال رسالتك",
-      description: "سنقوم بالرد عليك في أقرب وقت ممكن",
-      duration: 5000,
-    });
-    
-    setFormData({
-      name: '',
-      email: '',
-      phone: '',
-      subject: '',
-      message: '',
-    });
+    try {
+      // Send email notification
+      await supabase.functions.invoke("send-notification-email", {
+        body: {
+          subject: `رسالة جديدة من ${formData.name}`,
+          requestType: "project",
+          requestDetails: {
+            name: formData.name,
+            email: formData.email || null,
+            phone: formData.phone || null,
+            title: formData.subject,
+            description: formData.message,
+          }
+        }
+      });
+      
+      toast({
+        title: "تم إرسال رسالتك",
+        description: "سنقوم بالرد عليك في أقرب وقت ممكن",
+        duration: 5000,
+      });
+      
+      setFormData({
+        name: '',
+        email: '',
+        phone: '',
+        subject: '',
+        message: '',
+      });
+    } catch (error) {
+      console.error("Error sending contact form:", error);
+      toast({
+        title: "حدث خطأ",
+        description: "لم نتمكن من إرسال رسالتك، يرجى المحاولة مرة أخرى",
+        variant: "destructive",
+        duration: 5000,
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -127,9 +156,10 @@ const ContactForm = () => {
       <div className="flex justify-center">
         <button
           type="submit"
+          disabled={loading}
           className="btn-primary py-3 px-8 text-lg font-tajawal"
         >
-          إرسال
+          {loading ? "جاري الإرسال..." : "إرسال"}
         </button>
       </div>
     </form>

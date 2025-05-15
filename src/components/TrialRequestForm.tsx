@@ -6,7 +6,6 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { useContactInfo } from "@/hooks/useContactInfo";
 
 type TrialRequestFormProps = {
   isOpen: boolean;
@@ -15,7 +14,6 @@ type TrialRequestFormProps = {
 
 const TrialRequestForm = ({ isOpen, onClose }: TrialRequestFormProps) => {
   const { toast } = useToast();
-  const { contactInfo } = useContactInfo();
   const [formData, setFormData] = useState({
     company_name: "",
     whatsapp: "",
@@ -58,7 +56,6 @@ const TrialRequestForm = ({ isOpen, onClose }: TrialRequestFormProps) => {
       try {
         await supabase.functions.invoke("send-notification-email", {
           body: {
-            to: contactInfo.email,
             subject: "طلب تجربة برمجيات جديد",
             requestType: "trial",
             requestDetails: {

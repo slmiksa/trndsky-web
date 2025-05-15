@@ -23,10 +23,10 @@ serve(async (req) => {
   }
 
   try {
-    const { to, subject, requestType, requestDetails }: EmailRequest = await req.json();
+    const { subject, requestType, requestDetails }: EmailRequest = await req.json();
     
-    // Default admin email if not provided
-    const adminEmail = to || "admin@trndsky.com";
+    // Use the default admin email
+    const adminEmail = "info@trndsky.com";
     
     // Build email content based on request type
     let emailHtml = "";
