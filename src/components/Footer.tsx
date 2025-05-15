@@ -14,9 +14,9 @@ const Footer = () => {
           <div className="space-y-6">
             <Link to="/" className="inline-block">
               <img 
-                src="/lovable-uploads/d478d2a6-fe65-491d-b0eb-5beeace8f5ae.png" 
+                src="/lovable-uploads/494b749b-6590-48df-b844-3fd9b22b299f.png" 
                 alt="TRNDSKY Logo" 
-                className="h-12" 
+                className="h-20" 
               />
             </Link>
             <p className="text-gray-300 mt-4 text-sm leading-relaxed">
@@ -98,7 +98,7 @@ const Footer = () => {
                   </li>
                   <li className="flex items-start gap-3 text-gray-300">
                     <MapPin size={18} className="text-trndsky-blue flex-shrink-0 mt-1" />
-                    <span>{contactInfo.address}</span>
+                    <span>{contactInfo.location}</span>
                   </li>
                 </>
               ) : (

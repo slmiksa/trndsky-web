@@ -22,9 +22,9 @@ const Navbar = () => {
         <div className="flex justify-between items-center h-20">
           <Link to="/" className="flex items-center gap-2">
             <img 
-              src="/lovable-uploads/d478d2a6-fe65-491d-b0eb-5beeace8f5ae.png" 
+              src="/lovable-uploads/494b749b-6590-48df-b844-3fd9b22b299f.png" 
               alt="TRNDSKY Logo" 
-              className="h-10" 
+              className="h-16" 
             />
           </Link>
 
