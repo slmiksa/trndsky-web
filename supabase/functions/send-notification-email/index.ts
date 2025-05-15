@@ -84,9 +84,9 @@ serve(async (req) => {
       `;
     }
 
-    // Use onboarding@resend.dev as a temporary solution until domain verification
+    // Use the verified mail.trndsky.com subdomain
     const emailResponse = await resend.emails.send({
-      from: "TRNDSKY Notifications <onboarding@resend.dev>",
+      from: "TRNDSKY Notifications <info@mail.trndsky.com>",
       to: [adminEmail],
       subject: subject,
       html: emailHtml,
