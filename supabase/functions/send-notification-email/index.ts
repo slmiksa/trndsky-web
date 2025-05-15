@@ -34,11 +34,11 @@ serve(async (req) => {
     console.log("Request type:", requestType);
     console.log("Request details:", JSON.stringify(requestDetails));
     
-    // Build email content based on request type
-    let emailHtml = "";
+    // Build admin email content based on request type
+    let adminEmailHtml = "";
     
     if (requestType === "trial") {
-      emailHtml = `
+      adminEmailHtml = `
         <h1>طلب تجربة جديد للبرمجيات</h1>
         <p>تم استلام طلب تجربة جديد من:</p>
         <ul>
@@ -49,7 +49,7 @@ serve(async (req) => {
         <p>يرجى التواصل مع العميل في أقرب وقت ممكن.</p>
       `;
     } else if (requestType === "project") {
-      emailHtml = `
+      adminEmailHtml = `
         <h1>طلب برمجة خاصة جديد</h1>
         <p>تم استلام طلب برمجة خاصة جديد من:</p>
         <ul>
@@ -63,7 +63,7 @@ serve(async (req) => {
         <p>${requestDetails.description}</p>
       `;
     } else if (requestType === "purchase") {
-      emailHtml = `
+      adminEmailHtml = `
         <h1>طلب شراء برمجية جديد</h1>
         <p>تم استلام طلب شراء برمجية جديد من:</p>
         <ul>
@@ -75,7 +75,7 @@ serve(async (req) => {
         <p>يرجى التواصل مع العميل في أقرب وقت ممكن.</p>
       `;
     } else if (requestType === "contact") {
-      emailHtml = `
+      adminEmailHtml = `
         <h1>رسالة جديدة من نموذج الاتصال</h1>
         <p>تم استلام رسالة جديدة من:</p>
         <ul>
@@ -90,18 +90,92 @@ serve(async (req) => {
       `;
     }
 
-    console.log("Sending email to:", adminEmail);
+    console.log("Sending admin notification email to:", adminEmail);
     
-    // Use the verified mail.trndsky.com subdomain
-    const emailResponse = await resend.emails.send({
+    // Send notification to admin
+    const adminEmailResponse = await resend.emails.send({
       from: "TRNDSKY Notifications <info@mail.trndsky.com>",
       to: [adminEmail],
       subject: subject,
-      html: emailHtml,
+      html: adminEmailHtml,
       text: "يبدو أن عميلك المستخدم لا يدعم رسائل HTML. يرجى التحقق من لوحة التحكم للحصول على تفاصيل الطلب.",
     });
 
-    console.log("Email sent successfully:", emailResponse);
+    console.log("Admin email sent successfully:", adminEmailResponse);
+
+    // Check if customer email exists to send confirmation
+    const customerEmail = requestDetails.email || null;
+    
+    if (customerEmail) {
+      console.log("Sending confirmation email to customer:", customerEmail);
+      
+      // Build customer email content based on request type
+      let customerEmailHtml = "";
+      let customerEmailSubject = "";
+      
+      if (requestType === "project") {
+        customerEmailSubject = "تأكيد استلام طلب برمجة خاصة - TRNDSKY";
+        customerEmailHtml = `
+          <div style="direction: rtl; font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #333;">
+            <div style="text-align: center; margin-bottom: 30px;">
+              <h1 style="color: #1e3a8a;">شكراً لك ${requestDetails.name}</h1>
+            </div>
+            
+            <p style="font-size: 16px; line-height: 1.6;">لقد تم استلام طلبك للبرمجة الخاصة بنجاح.</p>
+            <div style="background-color: #f9fafb; border-radius: 8px; padding: 20px; margin: 20px 0;">
+              <h3 style="margin-top: 0; color: #0369a1;">تفاصيل طلبك:</h3>
+              <p><strong>عنوان المشروع:</strong> ${requestDetails.title}</p>
+              <p><strong>تاريخ الطلب:</strong> ${new Date().toLocaleString('ar-SA')}</p>
+            </div>
+            
+            <p style="font-size: 16px; line-height: 1.6;">سيقوم فريقنا بدراسة طلبك والتواصل معك في أقرب وقت ممكن لمناقشة التفاصيل والخطوات القادمة.</p>
+            
+            <p style="font-size: 16px; line-height: 1.6;">إذا كان لديك أي استفسارات إضافية، يرجى التواصل معنا عبر البريد الإلكتروني info@trndsky.com</p>
+            
+            <div style="text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid #e5e7eb; color: #6b7280; font-size: 14px;">
+              <p>TRNDSKY - خدمات برمجية احترافية</p>
+              <p>&copy; ${new Date().getFullYear()} جميع الحقوق محفوظة</p>
+            </div>
+          </div>
+        `;
+      } else if (requestType === "contact") {
+        customerEmailSubject = "تأكيد استلام رسالتك - TRNDSKY";
+        customerEmailHtml = `
+          <div style="direction: rtl; font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #333;">
+            <div style="text-align: center; margin-bottom: 30px;">
+              <h1 style="color: #1e3a8a;">شكراً لتواصلك معنا ${requestDetails.name}</h1>
+            </div>
+            
+            <p style="font-size: 16px; line-height: 1.6;">لقد تم استلام رسالتك بنجاح.</p>
+            <div style="background-color: #f9fafb; border-radius: 8px; padding: 20px; margin: 20px 0;">
+              <h3 style="margin-top: 0; color: #0369a1;">تفاصيل رسالتك:</h3>
+              <p><strong>الموضوع:</strong> ${requestDetails.subject}</p>
+              <p><strong>تاريخ الإرسال:</strong> ${new Date().toLocaleString('ar-SA')}</p>
+            </div>
+            
+            <p style="font-size: 16px; line-height: 1.6;">سنقوم بالرد على استفسارك في أقرب وقت ممكن.</p>
+            
+            <p style="font-size: 16px; line-height: 1.6;">نشكرك على تواصلك معنا.</p>
+            
+            <div style="text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid #e5e7eb; color: #6b7280; font-size: 14px;">
+              <p>TRNDSKY - خدمات برمجية احترافية</p>
+              <p>&copy; ${new Date().getFullYear()} جميع الحقوق محفوظة</p>
+            </div>
+          </div>
+        `;
+      }
+      
+      if (customerEmailHtml) {
+        const customerEmailResponse = await resend.emails.send({
+          from: "TRNDSKY <info@mail.trndsky.com>",
+          to: [customerEmail],
+          subject: customerEmailSubject,
+          html: customerEmailHtml,
+        });
+        
+        console.log("Customer confirmation email sent:", customerEmailResponse);
+      }
+    }
 
     return new Response(JSON.stringify({ success: true, message: "Email notification sent" }), {
       status: 200,

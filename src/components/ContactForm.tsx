@@ -27,7 +27,7 @@ const ContactForm = () => {
     setLoading(true);
     
     try {
-      // Send email notification with correct requestType "contact" instead of "project"
+      // Send email notification with correct requestType "contact" 
       const response = await supabase.functions.invoke("send-notification-email", {
         body: {
           subject: `رسالة جديدة من ${formData.name}`,
