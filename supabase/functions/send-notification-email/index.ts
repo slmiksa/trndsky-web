@@ -12,7 +12,7 @@ const corsHeaders = {
 interface EmailRequest {
   to: string;
   subject: string;
-  requestType: "trial" | "project" | "purchase";
+  requestType: "trial" | "project" | "purchase" | "contact";
   requestDetails: Record<string, any>;
 }
 
@@ -25,7 +25,7 @@ serve(async (req) => {
   try {
     const { subject, requestType, requestDetails }: EmailRequest = await req.json();
     
-    // Use the default admin email
+    // Always use the configured admin email
     const adminEmail = "info@trndsky.com";
     
     // Build email content based on request type
@@ -68,10 +68,24 @@ serve(async (req) => {
         </ul>
         <p>يرجى التواصل مع العميل في أقرب وقت ممكن.</p>
       `;
+    } else if (requestType === "contact") {
+      emailHtml = `
+        <h1>رسالة جديدة من نموذج الاتصال</h1>
+        <p>تم استلام رسالة جديدة من:</p>
+        <ul>
+          <li><strong>الاسم:</strong> ${requestDetails.name}</li>
+          <li><strong>البريد الإلكتروني:</strong> ${requestDetails.email || 'غير متوفر'}</li>
+          <li><strong>الهاتف:</strong> ${requestDetails.phone || 'غير متوفر'}</li>
+          <li><strong>الموضوع:</strong> ${requestDetails.subject}</li>
+          <li><strong>تاريخ الرسالة:</strong> ${new Date().toLocaleString('ar-SA')}</li>
+        </ul>
+        <h2>محتوى الرسالة:</h2>
+        <p>${requestDetails.message}</p>
+      `;
     }
 
     const emailResponse = await resend.emails.send({
-      from: "TRNDSKY Notifications <notifications@resend-domain.com>",
+      from: "TRNDSKY Notifications <info@trndsky.com>",
       to: [adminEmail],
       subject: subject,
       html: emailHtml,
