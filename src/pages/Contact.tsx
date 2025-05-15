@@ -1,7 +1,10 @@
+
 import Navbar from '../components/Navbar';
 import ContactForm from '../components/ContactForm';
 import { ContactDetails } from '@/components/ContactDetails';
 import { useContactInfo } from '@/hooks/useContactInfo';
+import { Toaster } from '@/components/ui/toaster';
+
 const Contact = () => {
   const {
     contactInfo,
@@ -23,11 +26,12 @@ const Contact = () => {
         <div className="container mx-auto">
           <ContactDetails variant="card" />
           
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mt-12">
+            <div>
+              <ContactForm />
+            </div>
             
             <div>
-              
               <div className="bg-white p-6 rounded-lg shadow-md font-tajawal text-right">
                 <h3 className="text-xl font-bold mb-3">ساعات العمل</h3>
                 <div className="space-y-2 text-gray-700">
@@ -50,6 +54,8 @@ const Contact = () => {
           <p className="font-tajawal">© {new Date().getFullYear()} TRNDSKY. جميع الحقوق محفوظة</p>
         </div>
       </footer>
+      
+      <Toaster />
     </div>;
 };
 export default Contact;

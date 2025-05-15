@@ -84,8 +84,9 @@ serve(async (req) => {
       `;
     }
 
+    // Use onboarding@resend.dev as a temporary solution until domain verification
     const emailResponse = await resend.emails.send({
-      from: "TRNDSKY Notifications <info@trndsky.com>",
+      from: "TRNDSKY Notifications <onboarding@resend.dev>",
       to: [adminEmail],
       subject: subject,
       html: emailHtml,

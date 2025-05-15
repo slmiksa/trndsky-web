@@ -27,20 +27,24 @@ const ContactForm = () => {
     setLoading(true);
     
     try {
-      // Send email notification
-      await supabase.functions.invoke("send-notification-email", {
+      // Send email notification with correct requestType "contact" instead of "project"
+      const response = await supabase.functions.invoke("send-notification-email", {
         body: {
           subject: `رسالة جديدة من ${formData.name}`,
-          requestType: "project",
+          requestType: "contact",
           requestDetails: {
             name: formData.name,
             email: formData.email || null,
             phone: formData.phone || null,
-            title: formData.subject,
-            description: formData.message,
+            subject: formData.subject,
+            message: formData.message,
           }
         }
       });
+
+      if (response.error) {
+        throw new Error(response.error.message);
+      }
       
       toast({
         title: "تم إرسال رسالتك",
