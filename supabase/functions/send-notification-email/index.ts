@@ -2,6 +2,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { Resend } from "npm:resend@2.0.0";
 
+// Initialize Resend with API key from environment variables
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
 const corsHeaders = {
@@ -23,10 +24,15 @@ serve(async (req) => {
   }
 
   try {
+    console.log("Received email notification request");
+    
     const { subject, requestType, requestDetails }: EmailRequest = await req.json();
     
     // Always use the configured admin email
     const adminEmail = "info@trndsky.com";
+    
+    console.log("Request type:", requestType);
+    console.log("Request details:", JSON.stringify(requestDetails));
     
     // Build email content based on request type
     let emailHtml = "";
@@ -84,6 +90,8 @@ serve(async (req) => {
       `;
     }
 
+    console.log("Sending email to:", adminEmail);
+    
     // Use the verified mail.trndsky.com subdomain
     const emailResponse = await resend.emails.send({
       from: "TRNDSKY Notifications <info@mail.trndsky.com>",
