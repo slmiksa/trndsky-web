@@ -17,10 +17,13 @@ export const AppInitializer = () => {
       try {
         console.log('جاري تحميل الإعدادات العامة...');
         
-        // ميزة إزالة العنوان والأيقونة الافتراضيين قبل تحميل الإعدادات من قاعدة البيانات
-        // إزالة أي أيقونات موجودة مسبقاً من رأس الصفحة
+        // إزالة أي أيقونات موجودة مسبقاً من رأس الصفحة - تأكد أن هذا الكود يعمل فوراً
         const existingIcons = document.querySelectorAll("link[rel*='icon']");
-        existingIcons.forEach(icon => document.head.removeChild(icon));
+        existingIcons.forEach(icon => {
+          if (icon.parentNode) {
+            icon.parentNode.removeChild(icon);
+          }
+        });
 
         // استخدام maybeSingle لمعالجة الحالات التي لا توجد فيها بيانات
         const { data, error } = await supabase
@@ -43,7 +46,7 @@ export const AppInitializer = () => {
             console.log('تم تحديث عنوان الصفحة إلى:', data.site_title);
           }
           
-          // تحديث الأيقونة
+          // تحديث الأيقونة فقط إذا كانت موجودة في الإعدادات
           if (data.favicon_url) {
             console.log('تحديث الأيقونة إلى:', data.favicon_url);
             
@@ -52,7 +55,9 @@ export const AppInitializer = () => {
             
             // تأكد من إزالة جميع الأيقونات القديمة أولا
             document.querySelectorAll("link[rel*='icon']").forEach(icon => {
-              document.head.removeChild(icon);
+              if (icon.parentNode) {
+                icon.parentNode.removeChild(icon);
+              }
             });
             
             // إضافة أيقونة عادية
