@@ -92,11 +92,11 @@ const DefaultAdminManager = ({ setActiveTab }: DefaultAdminManagerProps) => {
       {adminCards.map((card) => (
         <Card 
           key={card.tab}
-          className="hover:shadow-md transition-shadow cursor-pointer" 
+          className="hover:shadow-md transition-shadow cursor-pointer border-2 border-trndsky-blue/10 hover:border-trndsky-blue/30" 
           onClick={() => setActiveTab(card.tab as AdminTab)}
         >
           <CardHeader className="text-center">
-            <CardTitle className="font-tajawal">{card.title}</CardTitle>
+            <CardTitle className="font-tajawal text-trndsky-darkblue">{card.title}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-center text-4xl md:text-5xl mb-2">{card.icon}</div>

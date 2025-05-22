@@ -1,3 +1,4 @@
+
 import Navbar from '../components/Navbar';
 import HeroSlider from '../components/HeroSlider';
 import ServicesSection from '../components/ServicesSection';
@@ -8,9 +9,13 @@ import Footer from '../components/Footer';
 import { useState } from 'react';
 import TrialRequestForm from '../components/TrialRequestForm';
 import { Toaster } from '../components/ui/toaster';
+import { Button } from '../components/ui/button';
+
 const Index = () => {
   const [showTrialForm, setShowTrialForm] = useState(false);
-  return <div className="min-h-screen flex flex-col bg-gray-50">
+  
+  return (
+    <div className="min-h-screen flex flex-col bg-gray-50">
       <Navbar />
       <main className="flex-grow">
         <HeroSlider />
@@ -22,11 +27,15 @@ const Index = () => {
         <section className="py-24 bg-white">
           <div className="container mx-auto px-6">
             <div className="text-center mb-16">
-              
               <h2 className="text-4xl font-bold text-gray-800 font-tajawal mb-4">
-                
+                <span className="relative">
+                  برمجيات جاهزة
+                  <span className="absolute -bottom-2 left-0 right-0 h-1 bg-gradient-to-r from-trndsky-blue to-trndsky-teal rounded-full"></span>
+                </span>
               </h2>
-              
+              <p className="text-gray-600 max-w-2xl mx-auto font-tajawal">
+                مجموعة متنوعة من البرمجيات الجاهزة لتلبية احتياجات مختلف الأعمال والقطاعات
+              </p>
             </div>
             <FeaturedSoftware onTrialRequest={() => setShowTrialForm(true)} />
           </div>
@@ -76,11 +85,22 @@ const Index = () => {
           <PartnersSection />
         </section>
         
+        <footer className="bg-gray-50 py-4 border-t border-gray-200">
+          <div className="container mx-auto px-6">
+            <div className="text-center text-sm text-gray-500 font-tajawal">
+              <p className="mb-1">Freelancer License: FL-83548418</p>
+              <p>Business Platform License: 0000032128</p>
+            </div>
+          </div>
+        </footer>
+        
         {/* نموذج طلب التجربة */}
         <TrialRequestForm isOpen={showTrialForm} onClose={() => setShowTrialForm(false)} />
       </main>
       <Footer />
       <Toaster />
-    </div>;
+    </div>
+  );
 };
+
 export default Index;
