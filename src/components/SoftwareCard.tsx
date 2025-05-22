@@ -202,7 +202,7 @@ const SoftwareCard = ({
                   disabled={orderSent || isSubmitting} 
                   variant="default"
                   size="lg"
-                  className="w-full text-base font-bold py-3 bg-trndsky-teal hover:bg-trndsky-blue text-white font-tajawal rounded-lg shadow-lg hover:shadow-blue-glow border-2 border-white"
+                  className="w-full text-base font-bold py-3 bg-trndsky-teal hover:bg-trndsky-blue text-white font-tajawal rounded-lg shadow-lg hover:shadow-blue-glow border-2 border-white hover:opacity-100 active:opacity-100 focus:opacity-100"
                 >
                   <Send className="w-5 h-5 ml-2" /> 
                   {isSubmitting ? "جاري الإرسال..." : orderSent ? "تم الإرسال بنجاح" : "إرسال الطلب"}
