@@ -175,12 +175,24 @@ const SoftwareCard = ({
 
             <div className="mt-4 flex flex-col gap-3 md:flex-row md:justify-end">
               {!showOrderForm && <>
-                  <button className="px-6 py-2 bg-white text-trndsky-blue border-2 border-trndsky-blue/20 hover:bg-trndsky-blue hover:bg-opacity-10 hover:text-trndsky-darkblue hover:border-trndsky-blue text-sm font-tajawal rounded-full shadow-md transition-all duration-300 hover:opacity-100 active:opacity-100 focus:opacity-100" onClick={handleOrderClick} type="button">
+                  <Button 
+                    onClick={handleOrderClick} 
+                    type="button"
+                    variant="default"
+                    size="lg" 
+                    className="bg-trndsky-blue text-white font-tajawal font-bold border-2 border-white shadow-md hover:shadow-blue-glow hover:bg-trndsky-darkblue opacity-100 hover:opacity-100 active:opacity-100 focus:opacity-100"
+                  >
                     طلب المنتج
-                  </button>
-                  <button className="px-6 py-2 bg-white text-trndsky-blue border-2 border-trndsky-blue/20 hover:bg-trndsky-blue hover:bg-opacity-10 hover:text-trndsky-darkblue hover:border-trndsky-blue text-sm font-tajawal rounded-full shadow-md transition-all duration-300 hover:opacity-100 active:opacity-100 focus:opacity-100" onClick={handleTrialClick} type="button">
+                  </Button>
+                  <Button 
+                    onClick={handleTrialClick} 
+                    type="button"
+                    variant="default"
+                    size="lg"
+                    className="bg-trndsky-teal text-white font-tajawal font-bold border-2 border-white shadow-md hover:shadow-blue-glow hover:bg-trndsky-darkblue opacity-100 hover:opacity-100 active:opacity-100 focus:opacity-100"
+                  >
                     طلب تجربة
-                  </button>
+                  </Button>
                 </>}
             </div>
 
@@ -202,7 +214,7 @@ const SoftwareCard = ({
                   disabled={orderSent || isSubmitting} 
                   variant="default"
                   size="lg"
-                  className="w-full text-base font-bold py-3 bg-trndsky-teal hover:bg-trndsky-blue text-white font-tajawal rounded-lg shadow-lg hover:shadow-blue-glow border-2 border-white hover:opacity-100 active:opacity-100 focus:opacity-100"
+                  className="w-full text-base font-bold py-3 bg-trndsky-blue hover:bg-trndsky-darkblue text-white font-tajawal rounded-lg shadow-lg hover:shadow-blue-glow border-2 border-white opacity-100 hover:opacity-100 active:opacity-100 focus:opacity-100"
                 >
                   <Send className="w-5 h-5 ml-2" /> 
                   {isSubmitting ? "جاري الإرسال..." : orderSent ? "تم الإرسال بنجاح" : "إرسال الطلب"}
