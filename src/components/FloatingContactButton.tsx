@@ -66,7 +66,7 @@ const FloatingContactButton = ({
         scale: 1.05
       }} whileTap={{
         scale: 0.95
-      }} onClick={() => setIsOpen(true)} aria-label="التواصل معنا" className="bg-trndsky-blue text-white rounded-full p-4 shadow-xl hover:shadow-2xl flex items-center justify-center transition-all duration-300 border-2 border-white py-[8px] px-[13px] mx-0 my-[196px]">
+      }} onClick={() => setIsOpen(true)} aria-label="التواصل معنا" className="bg-trndsky-blue text-white rounded-full p-4 shadow-xl hover:shadow-2xl flex items-center justify-center transition-all duration-300 border-2 border-white my-[101px] py-[9px] px-0 mx-[7px]">
             <div className="relative">
               <MessageCircle size={28} className="text-white" />
               <span className="absolute -top-2 -right-2 bg-white text-trndsky-blue text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center animate-pulse-soft">?</span>
