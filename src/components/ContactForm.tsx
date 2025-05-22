@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useToast } from '@/components/ui/use-toast';
 import { supabase } from "@/integrations/supabase/client";
@@ -160,7 +161,7 @@ const ContactForm = () => {
         <button
           type="submit"
           disabled={loading}
-          className="btn-primary py-3 px-8 text-lg font-tajawal hover:opacity-100 active:opacity-100 focus:opacity-100"
+          className="btn-primary py-3 px-8 text-lg font-tajawal hover:opacity-100 active:opacity-100 focus:opacity-100 hover:shadow-blue-glow active:shadow-blue-glow focus:shadow-blue-glow"
         >
           {loading ? "جاري الإرسال..." : "إرسال"}
         </button>
