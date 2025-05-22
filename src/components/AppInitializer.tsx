@@ -17,13 +17,19 @@ export const AppInitializer = () => {
       try {
         console.log('جاري تحميل الإعدادات العامة...');
         
-        // إزالة أي أيقونات موجودة مسبقاً من رأس الصفحة - تأكد أن هذا الكود يعمل فوراً
+        // وضع الأيقونة الجديدة فوراً لمنع ظهور أيقونة أخرى
+        setDefaultFavicon();
+        
+        // إزالة أي أيقونات موجودة مسبقاً من رأس الصفحة
         const existingIcons = document.querySelectorAll("link[rel*='icon']");
         existingIcons.forEach(icon => {
           if (icon.parentNode) {
             icon.parentNode.removeChild(icon);
           }
         });
+        
+        // إضافة الأيقونة الجديدة مرة أخرى بعد إزالة الكل
+        setDefaultFavicon();
 
         // استخدام maybeSingle لمعالجة الحالات التي لا توجد فيها بيانات
         const { data, error } = await supabase
@@ -79,15 +85,53 @@ export const AppInitializer = () => {
             document.head.appendChild(shortcutIcon);
             
             console.log('تم تحديث الأيقونة بنجاح');
+          } else {
+            // إذا لم تكن هناك أيقونة في قاعدة البيانات، استخدم الأيقونة الافتراضية
+            setDefaultFavicon();
           }
         } else {
           console.log('لم يتم العثور على إعدادات عامة');
+          // استخدم الأيقونة الافتراضية في حالة عدم وجود إعدادات
+          setDefaultFavicon();
         }
       } catch (error) {
         console.error('Error initializing app settings:', error);
+        // في حالة حدوث خطأ، استخدم الأيقونة الافتراضية
+        setDefaultFavicon();
       } finally {
         setInitialized(true);
       }
+    };
+    
+    // دالة لتعيين الأيقونة الافتراضية (الشعار الجديد)
+    const setDefaultFavicon = () => {
+      // إزالة أي أيقونات موجودة
+      document.querySelectorAll("link[rel*='icon']").forEach(icon => {
+        if (icon.parentNode) {
+          icon.parentNode.removeChild(icon);
+        }
+      });
+      
+      const timestamp = new Date().getTime(); // منع التخزين المؤقت
+      const defaultFaviconUrl = `/lovable-uploads/64c873ad-7948-4191-9929-bbb9fb1d9858.png?t=${timestamp}`;
+      
+      // إضافة أيقونة عادية
+      const link = document.createElement('link');
+      link.rel = 'icon';
+      link.href = defaultFaviconUrl;
+      document.head.appendChild(link);
+      
+      // إضافة أيقونة لأجهزة آبل
+      const touchIcon = document.createElement('link');
+      touchIcon.rel = 'apple-touch-icon';
+      touchIcon.href = defaultFaviconUrl;
+      document.head.appendChild(touchIcon);
+      
+      // إضافة اختصار أيقونة للتوافق مع جميع المتصفحات
+      const shortcutIcon = document.createElement('link');
+      shortcutIcon.rel = 'shortcut icon';
+      shortcutIcon.href = defaultFaviconUrl;
+      document.head.appendChild(shortcutIcon);
     };
     
     loadSiteSettings();
@@ -105,6 +149,8 @@ export const AppInitializer = () => {
                   !(node as HTMLLinkElement).href.includes('?t=')) {
                 // إزالة الأيقونة الافتراضية إذا تم إضافتها تلقائيًا
                 node.parentNode?.removeChild(node);
+                // إضافة الأيقونة المخصصة بدلاً منها
+                setDefaultFavicon();
               }
             });
           }
