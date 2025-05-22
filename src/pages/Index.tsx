@@ -70,9 +70,7 @@ const Index = () => {
                   <span className="absolute -bottom-2 left-0 right-0 h-1 bg-gradient-to-r from-trndsky-green to-trndsky-blue rounded-full"></span>
                 </span>
               </h2>
-              <p className="text-gray-600 max-w-2xl mx-auto font-tajawal">
-                نتعاون مع نخبة من أفضل الشركات لتقديم حلول متكاملة ترتقي بأعمال عملائنا
-              </p>
+              <p className="text-gray-600 max-w-2xl mx-auto font-tajawal font-bold text-base">عملاءنا الذين نفخر بمساعدتهم في مشاريعهم</p>
             </div>
           </div>
           <PartnersSection />
