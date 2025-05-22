@@ -1,4 +1,3 @@
-
 import Navbar from '../components/Navbar';
 import HeroSlider from '../components/HeroSlider';
 import ServicesSection from '../components/ServicesSection';
@@ -9,12 +8,9 @@ import Footer from '../components/Footer';
 import { useState } from 'react';
 import TrialRequestForm from '../components/TrialRequestForm';
 import { Toaster } from '../components/ui/toaster';
-
 const Index = () => {
   const [showTrialForm, setShowTrialForm] = useState(false);
-  
-  return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
+  return <div className="min-h-screen flex flex-col bg-gray-50">
       <Navbar />
       <main className="flex-grow">
         <HeroSlider />
@@ -26,18 +22,11 @@ const Index = () => {
         <section className="py-24 bg-white">
           <div className="container mx-auto px-6">
             <div className="text-center mb-16">
-              <span className="inline-block py-1 px-4 bg-trndsky-yellow/20 text-trndsky-yellow rounded-full text-sm mb-4 font-tajawal border border-trndsky-yellow/30">
-                برمجياتنا المميزة
-              </span>
+              
               <h2 className="text-4xl font-bold text-gray-800 font-tajawal mb-4">
-                <span className="relative">
-                  أحدث الحلول البرمجية
-                  <span className="absolute -bottom-2 left-0 right-0 h-1 bg-gradient-to-r from-trndsky-yellow to-trndsky-red rounded-full"></span>
-                </span>
+                
               </h2>
-              <p className="text-gray-600 max-w-2xl mx-auto font-tajawal">
-                اكتشف مجموعة من البرمجيات الجاهزة المتطورة التي صممناها لتلبية احتياجات مختلف القطاعات
-              </p>
+              
             </div>
             <FeaturedSoftware onTrialRequest={() => setShowTrialForm(true)} />
           </div>
@@ -48,7 +37,7 @@ const Index = () => {
           <div className="container mx-auto px-6">
             <div className="max-w-4xl mx-auto">
               <div className="text-center mb-16">
-                <span className="inline-block py-1 px-4 bg-white/20 text-white rounded-full text-sm mb-4 font-tajawal border border-white/20">
+                <span className="inline-block py-1 px-4 bg-white/20 text-white rounded-full mb-4 font-tajawal border border-white/20 text-3xl">
                   ابدأ مشروعك
                 </span>
                 <h2 className="text-4xl font-bold text-white font-tajawal mb-4">
@@ -90,15 +79,10 @@ const Index = () => {
         </section>
         
         {/* نموذج طلب التجربة */}
-        <TrialRequestForm 
-          isOpen={showTrialForm} 
-          onClose={() => setShowTrialForm(false)} 
-        />
+        <TrialRequestForm isOpen={showTrialForm} onClose={() => setShowTrialForm(false)} />
       </main>
       <Footer />
       <Toaster />
-    </div>
-  );
+    </div>;
 };
-
 export default Index;
