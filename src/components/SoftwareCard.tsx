@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Send } from 'lucide-react';
 import { supabase } from "@/integrations/supabase/client";
@@ -6,7 +5,6 @@ import { toast } from 'sonner';
 import TrialRequestForm from './TrialRequestForm';
 import { ImageGallery } from './admin/ImageGallery';
 import { useContactInfo } from '@/hooks/useContactInfo';
-
 interface SoftwareCardProps {
   title: string;
   description: string;
@@ -15,7 +13,6 @@ interface SoftwareCardProps {
   price: string;
   onTrialRequest?: () => void;
 }
-
 const SoftwareCard = ({
   title,
   description,
@@ -35,19 +32,18 @@ const SoftwareCard = ({
   const [showTrialForm, setShowTrialForm] = useState(false);
   const [additionalImages, setAdditionalImages] = useState<string[]>([]);
   const [loadingImages, setLoadingImages] = useState(false);
-  const { contactInfo } = useContactInfo();
-
+  const {
+    contactInfo
+  } = useContactInfo();
   const toggleDetails = () => {
     setShowDetails(!showDetails);
     setShowOrderForm(false);
     setOrderSent(false);
   };
-
   const handleOrderClick = () => {
     setShowOrderForm(!showOrderForm);
     setOrderSent(false);
   };
-
   const handleTrialClick = () => {
     // If an external handler is provided, use it, otherwise show the local form
     if (onTrialRequest) {
@@ -56,7 +52,6 @@ const SoftwareCard = ({
       setShowTrialForm(true);
     }
   };
-
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const {
       name,
@@ -67,7 +62,6 @@ const SoftwareCard = ({
       [name]: value
     }));
   };
-
   const handleOrderSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -81,7 +75,6 @@ const SoftwareCard = ({
         whatsapp: orderData.whatsapp,
         status: 'new'
       });
-
       if (error) {
         console.error('Error submitting order:', error);
         toast.error('حدث خطأ أثناء إرسال الطلب. الرجاء المحاولة مرة أخرى.');
@@ -100,7 +93,7 @@ const SoftwareCard = ({
               company_name: orderData.company,
               whatsapp: orderData.whatsapp,
               software_id: id,
-              software_title: title,
+              software_title: title
             }
           }
         });
@@ -108,7 +101,6 @@ const SoftwareCard = ({
         // Log error but continue as the database entry was successful
         console.error("Error sending email notification:", emailError);
       }
-
       setOrderSent(true);
       setOrderData({
         company: '',
@@ -132,7 +124,6 @@ const SoftwareCard = ({
       fetchProductImages(id);
     }
   }, [showDetails, id]);
-  
   const fetchProductImages = async (productId: number) => {
     setLoadingImages(true);
     try {
@@ -153,23 +144,19 @@ const SoftwareCard = ({
       setLoadingImages(false);
     }
   };
-
-  return (
-    <div className="bg-gradient-to-tr from-white via-trndsky-gray to-[#f3fafe] rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 border border-trndsky-blue/10 hover:scale-105">
+  return <div className="bg-gradient-to-tr from-white via-trndsky-gray to-[#f3fafe] rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 border border-trndsky-blue/10 hover:scale-105">
       <div className="h-48 overflow-hidden relative" style={{
-        backgroundImage: `url(${image})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center'
-      }}>
+      backgroundImage: `url(${image})`,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center'
+    }}>
         <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent px-0 mx-0 my-0 rounded-none"></div>
       </div>
       
       <div className="p-6">
         <h3 className="text-2xl font-bold mb-2 font-tajawal text-right text-trndsky-darkblue">{title}</h3>
         <div className="flex items-center justify-between mb-3">
-          {price && (
-            <span className="font-tajawal text-xl font-bold text-trndsky-teal">{price}</span>
-          )}
+          {price && <span className="font-tajawal text-xl font-bold text-trndsky-teal">{price}</span>}
           <button onClick={toggleDetails} className="text-trndsky-teal hover:text-trndsky-blue font-medium transition-colors font-tajawal underline underline-offset-4">
             {showDetails ? 'إخفاء التفاصيل' : 'عرض التفاصيل'}
           </button>
@@ -220,10 +207,8 @@ const SoftwareCard = ({
       
       {/* نموذج طلب التجربة */}
       {!onTrialRequest && <TrialRequestForm isOpen={showTrialForm} onClose={() => setShowTrialForm(false)} />}
-    </div>
-  );
+    </div>;
 };
-
 export const FeaturedSoftware = ({
   onTrialRequest
 }: {
@@ -231,15 +216,14 @@ export const FeaturedSoftware = ({
 }) => {
   const [softwareItems, setSoftwareItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  
   const fetchFeaturedSoftware = async () => {
     try {
-      const { data, error } = await supabase
-        .from('software_products')
-        .select('*')
-        .order('id', { ascending: true })
-        .limit(3);
-        
+      const {
+        data,
+        error
+      } = await supabase.from('software_products').select('*').order('id', {
+        ascending: true
+      }).limit(3);
       if (error) {
         console.error('Error fetching featured software products:', error);
         return;
@@ -251,26 +235,17 @@ export const FeaturedSoftware = ({
       setLoading(false);
     }
   };
-  
   useEffect(() => {
     fetchFeaturedSoftware();
   }, []);
-  
   return <section className="section-padding bg-white">
       <div className="container mx-auto">
         <div className="text-center mb-16">
-          <span className="inline-block py-1 px-4 bg-trndsky-blue/10 text-trndsky-blue rounded-full text-sm mb-4 font-tajawal border border-trndsky-blue/20">
-            منتجاتنا المميزة
-          </span>
+          
           <h2 className="text-4xl font-bold text-gray-800 font-tajawal mb-4">
-            <span className="relative">
-              برمجياتنا الجاهزة
-              <span className="absolute -bottom-2 left-0 right-0 h-1 bg-gradient-to-r from-trndsky-teal to-trndsky-blue rounded-full"></span>
-            </span>
+            
           </h2>
-          <p className="text-gray-600 max-w-2xl mx-auto font-tajawal text-lg">
-            مجموعة من الحلول البرمجية الجاهزة التي يمكن تخصيصها لتناسب احتياجات عملك
-          </p>
+          
         </div>
         
         {loading ? <div className="text-center py-8">
@@ -278,17 +253,7 @@ export const FeaturedSoftware = ({
           </div> : softwareItems.length === 0 ? <div className="text-center py-8">
             <p className="text-gray-500">لا توجد برمجيات متاحة حالياً</p>
           </div> : <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-9">
-            {softwareItems.map(item => (
-              <SoftwareCard 
-                key={item.id} 
-                id={item.id} 
-                title={item.title} 
-                description={item.description} 
-                image={item.image_url} 
-                price={item.show_price && item.price ? `${item.price.toLocaleString()} ر.س` : ""} 
-                onTrialRequest={onTrialRequest} 
-              />
-            ))}
+            {softwareItems.map(item => <SoftwareCard key={item.id} id={item.id} title={item.title} description={item.description} image={item.image_url} price={item.show_price && item.price ? `${item.price.toLocaleString()} ر.س` : ""} onTrialRequest={onTrialRequest} />)}
           </div>}
         
         <div className="mt-12 text-center">
@@ -297,6 +262,4 @@ export const FeaturedSoftware = ({
       </div>
     </section>;
 };
-
 export default SoftwareCard;
-

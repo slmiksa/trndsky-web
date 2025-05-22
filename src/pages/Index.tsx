@@ -1,4 +1,3 @@
-
 import Navbar from '../components/Navbar';
 import HeroSlider from '../components/HeroSlider';
 import ServicesSection from '../components/ServicesSection';
@@ -10,12 +9,9 @@ import { useState } from 'react';
 import TrialRequestForm from '../components/TrialRequestForm';
 import { Toaster } from '../components/ui/toaster';
 import { Button } from '../components/ui/button';
-
 const Index = () => {
   const [showTrialForm, setShowTrialForm] = useState(false);
-  
-  return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
+  return <div className="min-h-screen flex flex-col bg-gray-50">
       <Navbar />
       <main className="flex-grow">
         <HeroSlider />
@@ -33,9 +29,7 @@ const Index = () => {
                   <span className="absolute -bottom-2 left-0 right-0 h-1 bg-gradient-to-r from-trndsky-blue to-trndsky-teal rounded-full"></span>
                 </span>
               </h2>
-              <p className="text-gray-600 max-w-2xl mx-auto font-tajawal">
-                مجموعة متنوعة من البرمجيات الجاهزة لتلبية احتياجات مختلف الأعمال والقطاعات
-              </p>
+              <p className="text-gray-600 max-w-2xl mx-auto font-tajawal">مجموعة متنوعة من البرمجيات الجاهزة لتلبية احتياجات مختلف الأعمال والقطاعات</p>
             </div>
             <FeaturedSoftware onTrialRequest={() => setShowTrialForm(true)} />
           </div>
@@ -46,9 +40,7 @@ const Index = () => {
           <div className="container mx-auto px-6">
             <div className="max-w-4xl mx-auto">
               <div className="text-center mb-16">
-                <span className="inline-block py-1 px-4 bg-white/20 text-white rounded-full mb-4 font-tajawal border border-white/20 text-3xl">
-                  ابدأ مشروعك
-                </span>
+                <span className="inline-block bg-white/20 text-white rounded-full mb-4 font-tajawal border border-white/20 text-3xl px-[33px] py-[17px] mx-[18px] my-0">ابدأ مشروعك بأفكارك</span>
                 <h2 className="text-4xl font-bold text-white font-tajawal mb-4">
                   <span className="relative">
                     طلب مشروع جديد
@@ -88,8 +80,8 @@ const Index = () => {
         <footer className="bg-gray-50 py-4 border-t border-gray-200">
           <div className="container mx-auto px-6">
             <div className="text-center text-sm text-gray-500 font-tajawal">
-              <p className="mb-1">Freelancer License: FL-83548418</p>
-              <p>Business Platform License: 0000032128</p>
+              
+              
             </div>
           </div>
         </footer>
@@ -99,8 +91,6 @@ const Index = () => {
       </main>
       <Footer />
       <Toaster />
-    </div>
-  );
+    </div>;
 };
-
 export default Index;
