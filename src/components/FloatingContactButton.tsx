@@ -137,14 +137,14 @@ const FloatingContactButton = ({
                   scale: 0.95
                 }}
                 onClick={() => setIsOpen(true)}
-                className="bg-gradient-to-r from-trndsky-teal to-trndsky-blue text-white rounded-full p-4 shadow-blue-glow hover:shadow-lg flex items-center justify-center transition-all duration-300"
+                className="bg-gradient-to-r from-trndsky-teal to-trndsky-blue text-white rounded-full p-4 shadow-lg hover:shadow-xl flex items-center justify-center transition-all duration-300 border border-white/20"
                 aria-label="التواصل معنا"
               >
                 <div className="relative">
                   <MessageCircle size={28} className="text-white" />
                   <span className="absolute -top-2 -right-2 bg-white text-trndsky-blue text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center animate-pulse-soft">?</span>
                 </div>
-                <span className="mr-2 font-tajawal">عندك إستفسار ؟</span>
+                <span className="mr-2 font-tajawal text-white">عندك إستفسار ؟</span>
               </motion.button>
             )}
           </AnimatePresence>

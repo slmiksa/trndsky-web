@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/components/ui/use-toast";
@@ -11,18 +12,22 @@ const WISAL_PARTNER = {
   name: "شركة الوصل الوطنية لتحصيل ديون جهات التمويل",
   logo_url: "/lovable-uploads/aa977791-13b8-471b-92c8-d9ef4ef03f27.png"
 };
+
 type Partner = {
   id: number;
   name: string;
   logo_url: string;
 };
+
 const Partners = () => {
   const [partners, setPartners] = useState<Partner[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
   useEffect(() => {
     fetchPartners();
   }, []);
+
   const fetchPartners = async () => {
     try {
       setLoading(true);
@@ -55,7 +60,9 @@ const Partners = () => {
       setLoading(false);
     }
   };
-  return <div className="min-h-screen flex flex-col bg-gray-50">
+
+  return (
+    <div className="min-h-screen flex flex-col bg-gray-50">
       <Navbar />
       <main className="flex-grow">
         <section className="py-16">
@@ -76,37 +83,56 @@ const Partners = () => {
             </div>
 
             <div className="relative mx-auto max-w-6xl">
-              {loading ? <div className="text-center py-12">
+              {loading ? (
+                <div className="text-center py-12">
                   <div className="w-12 h-12 border-4 border-trndsky-blue border-t-transparent rounded-full animate-spin mx-auto"></div>
                   <p className="mt-4 text-trndsky-blue">جاري تحميل بيانات الشركاء...</p>
-                </div> : error ? <div className="text-center py-12">
+                </div>
+              ) : error ? (
+                <div className="text-center py-12">
                   <div className="text-red-500 mb-4 text-lg">{error}</div>
                   <button onClick={fetchPartners} className="bg-trndsky-teal text-white px-4 py-2 rounded-lg hover:bg-trndsky-blue transition-colors">
                     إعادة المحاولة
                   </button>
-                </div> : <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
-                  {partners.length === 0 ? <div className="text-center py-12">
+                </div>
+              ) : (
+                <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
+                  {partners.length === 0 ? (
+                    <div className="text-center py-12">
                       <p className="text-xl text-gray-500">لا يوجد شركاء حالياً</p>
-                    </div> : <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-                      {partners.map(partner => <div key={partner.id} className="bg-white border border-trndsky-blue/10 shadow hover:shadow-md transition-all flex flex-col items-center justify-center h-44 p-4 rounded py-0">
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+                      {partners.map(partner => (
+                        <div key={partner.id} className="bg-white border border-trndsky-blue/10 shadow hover:shadow-md transition-all flex flex-col items-center justify-center h-52 p-4 rounded-lg">
                           <div className="bg-gray-50 w-full h-24 flex items-center justify-center rounded-xl p-2 mb-3">
-                            <img src={partner.logo_url} alt={partner.name} className="object-contain max-h-20 max-w-[80%]" onError={e => {
-                      e.currentTarget.src = "/placeholder.svg";
-                      e.currentTarget.alt = "صورة غير متوفرة";
-                    }} />
+                            <img 
+                              src={partner.logo_url} 
+                              alt={partner.name} 
+                              className="object-contain max-h-20 max-w-[80%]" 
+                              onError={(e) => {
+                                e.currentTarget.src = "/placeholder.svg";
+                                e.currentTarget.alt = "صورة غير متوفرة";
+                              }}
+                            />
                           </div>
-                          <div className="text-trndsky-darkblue font-bold text-sm text-center mt-2 line-clamp-2 py-0 my-0 px-px mx-[11px]">
+                          <div className="text-trndsky-darkblue font-bold text-sm text-center mt-2 px-2 h-20 overflow-y-auto">
                             {partner.name}
                           </div>
-                        </div>)}
-                    </div>}
-                </div>}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         </section>
       </main>
       <Footer />
       <Toaster />
-    </div>;
+    </div>
+  );
 };
+
 export default Partners;

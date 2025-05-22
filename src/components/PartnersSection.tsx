@@ -85,7 +85,8 @@ const PartnersSection = () => {
       </div>;
   }
 
-  return <div className="container mx-auto px-6 py-8">
+  return (
+    <div className="container mx-auto px-6 py-8">
       <div className="text-center mb-16">
         <span className="inline-block py-1 px-4 bg-trndsky-blue/10 text-trndsky-blue rounded-full text-sm mb-4 font-tajawal border border-trndsky-blue/20">
           شركاؤنا
@@ -112,7 +113,7 @@ const PartnersSection = () => {
               {limitedPartners.map(partner => (
                 <div 
                   key={partner.id} 
-                  className="bg-white border border-trndsky-blue/10 shadow hover:shadow-md transition-all flex flex-col items-center justify-center h-44 p-4 rounded-3xl animate-fade-in"
+                  className="bg-white border border-trndsky-blue/10 shadow hover:shadow-md transition-all flex flex-col items-center justify-center h-48 p-4 rounded-3xl animate-fade-in"
                 >
                   <div className="bg-gray-50 w-full h-24 flex items-center justify-center rounded-xl p-2 mb-3">
                     <img 
@@ -125,7 +126,7 @@ const PartnersSection = () => {
                       }}
                     />
                   </div>
-                  <div className="text-trndsky-darkblue font-bold text-sm text-center mt-2 line-clamp-2">
+                  <div className="text-trndsky-darkblue font-bold text-sm text-center mt-2 px-2 h-16 overflow-y-auto">
                     {partner.name}
                   </div>
                 </div>
@@ -147,7 +148,8 @@ const PartnersSection = () => {
           </div>
         )}
       </div>
-    </div>;
+    </div>
+  );
 };
 
 export default PartnersSection;
