@@ -170,9 +170,19 @@ button:hover {
   opacity: 1 !important;
 }
 
+button:active, 
+button:focus,
+button:focus-visible {
+  opacity: 1 !important;
+  outline: none;
+}
+
 .btn-primary:hover, 
 .btn-secondary:hover, 
-.btn-outline:hover {
+.btn-outline:hover,
+.btn-primary:active,
+.btn-secondary:active,
+.btn-outline:active {
   opacity: 1 !important;
   filter: brightness(1.05);
 }

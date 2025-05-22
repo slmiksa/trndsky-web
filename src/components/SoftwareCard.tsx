@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Send } from 'lucide-react';
 import { supabase } from "@/integrations/supabase/client";
@@ -185,10 +186,10 @@ const SoftwareCard = ({
 
             <div className="mt-4 flex flex-col gap-3 md:flex-row md:justify-end">
               {!showOrderForm && <>
-                  <button className="px-6 py-2 bg-white text-trndsky-blue border-2 border-trndsky-blue/20 hover:bg-gradient-to-l hover:from-trndsky-teal hover:to-trndsky-blue hover:text-white text-sm font-tajawal rounded-full shadow-md transition-all duration-300" onClick={handleOrderClick} type="button">
+                  <button className="px-6 py-2 bg-white text-trndsky-blue border-2 border-trndsky-blue/20 hover:bg-trndsky-blue hover:bg-opacity-10 hover:text-trndsky-darkblue hover:border-trndsky-blue text-sm font-tajawal rounded-full shadow-md transition-all duration-300 hover:opacity-100 active:opacity-100 focus:opacity-100" onClick={handleOrderClick} type="button">
                     طلب المنتج
                   </button>
-                  <button className="px-6 py-2 bg-white text-trndsky-blue border-2 border-trndsky-blue/20 hover:bg-gradient-to-l hover:from-trndsky-teal hover:to-trndsky-blue hover:text-white text-sm font-tajawal rounded-full shadow-md transition-all duration-300" onClick={handleTrialClick} type="button">
+                  <button className="px-6 py-2 bg-white text-trndsky-blue border-2 border-trndsky-blue/20 hover:bg-trndsky-blue hover:bg-opacity-10 hover:text-trndsky-darkblue hover:border-trndsky-blue text-sm font-tajawal rounded-full shadow-md transition-all duration-300 hover:opacity-100 active:opacity-100 focus:opacity-100" onClick={handleTrialClick} type="button">
                     طلب تجربة
                   </button>
                 </>}
@@ -207,7 +208,7 @@ const SoftwareCard = ({
                   </label>
                   <input id={`whatsapp-${id}`} name="whatsapp" required value={orderData.whatsapp} onChange={handleInputChange} className="w-full px-3 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-trndsky-teal bg-gray-50 font-tajawal" pattern="^[0-9+]{8,15}$" placeholder="05xxxxxxxx أو +9665xxxxxxx" />
                 </div>
-                <button type="submit" disabled={orderSent || isSubmitting} className="flex items-center gap-2 px-6 py-2 rounded-full bg-gradient-to-l from-trndsky-teal to-trndsky-blue text-white font-tajawal shadow hover:scale-105 transition-all hover:from-trndsky-blue hover:to-trndsky-teal">
+                <button type="submit" disabled={orderSent || isSubmitting} className="flex items-center gap-2 px-6 py-2 rounded-full bg-gradient-to-l from-trndsky-teal to-trndsky-blue text-white font-tajawal shadow hover:scale-105 transition-all hover:from-trndsky-blue hover:to-trndsky-teal hover:opacity-100 active:opacity-100 focus:opacity-100">
                   <Send className="w-5 h-5" /> {isSubmitting ? "جاري الإرسال..." : orderSent ? "تم الإرسال بنجاح" : "إرسال الطلب"}
                 </button>
                 {orderSent && <div className="mt-2 text-trndsky-teal font-tajawal text-sm">
@@ -298,3 +299,4 @@ export const FeaturedSoftware = ({
 };
 
 export default SoftwareCard;
+

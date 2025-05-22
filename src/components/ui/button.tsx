@@ -10,15 +10,15 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-trndsky-blue text-white hover:bg-trndsky-darkblue border border-trndsky-blue/20 hover:shadow-blue-glow",
+        default: "bg-trndsky-blue text-white hover:bg-trndsky-darkblue border border-trndsky-blue/20 hover:shadow-blue-glow hover:opacity-100 active:opacity-100",
         destructive:
-          "bg-trndsky-red text-white hover:bg-trndsky-red/90 border border-trndsky-red/20 hover:shadow-red-glow",
+          "bg-trndsky-red text-white hover:bg-trndsky-red/90 border border-trndsky-red/20 hover:shadow-red-glow hover:opacity-100 active:opacity-100",
         outline:
-          "border-2 border-trndsky-blue bg-transparent text-trndsky-blue hover:bg-trndsky-blue/10 hover:border-trndsky-blue hover:shadow-blue-glow",
+          "border-2 border-trndsky-blue bg-transparent text-trndsky-blue hover:bg-trndsky-blue/10 hover:border-trndsky-blue hover:shadow-blue-glow hover:opacity-100 active:opacity-100",
         secondary:
-          "bg-trndsky-yellow text-trndsky-darkblue hover:bg-trndsky-yellow/90 border border-trndsky-yellow/20 hover:shadow-yellow-glow",
-        ghost: "hover:bg-trndsky-blue/10 hover:text-trndsky-blue border border-transparent hover:border-trndsky-blue/20",
-        link: "text-trndsky-blue underline-offset-4 hover:underline shadow-none",
+          "bg-trndsky-yellow text-trndsky-darkblue hover:bg-trndsky-yellow/90 border border-trndsky-yellow/20 hover:shadow-yellow-glow hover:opacity-100 active:opacity-100",
+        ghost: "hover:bg-trndsky-blue/10 hover:text-trndsky-blue border border-transparent hover:border-trndsky-blue/20 hover:opacity-100 active:opacity-100",
+        link: "text-trndsky-blue underline-offset-4 hover:underline shadow-none hover:opacity-100 active:opacity-100",
       },
       size: {
         default: "h-11 px-5 py-2.5",
