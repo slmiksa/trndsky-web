@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -13,13 +14,31 @@ import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
 import { AdminAuthProvider } from "@/components/AdminAuthContext";
 import ProtectedAdminRoute from "@/components/ProtectedAdminRoute";
-import React from 'react';
+import React, { Suspense } from 'react';
 import FloatingContactButton from "./components/FloatingContactButton";
 import { useWhatsAppNumber } from "./hooks/useWhatsAppNumber";
 import AppInitializer from "./components/AppInitializer";
 
-// Create a client
-const queryClient = new QueryClient();
+// إنشاء مثيل واحد للعميل
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 60 * 1000, // تعتبر البيانات قديمة بعد دقيقة واحدة
+      cacheTime: 5 * 60 * 1000, // تبقى البيانات في الذاكرة المؤقتة لمدة 5 دقائق
+      retry: 1, // محاولة واحدة فقط في حالة الفشل
+    },
+  },
+});
+
+// مكون للتحميل البطيء
+const PageLoader = () => (
+  <div className="flex items-center justify-center min-h-screen">
+    <div className="flex flex-col items-center">
+      <div className="w-12 h-12 border-4 border-trndsky-blue border-t-transparent rounded-full animate-spin"></div>
+      <p className="mt-4 text-lg font-tajawal">جاري تحميل الصفحة...</p>
+    </div>
+  </div>
+);
 
 const AppContent = () => {
   const { whatsAppSettings, loading } = useWhatsAppNumber();
@@ -27,27 +46,29 @@ const AppContent = () => {
   return (
     <>
       <AppInitializer />
-      <Routes>
-        <Route path="/" element={<Index />} />
-        <Route path="/software" element={<Software />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="/partners" element={<Partners />} />
-        <Route path="/adminlogin" element={<AdminLogin />} />
-        <Route
-          path="/admin"
-          element={
-            <ProtectedAdminRoute>
-              <AdminDashboard />
-            </ProtectedAdminRoute>
-          }
-        />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+      <Suspense fallback={<PageLoader />}>
+        <Routes>
+          <Route path="/" element={<Index />} />
+          <Route path="/software" element={<Software />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/partners" element={<Partners />} />
+          <Route path="/adminlogin" element={<AdminLogin />} />
+          <Route
+            path="/admin"
+            element={
+              <ProtectedAdminRoute>
+                <AdminDashboard />
+              </ProtectedAdminRoute>
+            }
+          />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </Suspense>
       
-      {/* Always show the button regardless of loading state */}
+      {/* دائما إظهار زر التواصل بغض النظر عن حالة التحميل */}
       <FloatingContactButton 
-        phoneNumber={loading ? "+966500000000" : whatsAppSettings.phone_number} 
+        phoneNumber={loading ? "966575594911" : whatsAppSettings.phone_number} 
         defaultMessage={loading ? "استفسار من موقع TRNDSKY" : whatsAppSettings.default_message} 
       />
     </>

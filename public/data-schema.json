@@ -1,0 +1,23 @@
+
+{
+  "preconnect": [
+    "https://fonts.gstatic.com",
+    "https://qsdwcplmgkuyweqynyyh.supabase.co"
+  ],
+  "prefetch": [
+    "/software",
+    "/about",
+    "/contact",
+    "/partners"
+  ],
+  "preload": [
+    {
+      "href": "/lovable-uploads/64c873ad-7948-4191-9929-bbb9fb1d9858.png",
+      "as": "image"
+    },
+    {
+      "href": "/placeholder.svg",
+      "as": "image"
+    }
+  ]
+}

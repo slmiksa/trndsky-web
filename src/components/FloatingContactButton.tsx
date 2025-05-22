@@ -25,10 +25,10 @@ const FloatingContactButton = ({
     const encodedMessage = encodeURIComponent(`${defaultMessage}\n\n${message}`);
     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
 
-    // Open WhatsApp in a new tab
+    // فتح واتساب في نافذة جديدة
     window.open(whatsappUrl, '_blank');
 
-    // Reset and close form
+    // إعادة ضبط وإغلاق النموذج
     setMessage('');
     setIsOpen(false);
     toast.success('تم توجيهك إلى واتساب');
@@ -70,7 +70,7 @@ const FloatingContactButton = ({
               
               <button
                 type="submit"
-                className="w-full bg-gradient-to-r from-trndsky-teal to-trndsky-blue hover:from-trndsky-blue hover:to-trndsky-teal text-white font-bold py-2 px-4 rounded-lg flex items-center justify-center gap-2 transition-all duration-300 shadow-blue-glow font-tajawal"
+                className="w-full bg-trndsky-blue hover:bg-trndsky-darkblue text-white font-bold py-2 px-4 rounded-lg flex items-center justify-center gap-2 transition-all duration-300 shadow-blue-glow font-tajawal"
               >
                 <span>إرسال إلى واتساب</span>
                 <Send size={18} />
@@ -89,7 +89,7 @@ const FloatingContactButton = ({
               <MessageCircle size={28} className="text-white" />
               <span className="absolute -top-2 -right-2 bg-white text-trndsky-blue text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center animate-pulse-soft">?</span>
             </div>
-            <span className="mr-2 font-tajawal text-white">عندك إستفسار ؟</span>
+            <span className="mr-2 font-tajawal text-white">عندك إستفسار؟</span>
           </motion.button>
         )}
       </AnimatePresence>

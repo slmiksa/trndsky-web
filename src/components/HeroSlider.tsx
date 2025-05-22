@@ -18,22 +18,52 @@ const defaultSlides = [
     id: 1,
     title: "دعم فني متواصل",
     description: "فريقنا مستعد دائمًا لدعمك وتطوير مشاريعك على مدار الساعة وبأحدث التقنيات.",
-    image: "https://images.unsplash.com/photo-1531297484001-80022131f5a1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2920&q=80",
+    image: "/placeholder.svg",
   },
   {
     id: 2,
     title: "حلول تقنية متكاملة",
     description: "نقدم خدمات برمجية شاملة من التصميم إلى التطوير والصيانة",
-    image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2915&q=80",
+    image: "/placeholder.svg",
   }
 ];
 
 const HeroSlider = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [slides, setSlides] = useState<Slide[]>(defaultSlides); // استخدام السلايدات الافتراضية مباشرة
+  const [slides, setSlides] = useState<Slide[]>(defaultSlides);
   const [loading, setLoading] = useState(true);
   const [retryCount, setRetryCount] = useState(0);
+  const [imagesLoaded, setImagesLoaded] = useState<Record<number, boolean>>({});
   const maxRetries = 2;
+
+  // تحميل مسبق للصور
+  const preloadImages = useCallback((slidesData: Slide[]) => {
+    const newImagesLoaded: Record<number, boolean> = {};
+    
+    slidesData.forEach((slide) => {
+      if (slide.image) {
+        const img = new Image();
+        img.src = slide.image;
+        newImagesLoaded[slide.id] = false;
+        
+        img.onload = () => {
+          setImagesLoaded(prev => ({
+            ...prev,
+            [slide.id]: true
+          }));
+        };
+        
+        img.onerror = () => {
+          console.error(`Failed to load image for slide: ${slide.id}`);
+        };
+      }
+    });
+    
+    // إذا لم تكن هناك صور للتحميل
+    if (Object.keys(newImagesLoaded).length === 0) {
+      setImagesLoaded({});
+    }
+  }, []);
 
   // جلب السلايدات من قاعدة البيانات مع محاولات إعادة الاتصال
   const fetchSlides = useCallback(async () => {
@@ -65,13 +95,18 @@ const HeroSlider = () => {
         });
       } else if (data && data.length > 0) {
         setSlides(data);
+        preloadImages(data);
       }
     } catch (error) {
       console.error('Unexpected error:', error);
     } finally {
-      setLoading(false);
+      // نضع زمن انتظار قصير قبل إخفاء شاشة التحميل حتى لو تم الانتهاء من التحميل فعلاً
+      // هذا يضمن أن الواجهة تظهر كاملة وليس بشكل متقطع
+      setTimeout(() => {
+        setLoading(false);
+      }, 300);
     }
-  }, [retryCount]);
+  }, [retryCount, preloadImages]);
 
   // استدعاء وظيفة جلب السلايدات عند تحميل المكون
   useEffect(() => {
@@ -106,9 +141,9 @@ const HeroSlider = () => {
     fetchSlides();
   };
 
-  if (loading && retryCount === 0) {
+  if (loading) {
     return (
-      <div className="relative pt-16 flex items-center justify-center overflow-hidden bg-black border-b-4 border-trndsky-teal h-[50vh]">
+      <div className="relative pt-16 flex items-center justify-center overflow-hidden bg-gradient-to-b from-black to-trndsky-darkblue border-b-4 border-trndsky-teal h-[50vh]">
         <div className="text-white text-xl flex flex-col items-center">
           <div className="w-8 h-8 border-4 border-trndsky-teal border-t-transparent rounded-full animate-spin mb-4"></div>
           جاري تحميل السلايدات...
@@ -119,7 +154,7 @@ const HeroSlider = () => {
 
   if (slides.length === 0) {
     return (
-      <div className="relative pt-16 flex items-center justify-center overflow-hidden bg-black border-b-4 border-trndsky-teal h-[50vh]">
+      <div className="relative pt-16 flex items-center justify-center overflow-hidden bg-gradient-to-b from-black to-trndsky-darkblue border-b-4 border-trndsky-teal h-[50vh]">
         <div className="text-white text-xl flex flex-col items-center">
           <p className="mb-4">لا توجد سلايدات متاحة</p>
           <button 
@@ -135,12 +170,12 @@ const HeroSlider = () => {
 
   return (
     <div className="relative pt-16 flex items-center overflow-hidden bg-black border-b-4 border-trndsky-teal">
-      {/* Full-width hero image with overlay */}
+      {/* صور الخلفية وتأثيراتها */}
       <div className="absolute inset-0 z-0">
         {slides.map((slide, index) => (
           <div
             key={slide.id}
-            className={`absolute inset-0 transition-opacity duration-1000 ${
+            className={`absolute inset-0 transition-opacity duration-700 ${
               index === currentSlide ? 'opacity-100' : 'opacity-0'
             }`}
             style={{ display: index === currentSlide ? 'block' : 'none' }}
@@ -158,20 +193,20 @@ const HeroSlider = () => {
               }}
               onError={(e) => {
                 (e.currentTarget as HTMLElement).style.backgroundImage = 
-                  'url(https://images.unsplash.com/photo-1531297484001-80022131f5a1?ixlib=rb-4.0.3)';
+                  'url(/placeholder.svg)';
               }}
             ></div>
           </div>
         ))}
       </div>
 
-      {/* Content */}
+      {/* المحتوى */}
       <div className="relative z-10 container mx-auto px-6 py-32 md:py-40">
         <div className="max-w-3xl ml-auto">
           {slides.map((slide, index) => (
             <div
               key={slide.id}
-              className={`transition-all duration-700 ${
+              className={`transition-all duration-500 ${
                 index === currentSlide 
                 ? 'opacity-100 translate-y-0' 
                 : 'opacity-0 translate-y-10 absolute'
@@ -209,13 +244,13 @@ const HeroSlider = () => {
         </div>
       </div>
 
-      {/* Navigation Arrows */}
+      {/* أزرار التنقل */}
       <div className="absolute bottom-8 right-8 z-10 flex gap-3">
         <button 
           onClick={goToPrevSlide}
           className="w-12 h-12 flex items-center justify-center rounded-full bg-white/20 backdrop-blur-sm
             text-white border border-white/30 hover:bg-white/30 transition-all duration-300"
-          aria-label="Previous slide"
+          aria-label="السلايد السابق"
         >
           <ArrowRight className="w-5 h-5" />
         </button>
@@ -223,13 +258,13 @@ const HeroSlider = () => {
           onClick={goToNextSlide} 
           className="w-12 h-12 flex items-center justify-center rounded-full bg-white/20 backdrop-blur-sm
             text-white border border-white/30 hover:bg-white/30 transition-all duration-300"
-          aria-label="Next slide"
+          aria-label="السلايد التالي"
         >
           <ArrowLeft className="w-5 h-5" />
         </button>
       </div>
 
-      {/* Pagination Indicators */}
+      {/* مؤشرات الصفحات */}
       <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex gap-2">
         {slides.map((_, index) => (
           <button
@@ -238,7 +273,7 @@ const HeroSlider = () => {
             className={`w-3 h-3 rounded-full transition-all duration-300 ${
               index === currentSlide ? 'w-10 bg-trndsky-teal' : 'bg-white/40 hover:bg-white/60'
             }`}
-            aria-label={`Go to slide ${index + 1}`}
+            aria-label={`انتقل إلى سلايد ${index + 1}`}
           />
         ))}
       </div>
