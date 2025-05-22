@@ -161,7 +161,7 @@ const ContactForm = () => {
         <button
           type="submit"
           disabled={loading}
-          className="btn-primary py-3 px-8 text-lg font-tajawal"
+          className="btn-primary py-3 px-8 text-lg font-tajawal hover:opacity-100 hover:shadow-blue-glow"
         >
           {loading ? "جاري الإرسال..." : "إرسال"}
         </button>

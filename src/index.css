@@ -52,6 +52,14 @@ body, html {
   box-shadow: 0 5px 15px rgba(59, 130, 246, 0.3);
 }
 
+.shadow-red-glow {
+  box-shadow: 0 5px 15px rgba(234, 84, 85, 0.3);
+}
+
+.shadow-yellow-glow {
+  box-shadow: 0 5px 15px rgba(249, 202, 36, 0.3);
+}
+
 .animate-pulse-soft {
   animation: pulse-soft 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
@@ -155,4 +163,33 @@ img, video {
   .gradient-underline:hover::after {
     @apply w-full;
   }
+}
+
+/* تحسين ظهور الأزرار عند الحركة على الماوس */
+button:hover {
+  opacity: 1 !important;
+}
+
+.btn-primary:hover, 
+.btn-secondary:hover, 
+.btn-outline:hover {
+  opacity: 1 !important;
+  filter: brightness(1.05);
+}
+
+input:focus, 
+textarea:focus, 
+select:focus {
+  opacity: 1 !important;
+}
+
+/* تحسين ظهور كروت لوحة التحكم */
+.admin-card {
+  transition: all 0.3s ease;
+}
+
+.admin-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px -5px rgba(46, 134, 222, 0.2);
+  border-color: rgba(46, 134, 222, 0.5);
 }

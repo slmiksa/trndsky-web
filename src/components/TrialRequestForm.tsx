@@ -139,14 +139,14 @@ const TrialRequestForm = ({ isOpen, onClose }: TrialRequestFormProps) => {
               type="button"
               variant="outline"
               onClick={onClose}
-              className="font-tajawal"
+              className="font-tajawal hover:opacity-100"
             >
               إلغاء
             </Button>
             <Button
               type="submit"
               disabled={loading}
-              className="bg-gradient-to-l from-trndsky-teal to-trndsky-blue hover:from-trndsky-blue hover:to-trndsky-teal text-white font-tajawal"
+              className="bg-gradient-to-l from-trndsky-teal to-trndsky-blue hover:from-trndsky-blue hover:to-trndsky-teal text-white font-tajawal hover:opacity-100 hover:shadow-blue-glow"
             >
               {loading ? "جارٍ الإرسال..." : "إرسال طلب التجربة"}
             </Button>

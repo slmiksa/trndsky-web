@@ -145,7 +145,11 @@ const ProjectRequestForm = () => {
               <textarea id="description" name="description" value={formData.description} onChange={handleChange} required rows={5} className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-trndsky-teal bg-white shadow-sm text-lg font-tajawal resize-none text-black" dir="rtl"></textarea>
             </div>
             <div className="flex justify-center mt-8">
-              <button type="submit" disabled={loading} className="w-full md:w-auto bg-gradient-to-l from-trndsky-teal to-trndsky-blue hover:from-trndsky-blue hover:to-trndsky-teal text-white py-3 px-12 rounded-full shadow-lg text-xl font-tajawal tracking-widest transition-all hover:scale-105 disabled:opacity-60">
+              <button 
+                type="submit" 
+                disabled={loading} 
+                className="w-full md:w-auto bg-gradient-to-l from-trndsky-teal to-trndsky-blue hover:from-trndsky-blue hover:to-trndsky-teal text-white py-3 px-12 rounded-full shadow-lg text-xl font-tajawal tracking-widest transition-all hover:scale-105 disabled:opacity-60 hover:opacity-100 hover:shadow-blue-glow"
+              >
                 {loading ? "يتم الإرسال..." : "إرسال الطلب"}
               </button>
             </div>

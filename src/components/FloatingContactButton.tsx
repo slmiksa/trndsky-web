@@ -71,7 +71,7 @@ const FloatingContactButton = ({
               
               <button
                 type="submit"
-                className="w-full bg-trndsky-blue hover:bg-trndsky-darkblue text-white font-bold py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-all duration-300 shadow-blue-glow font-tajawal text-base"
+                className="w-full bg-trndsky-blue hover:bg-trndsky-darkblue text-white font-bold py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-all duration-300 shadow-blue-glow font-tajawal text-base hover:shadow-lg"
               >
                 <span>إرسال إلى واتساب</span>
                 <Send size={18} />
@@ -84,7 +84,7 @@ const FloatingContactButton = ({
             whileTap={{ scale: 0.95 }}
             onClick={() => setIsOpen(true)}
             aria-label="التواصل معنا"
-            className="bg-trndsky-blue text-white rounded-full shadow-xl hover:shadow-2xl flex items-center justify-center transition-all duration-300 border-2 border-white py-3 px-5"
+            className="bg-trndsky-blue text-white rounded-full shadow-xl hover:shadow-2xl flex items-center justify-center transition-all duration-300 border-2 border-white py-3 px-5 hover:bg-trndsky-darkblue"
           >
             <div className="relative">
               <MessageCircle size={24} className="text-white" />

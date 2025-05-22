@@ -6,18 +6,18 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 shadow-md hover:shadow-lg",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 shadow-md",
   {
     variants: {
       variant: {
-        default: "bg-trndsky-blue text-white hover:bg-trndsky-darkblue border border-trndsky-blue/20",
+        default: "bg-trndsky-blue text-white hover:bg-trndsky-darkblue border border-trndsky-blue/20 hover:shadow-blue-glow",
         destructive:
-          "bg-trndsky-red text-white hover:bg-trndsky-red/90 border border-trndsky-red/20",
+          "bg-trndsky-red text-white hover:bg-trndsky-red/90 border border-trndsky-red/20 hover:shadow-red-glow",
         outline:
-          "border-2 border-trndsky-blue bg-transparent text-trndsky-blue hover:bg-trndsky-blue/10",
+          "border-2 border-trndsky-blue bg-transparent text-trndsky-blue hover:bg-trndsky-blue/10 hover:border-trndsky-blue hover:shadow-blue-glow",
         secondary:
-          "bg-trndsky-yellow text-trndsky-darkblue hover:bg-trndsky-yellow/90 border border-trndsky-yellow/20",
-        ghost: "hover:bg-trndsky-blue/10 hover:text-trndsky-blue border border-transparent hover:border-trndsky-blue/10",
+          "bg-trndsky-yellow text-trndsky-darkblue hover:bg-trndsky-yellow/90 border border-trndsky-yellow/20 hover:shadow-yellow-glow",
+        ghost: "hover:bg-trndsky-blue/10 hover:text-trndsky-blue border border-transparent hover:border-trndsky-blue/20",
         link: "text-trndsky-blue underline-offset-4 hover:underline shadow-none",
       },
       size: {
