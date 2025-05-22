@@ -125,3 +125,34 @@ img, video {
     text-wrap: pretty;
   }
 }
+
+/* تنسيق للأزرار والعناصر التفاعلية */
+@layer components {
+  .btn-primary {
+    @apply bg-trndsky-blue hover:bg-trndsky-darkblue text-white px-6 py-2 rounded-lg transition-colors shadow-md hover:shadow-lg;
+  }
+  
+  .btn-secondary {
+    @apply bg-trndsky-yellow hover:bg-trndsky-yellow/90 text-trndsky-darkblue px-6 py-2 rounded-lg transition-colors shadow-md hover:shadow-lg;
+  }
+  
+  .btn-outline {
+    @apply border-2 border-trndsky-blue text-trndsky-blue hover:bg-trndsky-blue/10 px-6 py-2 rounded-lg transition-colors;
+  }
+
+  .hover-lift {
+    @apply transition-transform duration-300 hover:-translate-y-1;
+  }
+  
+  .gradient-underline {
+    @apply relative;
+  }
+  
+  .gradient-underline::after {
+    @apply content-[''] absolute w-0 h-0.5 bg-gradient-to-r from-trndsky-yellow to-trndsky-red bottom-0 left-0 transition-all duration-300;
+  }
+  
+  .gradient-underline:hover::after {
+    @apply w-full;
+  }
+}

@@ -129,8 +129,16 @@ const Footer = () => {
           </div>
         </div>
 
+        {/* Certification Numbers */}
+        <div className="mt-12 pt-8 border-t border-white/10 text-center">
+          <div className="flex flex-col md:flex-row justify-center gap-4 md:gap-10 text-blue-100 text-sm">
+            <p>Freelance Certification Number: FL-83548418</p>
+            <p>Business Platform Certification Number: 0000032128</p>
+          </div>
+        </div>
+
         {/* Copyright */}
-        <div className="border-t border-white/10 mt-16 pt-8 text-center text-blue-200 text-sm">
+        <div className="border-t border-white/10 mt-8 pt-8 text-center text-blue-200 text-sm">
           <p>© {new Date().getFullYear()} TRNDSKY. جميع الحقوق محفوظة.</p>
         </div>
       </div>
