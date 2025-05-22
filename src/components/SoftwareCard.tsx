@@ -6,7 +6,6 @@ import TrialRequestForm from './TrialRequestForm';
 import { ImageGallery } from './admin/ImageGallery';
 import { useContactInfo } from '@/hooks/useContactInfo';
 import { Button } from './ui/button';
-
 interface SoftwareCardProps {
   title: string;
   description: string;
@@ -175,22 +174,10 @@ const SoftwareCard = ({
 
             <div className="mt-4 flex flex-col gap-3 md:flex-row md:justify-end">
               {!showOrderForm && <>
-                  <Button 
-                    onClick={handleOrderClick} 
-                    type="button"
-                    variant="default"
-                    size="lg" 
-                    className="bg-trndsky-blue text-white font-tajawal font-bold border-2 border-white shadow-md hover:shadow-blue-glow hover:bg-trndsky-darkblue opacity-100 hover:opacity-100 active:opacity-100 focus:opacity-100"
-                  >
+                  <Button onClick={handleOrderClick} type="button" variant="default" size="lg" className="bg-trndsky-blue text-white font-tajawal font-bold border-2 border-white shadow-md hover:shadow-blue-glow hover:bg-trndsky-darkblue opacity-100 hover:opacity-100 active:opacity-100 focus:opacity-100">
                     طلب المنتج
                   </Button>
-                  <Button 
-                    onClick={handleTrialClick} 
-                    type="button"
-                    variant="default"
-                    size="lg"
-                    className="bg-trndsky-teal text-white font-tajawal font-bold border-2 border-white shadow-md hover:shadow-blue-glow hover:bg-trndsky-darkblue opacity-100 hover:opacity-100 active:opacity-100 focus:opacity-100"
-                  >
+                  <Button onClick={handleTrialClick} type="button" variant="default" size="lg" className="bg-trndsky-teal text-white font-tajawal font-bold border-2 border-white shadow-md hover:shadow-blue-glow opacity-100 hover:opacity-100 active:opacity-100 focus:opacity-100 bg-trndsky-blue">
                     طلب تجربة
                   </Button>
                 </>}
@@ -209,13 +196,7 @@ const SoftwareCard = ({
                   </label>
                   <input id={`whatsapp-${id}`} name="whatsapp" required value={orderData.whatsapp} onChange={handleInputChange} className="w-full px-3 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-trndsky-teal bg-gray-50 font-tajawal" pattern="^[0-9+]{8,15}$" placeholder="05xxxxxxxx أو +9665xxxxxxx" />
                 </div>
-                <Button 
-                  type="submit" 
-                  disabled={orderSent || isSubmitting} 
-                  variant="default"
-                  size="lg"
-                  className="w-full text-base font-bold py-3 bg-trndsky-blue hover:bg-trndsky-darkblue text-white font-tajawal rounded-lg shadow-lg hover:shadow-blue-glow border-2 border-white opacity-100 hover:opacity-100 active:opacity-100 focus:opacity-100"
-                >
+                <Button type="submit" disabled={orderSent || isSubmitting} variant="default" size="lg" className="w-full text-base font-bold py-3 bg-trndsky-blue hover:bg-trndsky-darkblue text-white font-tajawal rounded-lg shadow-lg hover:shadow-blue-glow border-2 border-white opacity-100 hover:opacity-100 active:opacity-100 focus:opacity-100">
                   <Send className="w-5 h-5 ml-2" /> 
                   {isSubmitting ? "جاري الإرسال..." : orderSent ? "تم الإرسال بنجاح" : "إرسال الطلب"}
                 </Button>
