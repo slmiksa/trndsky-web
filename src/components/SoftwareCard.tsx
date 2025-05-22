@@ -5,6 +5,8 @@ import { toast } from 'sonner';
 import TrialRequestForm from './TrialRequestForm';
 import { ImageGallery } from './admin/ImageGallery';
 import { useContactInfo } from '@/hooks/useContactInfo';
+import { Button } from './ui/button';
+
 interface SoftwareCardProps {
   title: string;
   description: string;
@@ -195,9 +197,16 @@ const SoftwareCard = ({
                   </label>
                   <input id={`whatsapp-${id}`} name="whatsapp" required value={orderData.whatsapp} onChange={handleInputChange} className="w-full px-3 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-trndsky-teal bg-gray-50 font-tajawal" pattern="^[0-9+]{8,15}$" placeholder="05xxxxxxxx أو +9665xxxxxxx" />
                 </div>
-                <button type="submit" disabled={orderSent || isSubmitting} className="flex items-center gap-2 px-6 py-2 rounded-full bg-gradient-to-l from-trndsky-teal to-trndsky-blue text-white font-tajawal shadow hover:scale-105 transition-all hover:from-trndsky-blue hover:to-trndsky-teal hover:opacity-100 active:opacity-100 focus:opacity-100">
-                  <Send className="w-5 h-5" /> {isSubmitting ? "جاري الإرسال..." : orderSent ? "تم الإرسال بنجاح" : "إرسال الطلب"}
-                </button>
+                <Button 
+                  type="submit" 
+                  disabled={orderSent || isSubmitting} 
+                  variant="default"
+                  size="lg"
+                  className="w-full text-base font-bold py-3 bg-trndsky-teal hover:bg-trndsky-blue text-white font-tajawal rounded-lg shadow-lg hover:shadow-blue-glow border-2 border-white"
+                >
+                  <Send className="w-5 h-5 ml-2" /> 
+                  {isSubmitting ? "جاري الإرسال..." : orderSent ? "تم الإرسال بنجاح" : "إرسال الطلب"}
+                </Button>
                 {orderSent && <div className="mt-2 text-trndsky-teal font-tajawal text-sm">
                     تم استلام الطلب بنجاح، سنتواصل معكم على واتساب قريباً.
                   </div>}
