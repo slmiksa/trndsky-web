@@ -26,7 +26,7 @@ const Navbar = () => {
             <img 
               src="/lovable-uploads/494b749b-6590-48df-b844-3fd9b22b299f.png" 
               alt="TRNDSKY Logo" 
-              className="h-16 rounded-lg animate-pulse-soft" 
+              className="h-16 animate-pulse-soft" 
             />
           </Link>
 
