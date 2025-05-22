@@ -137,7 +137,7 @@ const FloatingContactButton = ({
                   scale: 0.95
                 }}
                 onClick={() => setIsOpen(true)}
-                className="bg-gradient-to-r from-trndsky-teal to-trndsky-blue text-white rounded-full p-4 shadow-lg hover:shadow-xl flex items-center justify-center transition-all duration-300 border border-white/20"
+                className="bg-trndsky-blue text-white rounded-full p-4 shadow-xl hover:shadow-2xl flex items-center justify-center transition-all duration-300 border-2 border-white"
                 aria-label="التواصل معنا"
               >
                 <div className="relative">
