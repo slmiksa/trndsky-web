@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -46,12 +45,11 @@ const AppContent = () => {
         <Route path="*" element={<NotFound />} />
       </Routes>
       
-      {!loading && whatsAppSettings.enabled && (
-        <FloatingContactButton 
-          phoneNumber={whatsAppSettings.phone_number} 
-          defaultMessage={whatsAppSettings.default_message} 
-        />
-      )}
+      {/* Always show the button regardless of loading state */}
+      <FloatingContactButton 
+        phoneNumber={loading ? "+966500000000" : whatsAppSettings.phone_number} 
+        defaultMessage={loading ? "استفسار من موقع TRNDSKY" : whatsAppSettings.default_message} 
+      />
     </>
   );
 };
