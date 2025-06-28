@@ -245,7 +245,7 @@ select:focus {
 
 /* تحسين النصوص */
 .text-gradient {
-  @apply bg-gradient-to-r from-trndsky-blue via-trndsky-teal to-trndsky-green bg-clip-text text-transparent;
+  @apply bg-gradient-to-r from-trndsky-blue to-trndsky-green bg-clip-text text-transparent;
 }
 
 /* تحسين الخلفيات */
