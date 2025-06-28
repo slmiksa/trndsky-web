@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
-import { Send } from 'lucide-react';
+import { Send, X } from 'lucide-react';
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from 'sonner';
+import { toast } from "@/hooks/use-toast";
 import TrialRequestForm from './TrialRequestForm';
 import { ImageGallery } from './admin/ImageGallery';
 import { useContactInfo } from '@/hooks/useContactInfo';
 import { Button } from './ui/button';
+
 interface SoftwareCardProps {
   title: string;
   description: string;
@@ -14,6 +15,7 @@ interface SoftwareCardProps {
   price: string;
   onTrialRequest?: () => void;
 }
+
 const SoftwareCard = ({
   title,
   description,
@@ -33,6 +35,8 @@ const SoftwareCard = ({
   const [showTrialForm, setShowTrialForm] = useState(false);
   const [additionalImages, setAdditionalImages] = useState<string[]>([]);
   const [loadingImages, setLoadingImages] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
   const {
     contactInfo
   } = useContactInfo();
@@ -68,17 +72,22 @@ const SoftwareCard = ({
     setIsSubmitting(true);
     try {
       // Insert the software order into the database
-      const {
-        error
-      } = await supabase.from('software_orders').insert({
-        software_id: id,
-        company_name: orderData.company,
-        whatsapp: orderData.whatsapp,
-        status: 'new'
-      });
+      const { error } = await supabase
+        .from('software_orders')
+        .insert({
+          software_id: id,
+          company_name: orderData.company,
+          whatsapp: orderData.whatsapp,
+          status: 'new'
+        });
+
       if (error) {
         console.error('Error submitting order:', error);
-        toast.error('حدث خطأ أثناء إرسال الطلب. الرجاء المحاولة مرة أخرى.');
+        toast({
+          title: "خطأ في الإرسال",
+          description: "حدث خطأ أثناء إرسال الطلب. الرجاء المحاولة مرة أخرى.",
+          variant: "destructive",
+        });
         setIsSubmitting(false);
         return;
       }
@@ -99,21 +108,24 @@ const SoftwareCard = ({
           }
         });
       } catch (emailError) {
-        // Log error but continue as the database entry was successful
         console.error("Error sending email notification:", emailError);
       }
+
       setOrderSent(true);
-      setOrderData({
-        company: '',
-        whatsapp: ''
-      });
-      toast.success('تم إرسال طلبك بنجاح!');
+      setOrderData({ company: '', whatsapp: '' });
+      setSuccessMessage('تم إرسال طلب الشراء بنجاح! سنتواصل معكم قريباً.');
+      setShowSuccessModal(true);
+      
       setTimeout(() => {
         setShowOrderForm(false);
       }, 1800);
     } catch (error) {
       console.error('Error:', error);
-      toast.error('حدث خطأ أثناء إرسال الطلب. الرجاء المحاولة مرة أخرى.');
+      toast({
+        title: "خطأ في الإرسال",
+        description: "حدث خطأ أثناء إرسال الطلب. الرجاء المحاولة مرة أخرى.",
+        variant: "destructive",
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -145,72 +157,181 @@ const SoftwareCard = ({
       setLoadingImages(false);
     }
   };
-  return <div className="bg-gradient-to-tr from-white via-trndsky-gray to-[#f3fafe] rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 border border-trndsky-blue/10 hover:scale-105">
-      <div className="h-48 overflow-hidden relative" style={{
-      backgroundImage: `url(${image})`,
-      backgroundSize: 'cover',
-      backgroundPosition: 'center'
-    }}>
-        <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent px-0 mx-0 my-0 rounded-none"></div>
-      </div>
-      
-      <div className="p-6">
-        <h3 className="text-2xl font-bold mb-2 font-tajawal text-right text-trndsky-darkblue">{title}</h3>
-        <div className="flex items-center justify-between mb-3">
-          {price && <span className="font-tajawal text-xl font-bold text-trndsky-teal">{price}</span>}
-          <button onClick={toggleDetails} className="text-trndsky-teal hover:text-trndsky-blue font-medium transition-colors font-tajawal underline underline-offset-4">
-            {showDetails ? 'إخفاء التفاصيل' : 'عرض التفاصيل'}
-          </button>
+  return (
+    <>
+      <div className="bg-gradient-to-br from-white via-blue-50/30 to-indigo-50/50 rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 border border-blue-100/50 hover:scale-[1.02] group">
+        <div className="h-56 md:h-48 overflow-hidden relative" style={{
+          backgroundImage: `url(${image})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center'
+        }}>
+          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/10 to-transparent"></div>
+          <div className="absolute bottom-4 right-4">
+            <div className="bg-white/90 backdrop-blur-sm rounded-full px-3 py-1 text-sm font-bold text-trndsky-blue border border-white/50">
+              جديد
+            </div>
+          </div>
         </div>
         
-        {showDetails && <div className="mt-2 text-gray-600 text-right animate-fade-in font-tajawal bg-gray-50 rounded-lg p-4 border border-trndsky-blue/10">
-            <p className="mb-4">{description}</p>
+        <div className="p-6 md:p-8">
+          <h3 className="text-2xl md:text-3xl font-bold mb-3 font-tajawal text-right text-trndsky-darkblue leading-tight">
+            {title}
+          </h3>
+          
+          <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
+            {price && (
+              <div className="bg-gradient-to-r from-trndsky-teal to-trndsky-blue text-white px-4 py-2 rounded-full font-tajawal text-lg font-bold shadow-md">
+                {price}
+              </div>
+            )}
+            <button 
+              onClick={toggleDetails} 
+              className="text-trndsky-blue hover:text-trndsky-darkblue font-bold transition-all duration-300 font-tajawal bg-blue-50 hover:bg-blue-100 px-4 py-2 rounded-full border border-blue-200 shadow-sm hover:shadow-md"
+            >
+              {showDetails ? '🔼 إخفاء التفاصيل' : '🔽 عرض التفاصيل'}
+            </button>
+          </div>
+          
+          {showDetails && (
+            <div className="mt-4 animate-fade-in">
+              <div className="bg-gradient-to-br from-blue-50/80 to-indigo-50/80 rounded-2xl p-6 border border-blue-100/50 shadow-inner">
+                <div className="prose max-w-none text-right font-tajawal">
+                  <p className="text-gray-700 leading-relaxed text-base md:text-lg mb-6 font-medium">
+                    {description}
+                  </p>
+                </div>
 
-            {/* عرض معرض الصور إذا كانت هناك صور إضافية */}
-            {loadingImages ? <div className="text-center py-4">جاري تحميل الصور...</div> : (additionalImages.length > 0 || image) && <div className="my-4">
-                <h4 className="font-semibold mb-2 text-trndsky-darkblue">معرض الصور:</h4>
-                <ImageGallery images={additionalImages.length > 0 ? additionalImages : [image]} readOnly={true} />
-              </div>}
+                {/* عرض معرض الصور */}
+                {loadingImages ? (
+                  <div className="text-center py-8 bg-white/50 rounded-xl">
+                    <div className="w-8 h-8 border-3 border-trndsky-blue border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
+                    <p className="text-trndsky-blue font-tajawal">جاري تحميل الصور...</p>
+                  </div>
+                ) : (
+                  (additionalImages.length > 0 || image) && (
+                    <div className="my-6">
+                      <h4 className="font-bold mb-4 text-trndsky-darkblue text-lg font-tajawal flex items-center gap-2">
+                        🖼️ معرض الصور
+                      </h4>
+                      <div className="bg-white/70 rounded-xl p-4 border border-blue-100">
+                        <ImageGallery 
+                          images={additionalImages.length > 0 ? additionalImages : [image]} 
+                          readOnly={true} 
+                        />
+                      </div>
+                    </div>
+                  )
+                )}
 
-            <div className="mt-4 flex flex-col gap-3 md:flex-row md:justify-end">
-              {!showOrderForm && <>
-                  <Button onClick={handleOrderClick} type="button" variant="default" size="lg" className="bg-trndsky-blue text-white font-tajawal font-bold border-2 border-white shadow-md hover:shadow-blue-glow hover:bg-trndsky-darkblue opacity-100 hover:opacity-100 active:opacity-100 focus:opacity-100">
-                    طلب المنتج
-                  </Button>
-                  <Button onClick={handleTrialClick} type="button" variant="default" size="lg" className="bg-trndsky-teal text-white font-tajawal font-bold border-2 border-white shadow-md hover:shadow-blue-glow opacity-100 hover:opacity-100 active:opacity-100 focus:opacity-100 bg-trndsky-blue">
-                    طلب تجربة
-                  </Button>
-                </>}
+                <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-end">
+                  {!showOrderForm && (
+                    <>
+                      <Button 
+                        onClick={handleOrderClick} 
+                        type="button" 
+                        size="lg" 
+                        className="bg-gradient-to-r from-trndsky-blue to-trndsky-darkblue hover:from-trndsky-darkblue hover:to-trndsky-blue text-white font-tajawal font-bold px-8 py-3 rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 border-2 border-white/20"
+                      >
+                        🛒 طلب المنتج
+                      </Button>
+                      <Button 
+                        onClick={handleTrialClick} 
+                        type="button" 
+                        size="lg" 
+                        className="bg-gradient-to-r from-trndsky-teal to-trndsky-green hover:from-trndsky-green hover:to-trndsky-teal text-white font-tajawal font-bold px-8 py-3 rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 border-2 border-white/20"
+                      >
+                        🚀 طلب تجربة
+                      </Button>
+                    </>
+                  )}
+                </div>
+
+                {showOrderForm && (
+                  <form className="mt-6 bg-white rounded-2xl p-6 shadow-lg border border-blue-100" onSubmit={handleOrderSubmit} dir="rtl">
+                    <div className="grid gap-4">
+                      <div>
+                        <label className="block mb-2 text-trndsky-darkblue font-tajawal font-bold text-lg" htmlFor={`company-${id}`}>
+                          🏢 اسم الشركة / العميل
+                        </label>
+                        <input 
+                          id={`company-${id}`}
+                          name="company" 
+                          required 
+                          value={orderData.company} 
+                          onChange={handleInputChange} 
+                          className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:outline-none focus:ring-2 focus:ring-trndsky-blue focus:border-trndsky-blue bg-gray-50 font-tajawal text-lg transition-all duration-300" 
+                          placeholder="أدخل اسم الشركة أو العميل" 
+                        />
+                      </div>
+                      <div>
+                        <label className="block mb-2 text-trndsky-darkblue font-tajawal font-bold text-lg" htmlFor={`whatsapp-${id}`}>
+                          📱 رقم الواتساب للتواصل
+                        </label>
+                        <input 
+                          id={`whatsapp-${id}`}
+                          name="whatsapp" 
+                          required 
+                          value={orderData.whatsapp} 
+                          onChange={handleInputChange} 
+                          className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:outline-none focus:ring-2 focus:ring-trndsky-blue focus:border-trndsky-blue bg-gray-50 font-tajawal text-lg transition-all duration-300" 
+                          pattern="^[0-9+]{8,15}$" 
+                          placeholder="05xxxxxxxx أو +9665xxxxxxx" 
+                        />
+                      </div>
+                    </div>
+                    <Button 
+                      type="submit" 
+                      disabled={orderSent || isSubmitting} 
+                      size="lg" 
+                      className="w-full mt-6 text-lg font-bold py-4 bg-gradient-to-r from-trndsky-blue to-trndsky-darkblue hover:from-trndsky-darkblue hover:to-trndsky-blue text-white font-tajawal rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.02] border-2 border-white/20"
+                    >
+                      <Send className="w-6 h-6 ml-2" /> 
+                      {isSubmitting ? "⏳ جاري الإرسال..." : orderSent ? "✅ تم الإرسال بنجاح" : "🚀 إرسال الطلب"}
+                    </Button>
+                  </form>
+                )}
+              </div>
             </div>
-
-            {showOrderForm && <form className="mt-4 bg-white border border-trndsky-blue/10 rounded-xl p-4 animate-fade-in shadow" onSubmit={handleOrderSubmit} dir="rtl">
-                <div className="mb-3">
-                  <label className="block mb-1 text-trndsky-darkblue font-tajawal font-semibold text-base" htmlFor={`company-${id}`}>
-                    اسم الشركة / العميل
-                  </label>
-                  <input id={`company-${id}`} name="company" required value={orderData.company} onChange={handleInputChange} className="w-full px-3 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-trndsky-teal bg-gray-50 font-tajawal" placeholder="أدخل اسم الشركة أو العميل" />
-                </div>
-                <div className="mb-3">
-                  <label className="block mb-1 text-trndsky-darkblue font-tajawal font-semibold text-base" htmlFor={`whatsapp-${id}`}>
-                    رقم الواتساب للتواصل
-                  </label>
-                  <input id={`whatsapp-${id}`} name="whatsapp" required value={orderData.whatsapp} onChange={handleInputChange} className="w-full px-3 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-trndsky-teal bg-gray-50 font-tajawal" pattern="^[0-9+]{8,15}$" placeholder="05xxxxxxxx أو +9665xxxxxxx" />
-                </div>
-                <Button type="submit" disabled={orderSent || isSubmitting} variant="default" size="lg" className="w-full text-base font-bold py-3 bg-trndsky-blue hover:bg-trndsky-darkblue text-white font-tajawal rounded-lg shadow-lg hover:shadow-blue-glow border-2 border-white opacity-100 hover:opacity-100 active:opacity-100 focus:opacity-100">
-                  <Send className="w-5 h-5 ml-2" /> 
-                  {isSubmitting ? "جاري الإرسال..." : orderSent ? "تم الإرسال بنجاح" : "إرسال الطلب"}
-                </Button>
-                {orderSent && <div className="mt-2 text-trndsky-teal font-tajawal text-sm">
-                    تم استلام الطلب بنجاح، سنتواصل معكم على واتساب قريباً.
-                  </div>}
-              </form>}
-          </div>}
+          )}
+        </div>
       </div>
-      
+
+      {/* مودال نجاح الإرسال */}
+      {showSuccessModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-3xl p-8 max-w-md w-full mx-4 shadow-2xl transform animate-scale-in">
+            <div className="text-center">
+              <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center">
+                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+              </div>
+              <h3 className="text-2xl font-bold text-green-600 mb-3 font-tajawal">تم الإرسال بنجاح!</h3>
+              <p className="text-gray-600 mb-6 font-tajawal text-lg leading-relaxed">{successMessage}</p>
+              <Button 
+                onClick={() => setShowSuccessModal(false)}
+                className="bg-green-500 hover:bg-green-600 text-white px-8 py-3 rounded-xl font-tajawal font-bold text-lg shadow-lg hover:shadow-xl transition-all duration-300"
+              >
+                إغلاق
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* نموذج طلب التجربة */}
-      {!onTrialRequest && <TrialRequestForm isOpen={showTrialForm} onClose={() => setShowTrialForm(false)} />}
-    </div>;
+      {!onTrialRequest && (
+        <TrialRequestForm 
+          isOpen={showTrialForm} 
+          onClose={() => setShowTrialForm(false)} 
+        />
+      )}
+    </>
+  );
 };
+
 export const FeaturedSoftware = ({
   onTrialRequest
 }: {
@@ -264,4 +385,5 @@ export const FeaturedSoftware = ({
       </div>
     </section>;
 };
+
 export default SoftwareCard;
