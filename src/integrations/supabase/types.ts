@@ -385,22 +385,37 @@ export type Database = {
       trial_requests: {
         Row: {
           company_name: string
+          contact_person: string | null
           created_at: string
+          email: string | null
           id: string
+          message: string | null
+          phone: string | null
+          software_type: string | null
           status: string
           whatsapp: string
         }
         Insert: {
           company_name: string
+          contact_person?: string | null
           created_at?: string
+          email?: string | null
           id?: string
+          message?: string | null
+          phone?: string | null
+          software_type?: string | null
           status?: string
           whatsapp: string
         }
         Update: {
           company_name?: string
+          contact_person?: string | null
           created_at?: string
+          email?: string | null
           id?: string
+          message?: string | null
+          phone?: string | null
+          software_type?: string | null
           status?: string
           whatsapp?: string
         }

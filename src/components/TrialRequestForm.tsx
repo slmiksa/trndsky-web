@@ -41,12 +41,21 @@ const TrialRequestForm = ({ isOpen, onClose }: TrialRequestFormProps) => {
     setIsSubmitting(true);
 
     try {
+      // Map form data to database fields
+      const dbData = {
+        company_name: formData.company_name,
+        contact_person: formData.contact_person,
+        email: formData.email,
+        phone: formData.phone,
+        whatsapp: formData.phone, // Use phone as whatsapp
+        software_type: formData.software_type,
+        message: formData.message,
+        status: 'new'
+      };
+
       const { error } = await supabase
         .from('trial_requests')
-        .insert({
-          ...formData,
-          status: 'new'
-        });
+        .insert(dbData);
 
       if (error) {
         console.error('Error submitting trial request:', error);
